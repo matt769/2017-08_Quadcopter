@@ -1,3 +1,5 @@
+// ADD CONDITION ON MODE TO mapToPidInput()
+// change mapping depending on mode?
 
 
 byte addresses[][6] = {"1Node", "2Node"};
@@ -8,8 +10,8 @@ byte statusForAcknowledgement; // send this back to transmitter as acknowledgeme
 
 struct dataStruct {
   int throttle; // number 1000 to 2000
-  int pitch;    // number 1000 to 2000
   int roll;     // number 1000 to 2000
+  int pitch;    // number 1000 to 2000
   int yaw;     // number 1000 to 2000
   byte control; // for some control bits
   byte checksum;
@@ -28,10 +30,40 @@ void setupRadio() {
   radio.startListening();
 }
 
-void checkRadioForInput() {
+bool checkRadioForInput() {
   if ( radio.available()) {
     while (radio.available()) {
       radio.read( &rcPackage, sizeof(rcPackage) );
     }
+   return true;
   }
+  return false;
 }
+
+bool checkRadioForInputPLACEHOLDER() {
+  // ADD PLACEHOLDER VALUES
+  rcPackage.throttle = 500;
+  rcPackage.roll = 500;
+  rcPackage.pitch = 500;
+  rcPackage.yaw = 500;
+  return true;
+}
+
+
+void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bool *mode){
+    *throttle = rcPackage.throttle;
+//  if(balance_mode){
+//    pitch = (double)map(rcPackage.pitch,0,1000,-15,15);
+//    roll = (double)map(rcPackage.roll,0,1000,-15,15);
+//    yaw = (double)map(rcPackage.yaw,0,1000,-15,15);
+//  }
+//  else {
+    // REMEMBER THIS IS DEG/S
+    *roll = (double)map(rcPackage.roll,0,1000,-15,15);
+    *pitch = (double)map(rcPackage.pitch,0,1000,-15,15);
+    *yaw = (double)map(rcPackage.yaw,0,1000,-15,15);
+//  }
+
+}
+
+

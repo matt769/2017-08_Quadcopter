@@ -10,9 +10,8 @@
 
 // use interupts from radio/MPU? or just poll
 
-double actual;
-double target;
-double output;
+// Need to rearrange the order of some bits, esp. around balance/rate mode
+
 
 #include <I2C.h>
 #include <Servo.h>
@@ -29,6 +28,16 @@ double output;
 #include "Motors.h"
 
 
+int rcInputThrottle;
+//double rcInputRatePitch;
+//double rcInputRateRoll;
+//double rcInputRateYaw;
+
+bool balance_mode;  
+
+
+
+
 void setup() {
   Serial.begin(115200);
 
@@ -43,6 +52,7 @@ void setup() {
   // Indicate readiness somehow. LED?
 
   pidRateModeOn(); //normally this would only come after arming
+  balance_mode = false;
 
 }
 
@@ -66,39 +76,39 @@ void loop() {
   // update inner loop setpoint
   // update outer loop setpoint (if balance mode)
 
+//  Serial.println("1");
+  checkRadioForInputPLACEHOLDER(); // currently contains placeholder values
+//  Serial.println("2");
+  if(balance_mode){
+    mapRcToPidInput(&rcInputThrottle, &balanceRollSettings.target, &balancePitchSettings.target, &balanceYawSettings.target, &balance_mode);
+    // NEED TO CALCUALTE ACTUAL ANGLE
+    pidBalanceUpdate();
+    // set rate setpoints
+    ratePitchSettings.target = balancePitchSettings.output;
+    rateRollSettings.target = balanceRollSettings.output;
+    rateYawSettings.target = balanceYawSettings.output;
+  }
+  else {
+    mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &balance_mode);
+  }
+  
   readMainSensors(MPU_ADDRESS);
   convertReadingsToValues();
 
-  rateRollSettings.target = 0;
-  ratePitchSettings.target = 0;
-  rateYawSettings.target = 0;
   rateRollSettings.actual = valGyX;
   ratePitchSettings.actual = valGyY;
   rateYawSettings.actual = valGyZ;
 
-
   pidRateUpdate();
 
-//  if (millis() - lastPrint > 250) {
-//    Serial.print(valGyX); Serial.print('\t');
-//    Serial.print(valGyY); Serial.print('\t');
-//    Serial.print(valGyZ); Serial.print('\t');
-//    Serial.print(rateRollSettings.output); Serial.print('\t');
-//    Serial.print(ratePitchSettings.output); Serial.print('\t');
-//    Serial.print(rateYawSettings.output); Serial.print('\n');
-//    lastPrint = millis();
-//  }
-
-  rcPackage.throttle = 500;
-
-  calculateMotorInput();
+  calculateMotorInput(&rcInputThrottle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);  // change to use pointers
   updateMotors();
 
   if (millis() - lastPrint > 1000) {
 //    Serial.print(valGyX); Serial.print('\n');
-//    Serial.print(rateRollSettings.target); Serial.print('\t');
-//    Serial.print(rateRollSettings.actual); Serial.print('\t');
-//    Serial.print(rateRollSettings.output); Serial.print('\n');
+    Serial.print(rateRollSettings.target); Serial.print('\t');
+    Serial.print(ratePitchSettings.target); Serial.print('\t');
+    Serial.print(rateYawSettings.target); Serial.print('\n');
     Serial.print(rateRollSettings.output); Serial.print('\t');
     Serial.print(ratePitchSettings.output); Serial.print('\t');
     Serial.print(rateYawSettings.output); Serial.print('\n');
@@ -112,7 +122,7 @@ void loop() {
   
 
 
-
+  
 
 
 
