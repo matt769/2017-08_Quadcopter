@@ -1,11 +1,21 @@
 
 
-// THIS NEEDS TO GO IN MAIN FILE (or does it?)
-byte addresses[][6] = {"1Node", "2Node"};
-bool radioNumber = 1; // receiver should be 1 (or anythin not 0)
+uint8_t addresses[][6] = {"1Node", "2Node"};
+bool radioNumber = 1; // receiver should be 1 (or anything not 0)
 RF24 radio(8, 7); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 
+uint8_t statusForAcknowledgement; // send this back to transmitter as acknowledgement package
 
+struct dataStruct {
+  uint16_t throttle; // number 1000 to 2000
+  uint16_t pitch;    // number 1000 to 2000
+  uint16_t roll;     // number 1000 to 2000
+  uint16_t yaw;     // number 1000 to 2000
+  uint8_t control; // for some control bits
+  uint8_t checksum;
+};
+
+struct dataStruct rcPackage;
 
 void setupRadio() {
   // RADIO
@@ -14,10 +24,14 @@ void setupRadio() {
   // Open a writing and reading pipe on each radio, MUST BE OPPOSITE addresses to the receiver
   radio.openWritingPipe(addresses[0]);
   radio.openReadingPipe(1, addresses[1]);
+
+  radio.startListening();
 }
 
-
-
-
-
-// acknowledgements
+void checkRadioForInput() {
+  if ( radio.available()) {
+    while (radio.available()) {
+      radio.read( &rcPackage, sizeof(rcPackage) );
+    }
+  }
+}

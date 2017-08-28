@@ -5,10 +5,8 @@
 // if donig by interupt, do you have to reset flat on MPU?
 
 
-// THERE ARE STILL SOME JR FUNCTIONS IN THE BELOW
-// Ned to replace with my own
-
 // change to defines
+// add accel offsets
 
 
 // Config registers
@@ -41,17 +39,19 @@ const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
 
 // PARAMETERS
 // Do I need to handle the offsets myself? (if not using DMP?)
-int XGyroOffset = -343;   // REQUIRES DERIVING FOR NEW MPU
-int YGyroOffset = -232;   // REQUIRES DERIVING FOR NEW MPU
-int ZGyroOffset = 28;     // REQUIRES DERIVING FOR NEW MPU
-int ZAccelOffset = 847;   // REQUIRES DERIVING FOR NEW MPU
+int16_t GyXOffset = -274;
+int16_t GyYOffset = -321;
+int16_t GyZOffset = -472;
+int16_t AccelZOffset = 847;   // REQUIRES DERIVING FOR NEW MPU
 byte dlpf = 0;
 
 unsigned long lastReadingTime;
 unsigned long thisReadingTime;
 
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // measurement values
-int16_t GyXOffset, GyYOffset, GyZOffset;
+float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
+float accelRes = 2.0f / 32768.0f;
+float gyroRes = 250.0f / 32768.0f;
 
 bool sensorRead;
 
@@ -76,7 +76,7 @@ void setupMotionSensor() {
   else {
     Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
     Serial.println(F("Try reseting..."));
-    while(1); // CHANGE TO SET SOME STATUS FLAG THAT CA BE SENT TO TRANSMITTER
+    while(1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
   }
 }
 
@@ -109,3 +109,11 @@ byte getInteruptStatus(byte address){
   return readRegister(address,INT_STATUS);
 }
 
+void convertReadingsToValues(){
+  valAcX = AcX * accelRes;  // add accel offset
+  valAcY = AcY * accelRes;  // add accel offset
+  valAcZ = AcZ * accelRes;  // add accel offset
+  valGyX = (GyX - GyXOffset) * gyroRes;
+  valGyY = (GyY - GyYOffset) * gyroRes;
+  valGyZ = (GyZ - GyZOffset) * gyroRes;
+}

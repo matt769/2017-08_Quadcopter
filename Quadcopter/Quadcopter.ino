@@ -8,12 +8,19 @@
 
 // should I control ESC pulses myself or use servo.write - USE SERVO.WRITE for now
 
+// use interupts from radio/MPU? or just poll
+
+double actual;
+double target;
+double output;
+
 #include <I2C.h>
 #include <Servo.h>
 #include <SPI.h>
 #include <RF24.h>
 #include <PID_v1.h>
 
+#include "debug_and_misc.h"
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
@@ -28,12 +35,20 @@ void setup() {
 
   setupI2C();
   setupMotionSensor();
-  setupRadio();
+  //  setupRadio();   ignore for now
+  pidSetup();
+
 
   Serial.println(F("Setup complete"));
   // Indicate readiness somehow. LED?
-  
+
+  pidRateModeOn(); //normally this would only come after arming
+
 }
+
+unsigned long lastPrint = 0;  // for debug only
+
+
 
 void loop() {
   // at what frequency should everything run?
@@ -50,6 +65,32 @@ void loop() {
   // update current angle estimation (gyro + accel info)
   // update inner loop setpoint
   // update outer loop setpoint (if balance mode)
-  
+
+  readMainSensors(MPU_ADDRESS);
+  convertReadingsToValues();
+
+  rateRollSettings.target = 0;
+  ratePitchSettings.target = 0;
+  rateYawSettings.target = 0;
+  rateRollSettings.actual = valGyX;
+  ratePitchSettings.actual = valGyY;
+  rateYawSettings.actual = valGyZ;
+
+
+  pidRateUpdate();
+
+  if (millis() - lastPrint > 250) {
+    Serial.print(valGyX); Serial.print('\t');
+    Serial.print(valGyY); Serial.print('\t');
+    Serial.print(valGyZ); Serial.print('\t');
+    Serial.print(rateRollSettings.output); Serial.print('\t');
+    Serial.print(ratePitchSettings.output); Serial.print('\t');
+    Serial.print(rateYawSettings.output); Serial.print('\n');
+
+    lastPrint = millis();
+  }
+
+
+
 
 } // loop
