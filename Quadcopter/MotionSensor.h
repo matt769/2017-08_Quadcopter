@@ -42,7 +42,10 @@ const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
 int16_t GyXOffset = -274;
 int16_t GyYOffset = -321;
 int16_t GyZOffset = -472;
-int16_t AccelZOffset = 847;   // REQUIRES DERIVING FOR NEW MPU
+int16_t AccelXOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
+int16_t AccelYOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
+int16_t AccelZOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
+
 byte dlpf = 0;
 
 unsigned long lastReadingTime;
@@ -50,10 +53,31 @@ unsigned long thisReadingTime;
 
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // measurement values
 float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
+long AcXAve = 0, AcYAve = 0, AcZAve = 0;
 float accelRes = 2.0f / 32768.0f;
 float gyroRes = 250.0f / 32768.0f;
 
 bool sensorRead;
+
+struct angle {
+  float roll;
+  float pitch;
+  float yaw;
+};
+
+struct angle accelAngles;
+struct angle gyroAngles;
+struct angle gyroChangeAngles;
+struct angle currentAngles;
+
+float compFilterAlpha = 0.98;
+float compFilterAlphaComplement = 1- compFilterAlpha;
+
+float gyroChange = 0;
+
+float accelAverageAlpha = 0.1;
+float accelAverageAlphaComplement = 1 - accelAverageAlpha;
+
 
 void setupMotionSensor() {
 
@@ -81,11 +105,11 @@ void setupMotionSensor() {
 }
 
 
-void readMainSensors(byte address) {
+void readMainSensors() {
   //
   lastReadingTime = thisReadingTime;
-  thisReadingTime = millis();
-  I2c.read(address, ACCEL_XOUT_H, 14);
+  thisReadingTime = micros();
+  I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
   // read the most significant bit register into the variable then shift to the left
   // and binary add the least significant
   if(I2c.available()==14){
@@ -109,11 +133,59 @@ byte getInteruptStatus(byte address){
   return readRegister(address,INT_STATUS);
 }
 
-void convertReadingsToValues(){
-  valAcX = AcX * accelRes;  // add accel offset
-  valAcY = AcY * accelRes;  // add accel offset
-  valAcZ = AcZ * accelRes;  // add accel offset
+void convertGyroReadingsToValues(){
+
   valGyX = (GyX - GyXOffset) * gyroRes;
   valGyY = (GyY - GyYOffset) * gyroRes;
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
+
+void accumulateGyroChange(){
+  // have to convert gyro readings to values every time anyway, so can use the values here
+  unsigned long interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
+  gyroChangeAngles.roll += valGyX / interval;
+  gyroChangeAngles.pitch += valGyY / interval;
+  gyroChangeAngles.yaw += valGyZ / interval;
+}
+
+void accumulateAccelReadings(){
+  // can filter on the accel readings without having to convert to values until we need to calculate an actual angle
+  // actually, don't need to convert to values at all because we only need relative values
+  // use a cyclic buffer ot just sum and low pass filter as we go?
+  AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
+  AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
+  AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
+}
+
+
+// consider splitting to work into parts to fit in when more time available (is that required)
+// I think that each atan operation will take about 600us
+void calcAnglesAccel(){
+  // this will not work well for Z
+  accelAngles.roll = atan2(AcYAve,AcZAve);
+  accelAngles.pitch = atan2(AcXAve,AcZAve);
+  accelAngles.yaw = atan2(AcXAve,AcYAve);
+}
+
+
+void initialiseCurrentAngles(){
+  // take a certain number of readings
+  for(int i=0;i++;i<200){
+    readMainSensors();
+    accumulateAccelReadings();
+    delay(5);
+  }
+  calcAnglesAccel();
+  currentAngles.roll = accelAngles.roll;
+  currentAngles.pitch = accelAngles.pitch;
+  currentAngles.yaw = accelAngles.yaw;
+}
+
+void mixAngles(){
+  currentAngles.roll += ((gyroAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
+  currentAngles.pitch += ((gyroAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
+  currentAngles.yaw += ((gyroAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+}
+
+
+

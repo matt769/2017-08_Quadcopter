@@ -6,12 +6,15 @@
 
 // remove debug statements later
 
-// should I control ESC pulses myself or use servo.write - USE SERVO.WRITE for now
-
-// use interupts from radio/MPU? or just poll
-
 // Need to rearrange the order of some bits, esp. around balance/rate mode
 
+// Need to store/accumulate accel readings
+
+// after main framework done, test timings and try and speed up if required
+
+// rename all X/Y/Z as roll/pitch/yaw
+
+// *** NOTE THAT ANGLES ARE CURRENTLY IN RADIANS ***
 
 #include <I2C.h>
 #include <Servo.h>
@@ -29,12 +32,12 @@
 
 
 int rcInputThrottle;
-//double rcInputRatePitch;
-//double rcInputRateRoll;
-//double rcInputRateYaw;
-
 bool balance_mode;  
 
+// all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
+int rateLoopFreq = 10;
+int balanceLoopFreq = 50;
+int receiverFreq = 20;
 
 
 
@@ -92,8 +95,8 @@ void loop() {
     mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &balance_mode);
   }
   
-  readMainSensors(MPU_ADDRESS);
-  convertReadingsToValues();
+  readMainSensors();
+  convertGyroReadingsToValues();
 
   rateRollSettings.actual = valGyX;
   ratePitchSettings.actual = valGyY;
@@ -101,7 +104,7 @@ void loop() {
 
   pidRateUpdate();
 
-  calculateMotorInput(&rcInputThrottle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);  // change to use pointers
+  calculateMotorInput(&rcInputThrottle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
   updateMotors();
 
   if (millis() - lastPrint > 1000) {
