@@ -1,5 +1,8 @@
 // actually the ESCs really
 
+// CHANGE MOTOR CALC TO GET THE VALUES PASSED TO IT
+// so is independent of the receiver and PID modules
+
 Servo motor1; // front left (CW)
 Servo motor2; // front right (CCW)
 Servo motor3; // back left (CCW)
@@ -32,10 +35,10 @@ void setupMotors(){
 
 
 void calculateMotorInput(){
-  motor1pulse = throttle + rateRollSettings.output - ratePitchSettings.output - rateYawSettings.output;
-  motor2pulse = throttle + rateRollSettings.output + ratePitchSettings.output + rateYawSettings.output;
-  motor3pulse = throttle - rateRollSettings.output - ratePitchSettings.output + rateYawSettings.output;
-  motor4pulse = throttle - rateRollSettings.output + ratePitchSettings.output - rateYawSettings.output;
+  motor1pulse = rcPackage.throttle + rateRollSettings.output - ratePitchSettings.output + rateYawSettings.output;
+  motor2pulse = rcPackage.throttle - rateRollSettings.output - ratePitchSettings.output - rateYawSettings.output;
+  motor3pulse = rcPackage.throttle + rateRollSettings.output + ratePitchSettings.output - rateYawSettings.output;
+  motor4pulse = rcPackage.throttle - rateRollSettings.output + ratePitchSettings.output + rateYawSettings.output;
 }
 
 

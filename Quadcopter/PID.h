@@ -9,6 +9,8 @@
 
 // NEED TO REVIEW THE LIMITS
 
+// Review how PID deals with being turned on and off
+
 
 struct pid {
   double actual;  // these all need to be double since that's what the PID onstructor requires (although could change just for thi?)
@@ -26,12 +28,12 @@ struct pid balanceRollSettings;
 struct pid balancePitchSettings;
 struct pid balanceYawSettings;
 
-PID pidRateRoll(&rateRollSettings.actual, &rateRollSettings.output, &rateRollSettings.target, rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD, REVERSE);
-PID pidRatePitch(&ratePitchSettings.actual, &ratePitchSettings.output, &ratePitchSettings.target, ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD, REVERSE);
-PID pidRateYaw(&rateYawSettings.actual, &rateYawSettings.output, &rateYawSettings.target, rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD, REVERSE);
-PID pidBalanceRoll(&balanceRollSettings.actual, &balanceRollSettings.output, &balanceRollSettings.target, balanceRollSettings.kP, balanceRollSettings.kI, balanceRollSettings.kD, REVERSE);
-PID pidBalancePitch(&balancePitchSettings.actual, &balancePitchSettings.output, &balancePitchSettings.target, balancePitchSettings.kP, balancePitchSettings.kI, balancePitchSettings.kD, REVERSE);
-PID pidBalanceYaw(&balanceYawSettings.actual, &balanceYawSettings.output, &balanceYawSettings.target, balanceYawSettings.kP, balanceYawSettings.kI, balanceYawSettings.kD, REVERSE);
+PID pidRateRoll(&rateRollSettings.actual, &rateRollSettings.output, &rateRollSettings.target, rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD, DIRECT);
+PID pidRatePitch(&ratePitchSettings.actual, &ratePitchSettings.output, &ratePitchSettings.target, ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD, DIRECT);
+PID pidRateYaw(&rateYawSettings.actual, &rateYawSettings.output, &rateYawSettings.target, rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD, DIRECT);
+PID pidBalanceRoll(&balanceRollSettings.actual, &balanceRollSettings.output, &balanceRollSettings.target, balanceRollSettings.kP, balanceRollSettings.kI, balanceRollSettings.kD, DIRECT);
+PID pidBalancePitch(&balancePitchSettings.actual, &balancePitchSettings.output, &balancePitchSettings.target, balancePitchSettings.kP, balancePitchSettings.kI, balancePitchSettings.kD, DIRECT);
+PID pidBalanceYaw(&balanceYawSettings.actual, &balanceYawSettings.output, &balanceYawSettings.target, balanceYawSettings.kP, balanceYawSettings.kI, balanceYawSettings.kD, DIRECT);
 
 
 
@@ -59,7 +61,7 @@ void pidBalanceModeOff() {
   pidBalanceYaw.SetMode(MANUAL);
 }
 
-void pidSetup() {
+void setupPid() {
 
   pidRateModeOff();
   pidBalanceModeOff();
@@ -121,4 +123,9 @@ void pidBalanceUpdate() {
   pidBalancePitch.Compute();
   pidBalanceYaw.Compute();
 }
+
+
+
+
+
 

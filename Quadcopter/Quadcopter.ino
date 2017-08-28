@@ -25,9 +25,8 @@ double output;
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "PID.h"
-#include "Motors.h"
 #include "Receiver.h"
-
+#include "Motors.h"
 
 
 void setup() {
@@ -36,7 +35,8 @@ void setup() {
   setupI2C();
   setupMotionSensor();
   //  setupRadio();   ignore for now
-  pidSetup();
+  setupPid();
+  setupMotors();
 
 
   Serial.println(F("Setup complete"));
@@ -79,16 +79,39 @@ void loop() {
 
   pidRateUpdate();
 
-  if (millis() - lastPrint > 250) {
-    Serial.print(valGyX); Serial.print('\t');
-    Serial.print(valGyY); Serial.print('\t');
-    Serial.print(valGyZ); Serial.print('\t');
+//  if (millis() - lastPrint > 250) {
+//    Serial.print(valGyX); Serial.print('\t');
+//    Serial.print(valGyY); Serial.print('\t');
+//    Serial.print(valGyZ); Serial.print('\t');
+//    Serial.print(rateRollSettings.output); Serial.print('\t');
+//    Serial.print(ratePitchSettings.output); Serial.print('\t');
+//    Serial.print(rateYawSettings.output); Serial.print('\n');
+//    lastPrint = millis();
+//  }
+
+  rcPackage.throttle = 500;
+
+  calculateMotorInput();
+  updateMotors();
+
+  if (millis() - lastPrint > 1000) {
+//    Serial.print(valGyX); Serial.print('\n');
+//    Serial.print(rateRollSettings.target); Serial.print('\t');
+//    Serial.print(rateRollSettings.actual); Serial.print('\t');
+//    Serial.print(rateRollSettings.output); Serial.print('\n');
     Serial.print(rateRollSettings.output); Serial.print('\t');
     Serial.print(ratePitchSettings.output); Serial.print('\t');
     Serial.print(rateYawSettings.output); Serial.print('\n');
-
+    Serial.print(motor1pulse); Serial.print('\t');
+    Serial.print(motor2pulse); Serial.print('\n');
+    Serial.print(motor3pulse); Serial.print('\t');
+    Serial.print(motor4pulse); Serial.print('\n');
+    Serial.print('\n');
     lastPrint = millis();
   }
+  
+
+
 
 
 
