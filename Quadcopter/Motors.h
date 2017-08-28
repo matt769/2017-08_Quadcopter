@@ -15,6 +15,8 @@ int motor2pulse;
 int motor3pulse;
 int motor4pulse;
 
+int throttle;
+
 
 void setupMotors(){
   motor1.writeMicroseconds(1000);
@@ -30,10 +32,10 @@ void setupMotors(){
 
 
 void calculateMotorInput(){
-  motor1pulse = throttle + rateRollSettings.ouput - ratePitchSettings.ouput - rateYawSettings.ouput
-  motor2pulse = throttle + rateRollSettings.ouput + ratePitchSettings.ouput + rateYawSettings.ouput
-  motor3pulse = throttle - rateRollSettings.ouput - ratePitchSettings.ouput + rateYawSettings.ouput
-  motor4pulse = throttle - rateRollSettings.ouput + ratePitchSettings.ouput - rateYawSettings.ouput  
+  motor1pulse = throttle + rateRollSettings.output - ratePitchSettings.output - rateYawSettings.output;
+  motor2pulse = throttle + rateRollSettings.output + ratePitchSettings.output + rateYawSettings.output;
+  motor3pulse = throttle - rateRollSettings.output - ratePitchSettings.output + rateYawSettings.output;
+  motor4pulse = throttle - rateRollSettings.output + ratePitchSettings.output - rateYawSettings.output;
 }
 
 

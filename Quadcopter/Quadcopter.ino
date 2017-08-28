@@ -9,10 +9,18 @@
 // should I control ESC pulses myself or use servo.write - USE SERVO.WRITE for now
 
 #include <I2C.h>
-#include <PID_v1.h>
 #include <Servo.h>
 #include <SPI.h>
 #include <RF24.h>
+#include <PID_v1.h>
+
+#include "BatteryMonitor.h"
+#include "I2cFunctions.h"
+#include "MotionSensor.h"
+#include "PID.h"
+#include "Motors.h"
+#include "Receiver.h"
+
 
 
 void setup() {
@@ -21,19 +29,6 @@ void setup() {
   setupI2C();
   setupMotionSensor();
   setupRadio();
-
-  // check MPU connected
-  byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS,WHO_AM_I);
-  if(MPU_ADDRESS_CHECK==MPU_ADDRESS){
-    Serial.println(F("MPU-6050 available"));
-  }
-  else {
-    Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
-    Serial.println(F("Try reseting..."));
-    while(1);
-  }
-
-
 
   Serial.println(F("Setup complete"));
   // Indicate readiness somehow. LED?
@@ -56,10 +51,5 @@ void loop() {
   // update inner loop setpoint
   // update outer loop setpoint (if balance mode)
   
-  
 
-
-
-  
-
-}
+} // loop

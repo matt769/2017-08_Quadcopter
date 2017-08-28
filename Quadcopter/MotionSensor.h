@@ -47,8 +47,13 @@ int ZGyroOffset = 28;     // REQUIRES DERIVING FOR NEW MPU
 int ZAccelOffset = 847;   // REQUIRES DERIVING FOR NEW MPU
 byte dlpf = 0;
 
+unsigned long lastReadingTime;
+unsigned long thisReadingTime;
 
-MPU6050 mpu;
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // measurement values
+int16_t GyXOffset, GyYOffset, GyZOffset;
+
+bool sensorRead;
 
 void setupMotionSensor() {
 
@@ -73,9 +78,34 @@ void setupMotionSensor() {
     Serial.println(F("Try reseting..."));
     while(1); // CHANGE TO SET SOME STATUS FLAG THAT CA BE SENT TO TRANSMITTER
   }
+}
 
 
+void readMainSensors(byte address) {
+  //
+  lastReadingTime = thisReadingTime;
+  thisReadingTime = millis();
+  I2c.read(address, ACCEL_XOUT_H, 14);
+  // read the most significant bit register into the variable then shift to the left
+  // and binary add the least significant
+  if(I2c.available()==14){
+  AcX=I2c.receive()<<8|I2c.receive();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)  
+  AcY=I2c.receive()<<8|I2c.receive();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  AcZ=I2c.receive()<<8|I2c.receive();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  Tmp=I2c.receive()<<8|I2c.receive();  // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+  GyX=I2c.receive()<<8|I2c.receive();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+  GyY=I2c.receive()<<8|I2c.receive();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+  GyZ=I2c.receive()<<8|I2c.receive();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+  sensorRead = true;
+  }
+  else {
+    sensorRead = false;
+//    Serial.println(I2c.available());
+    flushI2cBuffer();
+  }
+} 
 
-
+byte getInteruptStatus(byte address){
+  return readRegister(address,INT_STATUS);
 }
 
