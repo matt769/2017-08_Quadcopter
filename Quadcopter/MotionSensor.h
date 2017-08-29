@@ -1,16 +1,15 @@
 // Start without using interupts or DMP
-// Don't need to use JR library at all in that case
-// Check my first version of self-balancing if poss
 
-// if donig by interupt, do you have to reset flat on MPU?
-
+// ADD setting gyro range
+// ADD setting accel range
 
 // change to defines
-// add accel offsets
+// calibrate accel offsets
 
 
 // Config registers
 const byte WHO_AM_I = 117;
+const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
 const byte PWR_MGMT_1 = 107;   // Power management
 const byte CONFIG = 26;
 const byte FS_SEL = 27; //  Gyro config
@@ -35,9 +34,7 @@ const byte GYRO_YOUT_L = 70;   //[7:0]
 const byte GYRO_ZOUT_H = 71;   // [15:8]
 const byte GYRO_ZOUT_L = 72;   //[7:0]
 
-const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
-
-// PARAMETERS
+// DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
 // Do I need to handle the offsets myself? (if not using DMP?)
 int16_t GyXOffset = -274;
 int16_t GyYOffset = -321;
@@ -46,18 +43,15 @@ int16_t AccelXOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
 int16_t AccelYOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
 int16_t AccelZOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
 
-byte dlpf = 0;
-
-unsigned long lastReadingTime;
-unsigned long thisReadingTime;
-
-int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // measurement values
+// MEASUREMENT
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // raw measurement values
 float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
 float AcXAve = 0, AcYAve = 0, AcZAve = 0;
 float accelRes = 2.0f / 32768.0f;
 float gyroRes = 250.0f / 32768.0f;
-
-bool sensorRead;
+unsigned long lastReadingTime; // For calculating angle change from gyros
+unsigned long thisReadingTime; // For calculating angle change from gyros
+bool sensorRead;  // indicates whether valid information was read from the sensor
 
 struct angle {
   float roll;
@@ -70,12 +64,12 @@ struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 
-float compFilterAlpha = 0.98;
+
+// PARAMETERS
+byte dlpf = 0;
+float compFilterAlpha = 0.9; // weight applied to gyro angle estimate
 float compFilterAlphaComplement = 1- compFilterAlpha;
-
-float gyroChange = 0;
-
-float accelAverageAlpha = 0.1;
+float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
 float accelAverageAlphaComplement = 1 - accelAverageAlpha;
 
 
@@ -143,7 +137,10 @@ void convertGyroReadingsToValues(){
 
 void accumulateGyroChange(){
   // have to convert gyro readings to values every time anyway, so can use the values here
-  unsigned long interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
+  float interval = (lastReadingTime - thisReadingTime) * 0.000001;  // convert to seconds (from micros)
+//  Serial.print(thisReadingTime);Serial.print('\t');Serial.print(lastReadingTime);Serial.print('\n');
+//  Serial.print(interval);Serial.print('\t');Serial.print(valGyX);Serial.print('\t');Serial.print(valGyY);Serial.print('\t');Serial.print(valGyZ);Serial.print('\n');
+//  Serial.print(interval);Serial.print('\t');Serial.print(gyroChangeAngles.roll);Serial.print('\t');Serial.print(gyroChangeAngles.pitch);Serial.print('\t');Serial.print(gyroChangeAngles.yaw);Serial.print('\n');
   gyroChangeAngles.roll += valGyX / interval;
   gyroChangeAngles.pitch += valGyY / interval;
   gyroChangeAngles.yaw += valGyZ / interval;
@@ -187,9 +184,10 @@ void calcAnglesAccel(){
 //  Serial.print("**********");Serial.print('\n');
 }
 
-
+// QC must be sationary when this runs
 void initialiseCurrentAngles(){
   // take a certain number of readings
+  readMainSensors();  // just to get timing variables filled
   for(int i=0;i<200;i++){
     readMainSensors();
     accumulateAccelReadings();
@@ -207,10 +205,16 @@ void initialiseCurrentAngles(){
   currentAngles.yaw = accelAngles.yaw;
 }
 
+void resetGyroChange(){
+  gyroChangeAngles.roll = 0;
+  gyroChangeAngles.pitch = 0;
+  gyroChangeAngles.yaw = 0;
+}
+
 void mixAngles(){
-  currentAngles.roll += ((gyroAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
-  currentAngles.pitch += ((gyroAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  currentAngles.yaw += ((gyroAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  currentAngles.roll = ((gyroAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
+  currentAngles.pitch = ((gyroAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
+  currentAngles.yaw = ((gyroAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
 }
 
 

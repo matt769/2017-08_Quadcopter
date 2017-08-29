@@ -1,8 +1,5 @@
 // actually the ESCs really
 
-// CHANGE MOTOR CALC TO GET THE VALUES PASSED TO IT
-// so is independent of the receiver and PID modules
-
 Servo motor1; // front left (CW)
 Servo motor2; // front right (CCW)
 Servo motor3; // back left (CCW)
@@ -20,16 +17,15 @@ int motor4pulse;
 
 
 void setupMotors(){
-  motor1.writeMicroseconds(1000);
+  motor1.writeMicroseconds(1500);
   motor1.attach(pinMotor1);
-  motor2.writeMicroseconds(1000);
+  motor2.writeMicroseconds(1500);
   motor2.attach(pinMotor2);
-  motor3.writeMicroseconds(1000);
+  motor3.writeMicroseconds(1500);
   motor3.attach(pinMotor3);
-  motor4.writeMicroseconds(1000);
+  motor4.writeMicroseconds(1500);
   motor4.attach(pinMotor4);
 }
-
 
 void calculateMotorInput(int *throttle, double *rollOffset, double *pitchOffset, double *yawOffset){
   motor1pulse = *throttle + *rollOffset - *pitchOffset + *yawOffset;
@@ -37,8 +33,6 @@ void calculateMotorInput(int *throttle, double *rollOffset, double *pitchOffset,
   motor3pulse = *throttle + *rollOffset + *pitchOffset - *yawOffset;
   motor4pulse = *throttle - *rollOffset + *pitchOffset + *yawOffset;
 }
-
-
 
 void updateMotors(){
   motor1.writeMicroseconds(motor1pulse);

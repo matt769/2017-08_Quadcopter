@@ -86,8 +86,6 @@ void setupPid() {
   balanceYawSettings.kI = 0;
   balanceYawSettings.kD = 0;
 
-  // for now, deal with limits elsewhere  // PID.SetOutputLimits(a, b);
-  // also handle sample time elsewhere, but this can stay here for now
   pidRateRoll.SetSampleTime(20);
   pidRatePitch.SetSampleTime(20);
   pidRateYaw.SetSampleTime(20);

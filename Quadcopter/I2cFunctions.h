@@ -1,3 +1,5 @@
+// some of these functions aren't technically related to I2C, but that's what I'm using them for here
+
 
 boolean i2cTimeout;
 
@@ -8,8 +10,16 @@ void setupI2C(){
 }
 
 
+// stardard write plus records if there was a timeout
+void writeRegister(byte address, byte sensorRegister, byte data) {
+ i2cTimeout = I2c.write(address,sensorRegister,data); // start transmission to device
+} 
 
-// ADD GENERAL FUNCTION TO READ MULTIPLE REGISTERS
+// stardard read plus records if there was a timeout
+byte readRegister(byte address, byte sensorRegister) {
+ i2cTimeout = I2c.read(address, sensorRegister, 1);
+ return I2c.receive();
+} 
 
 
 byte modifyBits(byte originalByte, byte startingReplacementBit, byte noReplacementBits, byte replacementValue){
@@ -25,41 +35,27 @@ byte modifyBits(byte originalByte, byte startingReplacementBit, byte noReplaceme
   return newByte;
 }
 
-
-
-void writeRegister(byte address, byte sensorRegister, byte data) {
- i2cTimeout = I2c.write(address,sensorRegister,data); // start transmission to device
-} 
-
-byte readRegister(byte address, byte sensorRegister) {
- i2cTimeout = I2c.read(address, sensorRegister, 1);
- return I2c.receive();
-} 
-
-
-// there's already a write bits function which has been used instead of my own???
+// there's already a 'writeBits' function which has been used instead of my own???
 void writeBitsNew(byte address, byte registerToWrite,byte startingReplacementBit, byte noReplacementBits, byte replacementValue){
-  byte originalregisterValue = readRegister(address,registerToWrite);
-  byte newRegisterValue = modifyBits(originalregisterValue,startingReplacementBit,noReplacementBits,replacementValue);
+  byte originalRegisterValue = readRegister(address,registerToWrite);
+  byte newRegisterValue = modifyBits(originalRegisterValue,startingReplacementBit,noReplacementBits,replacementValue);
   writeRegister(address,registerToWrite,newRegisterValue);
 }
 
-
-void writeBitsNew2(byte address, byte registerToWrite, byte originalReading, byte startingReplacementBit, byte noReplacementBits, byte replacementValue){
-  byte newRegisterValue = modifyBits(originalReading,startingReplacementBit,noReplacementBits,replacementValue);
+void writeBitsNew2(byte address, byte registerToWrite, byte originalRegisterValue, byte startingReplacementBit, byte noReplacementBits, byte replacementValue){
+  byte newRegisterValue = modifyBits(originalRegisterValue,startingReplacementBit,noReplacementBits,replacementValue);
   writeRegister(address,registerToWrite,newRegisterValue);
 }
 
-int readBitsNew(byte address, byte registerToRead,byte startingBit, byte noOfBits){
-  byte registerVal = readRegister(address,registerToRead);
-  
-  // create mask that will just have 1s in bits of interest
-  // apply mask to read value
-  //return
-  return registerVal; //placeholder
+// NEEDS TESTING
+byte readBitsNew(byte address, byte registerToRead,byte startingBit, byte noOfBits){
+  byte result = readRegister(address,registerToRead);
+  byte readMask = (1<< noOfBits)-1;  // set required number of 1s
+  readMask = readMask << startingBit; // move to required position
+  result &= readMask;
+  result = result >> startingBit; // move bits of interest to beginning
+  return result;
 }
-
-
 
 void flushI2cBuffer(){
   while(I2c.available()){
