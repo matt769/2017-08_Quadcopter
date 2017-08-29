@@ -3,6 +3,7 @@
 
 // after main framework done, test timings and speed up (ONLY IF REQUIRED)
 // rename all X/Y/Z as roll/pitch/yaw
+// Rename all 'balance' to 'attitude'
 // add rx heartbeat
 // Need timeout on radio
 // Handle changes in mode
@@ -19,7 +20,7 @@
 // I've included local copy of Servo library so that I can modify REFRESH_INTERVAL
 // but default (50Hz) should be ok. ESCs support 30-450Hz
 
-// What is in RAD and what in DEG ???
+
 
 
 #include <I2C.h>
@@ -47,12 +48,17 @@ byte STATE = RATE;
 byte PREV_STATE = RATE;
 
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
-int rateLoopFreq = 4;   // remove ** ~1ms **  from desired loop time to compensate to time to run code
+int rateLoopFreq = 9;   // remove ** ~1ms **  from desired loop time to compensate to time to run code
 unsigned long rateLoopLast = 0;
 int balanceLoopFreq = 45;   // remove ** ~5ms **  from desired loop time to compensate to time to run code
 unsigned long balanceLoopLast = 0;
 int receiverFreq = 20;  // although this can also be controlled on the transmitter side
 unsigned long receiverLast = 0;
+
+
+// DEBUG
+unsigned long lastPrint = 0;  // for debug only
+int counter = 0;  // for debug only
 
 
 
@@ -78,59 +84,44 @@ void setup() {
     unsigned long timeNow = millis();
     setMotorsHigh();
     while(millis() - timeNow > 1000){
-      
     }
     timeNow = millis();
     setMotorsLow();
     while(millis() - timeNow > 1000){
-      
     }
 
 }
 
-unsigned long lastPrint = 0;  // for debug only
-int counter = 0;  // for debug only
+
 
 void loop() {
 
-
-  
-
-//  balance_mode = getMode();
-//  if (balance_mode && STATE == RATE) {
-//    STATE = BALANCE;
-//    PREV_STATE = RATE;
-//  }
-//  else if (!balance_mode && STATE == BALANCE) {
-//    STATE = RATE;
-//    PREV_STATE = BALANCE;
-//  }
-
-
-
+  // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
     if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
       balance_mode = getMode();
       if (balance_mode) {
         mapRcToPidInput(&rcInputThrottle, &balanceRollSettings.target, &balancePitchSettings.target, &balanceYawSettings.target, &balance_mode);
+        STATE = BALANCE;
       }
       else {
         mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &balance_mode);
+        STATE = RATE;
       }
     }
   }
 
-
-
-
-  // overwrite user input (actually there won't be any if using auto level)
-  // need to determine what throttle level is appropriate
-  // maybe remove this for now
-  if (auto_level_mode) {
-    rateRollSettings.target = 0;
-    ratePitchSettings.target = 0;
-    rateYawSettings.target = 0;
+  // HANDLE STATE CHANGES
+  if(STATE != PREV_STATE){
+    if(STATE == BALANCE){
+      pidBalanceModeOn();
+    }
+    else {
+      pidBalanceModeOff();
+    }
   }
+
+
 
   if (millis() - rateLoopLast > rateLoopFreq) {
     //        Serial.println(millis());
