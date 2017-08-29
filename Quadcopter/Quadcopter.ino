@@ -16,7 +16,8 @@
 // where to handle change of state between rate and balance
 // I think I need to re-think a bit
 
-// REMOVE YAW OUTER PID
+// I've included local copy of Servo library so that I can modify REFRESH_INTERVAL
+// but default (50Hz) should be ok. ESCs support 30-450Hz
 
 // What is in RAD and what in DEG ???
 
@@ -161,9 +162,9 @@ void loop() {
     mixAngles();
     resetGyroChange();
 
-    balanceRollSettings.actual = currentAngles.roll * RAD_TO_DEG;
-    balancePitchSettings.actual = currentAngles.pitch * RAD_TO_DEG;
-    balanceYawSettings.actual = currentAngles.yaw * RAD_TO_DEG;
+    balanceRollSettings.actual = currentAngles.roll;
+    balancePitchSettings.actual = currentAngles.pitch;
+    balanceYawSettings.actual = currentAngles.yaw;
 
     //    Serial.print("InDegrees: "); Serial.print('\t');
     //    Serial.print(balanceRollSettings.actual); Serial.print('\t');
@@ -213,25 +214,25 @@ void loop() {
     Serial.print(motor3pulse); Serial.print('\t');
     Serial.print(motor4pulse); Serial.print('\n');
 
-//        Serial.print(balanceRollSettings.actual); Serial.print('\t');
-//        Serial.print(balancePitchSettings.actual); Serial.print('\t');
-//        Serial.print(balanceYawSettings.actual); Serial.print('\n');
-//        Serial.print(balanceRollSettings.target); Serial.print('\t');
-//        Serial.print(balancePitchSettings.target); Serial.print('\t');
-//        Serial.print(balanceYawSettings.target); Serial.print('\n');
-//        Serial.print(balanceRollSettings.output); Serial.print('\t');
-//        Serial.print(balancePitchSettings.output); Serial.print('\t');
-//        Serial.print(balanceYawSettings.output); Serial.print('\n');
-//
-//        Serial.print(rateRollSettings.actual); Serial.print('\t');
-//        Serial.print(ratePitchSettings.actual); Serial.print('\t');
-//        Serial.print(rateYawSettings.actual); Serial.print('\n');
-//        Serial.print(rateRollSettings.target); Serial.print('\t');
-//        Serial.print(ratePitchSettings.target); Serial.print('\t');
-//        Serial.print(rateYawSettings.target); Serial.print('\n');
-//        Serial.print(rateRollSettings.output); Serial.print('\t');
-//        Serial.print(ratePitchSettings.output); Serial.print('\t');
-//        Serial.print(rateYawSettings.output); Serial.print('\n');
+        Serial.print(balanceRollSettings.actual); Serial.print('\t');
+        Serial.print(balancePitchSettings.actual); Serial.print('\t');
+        Serial.print(balanceYawSettings.actual); Serial.print('\n');
+        Serial.print(balanceRollSettings.target); Serial.print('\t');
+        Serial.print(balancePitchSettings.target); Serial.print('\t');
+        Serial.print(balanceYawSettings.target); Serial.print('\n');
+        Serial.print(balanceRollSettings.output); Serial.print('\t');
+        Serial.print(balancePitchSettings.output); Serial.print('\t');
+        Serial.print(balanceYawSettings.output); Serial.print('\n');
+
+        Serial.print(rateRollSettings.actual); Serial.print('\t');
+        Serial.print(ratePitchSettings.actual); Serial.print('\t');
+        Serial.print(rateYawSettings.actual); Serial.print('\n');
+        Serial.print(rateRollSettings.target); Serial.print('\t');
+        Serial.print(ratePitchSettings.target); Serial.print('\t');
+        Serial.print(rateYawSettings.target); Serial.print('\n');
+        Serial.print(rateRollSettings.output); Serial.print('\t');
+        Serial.print(ratePitchSettings.output); Serial.print('\t');
+        Serial.print(rateYawSettings.output); Serial.print('\n');
     //
     Serial.print('\n');
     lastPrint = millis();

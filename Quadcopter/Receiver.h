@@ -25,10 +25,10 @@ struct dataStruct {
 
 struct dataStruct rcPackage;
 
-float rateMin = -10;  // UNITS??
-float rateMax = 10;  // UNITS??
-float balanceMin = -20;  // UNITS??
-float balanceMax = 20;  // UNITS??
+float rateMin = -10;  // DEGREES/SECOND
+float rateMax = 10;  // DEGREES/SECOND
+float balanceMin = -20;  // DEGREES
+float balanceMax = 20;  // DEGREES
 
 bool rxHeartbeat = false;
 unsigned long lastReceived = 0;
@@ -59,11 +59,11 @@ bool checkRadioForInput() {
 
 bool checkRadioForInputPLACEHOLDER() {
   // ADD PLACEHOLDER VALUES
-  rcPackage.throttle = 250;
+  rcPackage.throttle = 500;
   rcPackage.roll = 500;
   rcPackage.pitch = 500;
   rcPackage.yaw = 500;
-  rcPackage.control = B00000000;
+  rcPackage.control = B00000100;
   rxHeartbeat = true;
   lastReceived = millis();
   return true;
@@ -79,7 +79,6 @@ void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bo
     *yaw = (double)map(rcPackage.yaw, 0, 1000, rateMin, rateMax);
   }
   else {
-    // REMEMBER THIS IS DEG/S
     *roll = (double)map(rcPackage.roll, 0, 1000, balanceMin, balanceMax);
     *pitch = (double)map(rcPackage.pitch, 0, 1000, balanceMin, balanceMax);
     *yaw = (double)map(rcPackage.yaw, 0, 1000, balanceMin, balanceMax);

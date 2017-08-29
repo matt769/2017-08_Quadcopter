@@ -11,6 +11,11 @@
 
 // Review how PID deals with being turned on and off
 
+int pidRateMin = -20;
+int pidRateMax = 20;
+int pidBalanceMin = -10;
+int pidBalanceMax = 10;
+
 
 struct pid {
   double actual;  // these all need to be double since that's what the PID onstructor requires (although could change just for thi?)
@@ -100,12 +105,12 @@ void setupPid() {
   pidBalancePitch.SetTunings(balancePitchSettings.kP,balancePitchSettings.kI,balancePitchSettings.kD);
   pidBalanceYaw.SetTunings(balanceYawSettings.kP,balanceYawSettings.kI,balanceYawSettings.kD);
 
-  pidRateRoll.SetOutputLimits(-100,100);
-  pidRatePitch.SetOutputLimits(-100,100);
-  pidRateYaw.SetOutputLimits(-100,100);
-  pidBalanceRoll.SetOutputLimits(-30,100);
-  pidBalancePitch.SetOutputLimits(-100,100);
-  pidBalanceYaw.SetOutputLimits(-100,100);
+  pidRateRoll.SetOutputLimits(pidRateMin,pidRateMax);
+  pidRatePitch.SetOutputLimits(pidRateMin,pidRateMax);
+  pidRateYaw.SetOutputLimits(pidRateMin,pidRateMax);
+  pidBalanceRoll.SetOutputLimits(pidBalanceMin,pidBalanceMax);
+  pidBalancePitch.SetOutputLimits(pidBalanceMin,pidBalanceMax);
+  pidBalanceYaw.SetOutputLimits(pidBalanceMin,pidBalanceMax);
 
 }
 

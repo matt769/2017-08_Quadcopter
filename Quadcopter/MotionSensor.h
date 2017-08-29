@@ -171,9 +171,9 @@ void accumulateAccelReadings(){
 // I think that each atan operation will take about 600us
 void calcAnglesAccel(){
   // this will not work well for Z
-  accelAngles.roll = atan2(AcYAve,AcZAve);
-  accelAngles.pitch = atan2(AcXAve,AcZAve);
-  accelAngles.yaw = atan2(AcXAve,AcYAve);
+  accelAngles.roll = atan2(AcYAve,AcZAve) * RAD_TO_DEG;
+  accelAngles.pitch = atan2(AcXAve,AcZAve) * RAD_TO_DEG;
+  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 //  Serial.print("**********");Serial.print('\n');
 //  Serial.print(accelAngles.roll);Serial.print('\t');
 //  Serial.print(accelAngles.pitch);Serial.print('\t');
@@ -217,6 +217,7 @@ void mixAngles(){
   currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
   currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
 }
+
 
 
 
