@@ -215,7 +215,7 @@ void resetGyroChange(){
 void mixAngles(){
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
   currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
 }
 
 

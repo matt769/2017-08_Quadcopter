@@ -41,3 +41,18 @@ void updateMotors(){
   motor4.writeMicroseconds(motor4pulse);
 }
 
+
+void setMotorsLow(){  //for testing
+  motor1.writeMicroseconds(1000);
+  motor2.writeMicroseconds(1000);
+  motor3.writeMicroseconds(1000);
+  motor4.writeMicroseconds(1000);
+}
+void setMotorsHigh(){  //for testing
+  motor1.writeMicroseconds(2000);
+  motor2.writeMicroseconds(2000);
+  motor3.writeMicroseconds(2000);
+  motor4.writeMicroseconds(2000);
+}
+
+

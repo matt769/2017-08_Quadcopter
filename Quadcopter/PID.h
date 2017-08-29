@@ -103,7 +103,7 @@ void setupPid() {
   pidRateRoll.SetOutputLimits(-100,100);
   pidRatePitch.SetOutputLimits(-100,100);
   pidRateYaw.SetOutputLimits(-100,100);
-  pidBalanceRoll.SetOutputLimits(-100,100);
+  pidBalanceRoll.SetOutputLimits(-30,100);
   pidBalancePitch.SetOutputLimits(-100,100);
   pidBalanceYaw.SetOutputLimits(-100,100);
 

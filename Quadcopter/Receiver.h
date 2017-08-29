@@ -25,10 +25,10 @@ struct dataStruct {
 
 struct dataStruct rcPackage;
 
-float rateMin = -10;
-float rateMax = 10;
-float balanceMin = -20;
-float balanceMax = 20;
+float rateMin = -10;  // UNITS??
+float rateMax = 10;  // UNITS??
+float balanceMin = -20;  // UNITS??
+float balanceMax = 20;  // UNITS??
 
 bool rxHeartbeat = false;
 unsigned long lastReceived = 0;
@@ -59,7 +59,7 @@ bool checkRadioForInput() {
 
 bool checkRadioForInputPLACEHOLDER() {
   // ADD PLACEHOLDER VALUES
-  rcPackage.throttle = 500;
+  rcPackage.throttle = 250;
   rcPackage.roll = 500;
   rcPackage.pitch = 500;
   rcPackage.yaw = 500;
