@@ -53,7 +53,7 @@ unsigned long thisReadingTime;
 
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // measurement values
 float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
-long AcXAve = 0, AcYAve = 0, AcZAve = 0;
+float AcXAve = 0, AcYAve = 0, AcZAve = 0;
 float accelRes = 2.0f / 32768.0f;
 float gyroRes = 250.0f / 32768.0f;
 
@@ -105,7 +105,7 @@ void setupMotionSensor() {
 }
 
 
-void readMainSensors() {
+bool readMainSensors() {
   //
   lastReadingTime = thisReadingTime;
   thisReadingTime = micros();
@@ -127,6 +127,7 @@ void readMainSensors() {
 //    Serial.println(I2c.available());
     flushI2cBuffer();
   }
+  return sensorRead;
 } 
 
 byte getInteruptStatus(byte address){
@@ -152,9 +153,20 @@ void accumulateAccelReadings(){
   // can filter on the accel readings without having to convert to values until we need to calculate an actual angle
   // actually, don't need to convert to values at all because we only need relative values
   // use a cyclic buffer ot just sum and low pass filter as we go?
+//  Serial.print(AcX);Serial.print('\t');
+//  Serial.print(AcY);Serial.print('\t');
+//  Serial.print(AcZ);Serial.print('\t');
+//  Serial.print(AcXAve);Serial.print('\t');
+//  Serial.print(AcYAve);Serial.print('\t');
+//  Serial.print(AcZAve);Serial.print('\n');
+  
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
   AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
+
+//  Serial.println(AcXAve);Serial.print('\t');
+//  Serial.println(AcYAve);Serial.print('\t');
+//  Serial.println(AcZAve);Serial.print('\n');
 }
 
 
@@ -165,16 +177,30 @@ void calcAnglesAccel(){
   accelAngles.roll = atan2(AcYAve,AcZAve);
   accelAngles.pitch = atan2(AcXAve,AcZAve);
   accelAngles.yaw = atan2(AcXAve,AcYAve);
+//  Serial.print("**********");Serial.print('\n');
+//  Serial.print(accelAngles.roll);Serial.print('\t');
+//  Serial.print(accelAngles.pitch);Serial.print('\t');
+//  Serial.print(accelAngles.yaw);Serial.print('\t');
+//  Serial.print(currentAngles.roll);Serial.print('\t');
+//  Serial.print(currentAngles.pitch);Serial.print('\t');
+//  Serial.print(currentAngles.yaw);Serial.print('\n');
+//  Serial.print("**********");Serial.print('\n');
 }
 
 
 void initialiseCurrentAngles(){
   // take a certain number of readings
-  for(int i=0;i++;i<200){
+  for(int i=0;i<200;i++){
     readMainSensors();
     accumulateAccelReadings();
     delay(5);
+//    Serial.println(AcXAve);Serial.print('\t');
+//  Serial.println(AcYAve);Serial.print('\t');
+//  Serial.println(AcZAve);Serial.print('\n');
   }
+//    Serial.print(AcXAve);Serial.print('\t');
+//  Serial.print(AcYAve);Serial.print('\t');
+//  Serial.print(AcZAve);Serial.print('\n');
   calcAnglesAccel();
   currentAngles.roll = accelAngles.roll;
   currentAngles.pitch = accelAngles.pitch;

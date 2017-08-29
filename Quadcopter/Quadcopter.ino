@@ -45,9 +45,16 @@ void setup() {
   setupMotors();
 
   initialiseCurrentAngles();
-  Serial.println(currentAngles.roll * RAD_TO_DEG);
-  Serial.println(currentAngles.pitch * RAD_TO_DEG);
-  Serial.println(currentAngles.yaw * RAD_TO_DEG);
+
+  Serial.println(AcXAve);Serial.print('\t');
+  Serial.println(AcYAve);Serial.print('\t');
+  Serial.println(AcZAve);Serial.print('\n');
+  Serial.print(accelAngles.roll * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(accelAngles.pitch * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(accelAngles.yaw * RAD_TO_DEG);Serial.print('\n');
+  Serial.print(currentAngles.roll * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.pitch * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.yaw * RAD_TO_DEG);Serial.print('\n');
   
   
 
@@ -116,11 +123,26 @@ void loop() {
   if (millis() - balanceLoopLast > balanceLoopFreq) {
 //    Serial.println(millis());
     balanceLoopLast = millis();
+
+  Serial.print(currentAngles.roll * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.pitch * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.yaw * RAD_TO_DEG);Serial.print('\n');
+
     calcAnglesAccel();
+          Serial.print(accelAngles.roll * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(accelAngles.pitch * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(accelAngles.yaw * RAD_TO_DEG);Serial.print('\n');
     mixAngles();
+      Serial.print(currentAngles.roll * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.pitch * RAD_TO_DEG);Serial.print('\t');
+  Serial.print(currentAngles.yaw * RAD_TO_DEG);Serial.print('\n');
     balanceRollSettings.actual = currentAngles.roll * RAD_TO_DEG;
     balancePitchSettings.actual = currentAngles.pitch * RAD_TO_DEG;
     balanceYawSettings.actual = currentAngles.yaw * RAD_TO_DEG;
+            Serial.print(balanceRollSettings.actual); Serial.print('\t');
+      Serial.print(balancePitchSettings.actual); Serial.print('\t');
+      Serial.print(balanceYawSettings.actual); Serial.print('\n');
+      Serial.print('\n');
 
     if (balance_mode) {
       //      Serial.println(millis());
@@ -150,8 +172,8 @@ void loop() {
       Serial.print(balanceRollSettings.actual); Serial.print('\t');
       Serial.print(balancePitchSettings.actual); Serial.print('\t');
       Serial.print(balanceYawSettings.actual); Serial.print('\n');
-
-      Serial.print('\n');
+//
+//      Serial.print('\n');
       lastPrint = millis();
     }
 
