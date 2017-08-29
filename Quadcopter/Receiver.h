@@ -19,6 +19,13 @@ struct dataStruct {
 
 struct dataStruct rcPackage;
 
+float rateMin = -10;
+float rateMax = 10;
+float balanceMin = -20;
+float balanceMax = 20;
+
+
+
 void setupRadio() {
   // RADIO
   radio.begin();
@@ -52,17 +59,18 @@ bool checkRadioForInputPLACEHOLDER() {
 
 void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bool *mode){
     *throttle = rcPackage.throttle;
-//  if(balance_mode){
-//    pitch = (double)map(rcPackage.pitch,0,1000,-15,15);
-//    roll = (double)map(rcPackage.roll,0,1000,-15,15);
-//    yaw = (double)map(rcPackage.yaw,0,1000,-15,15);
-//  }
-//  else {
+
+  if(!*mode){
+    *roll = (double)map(rcPackage.roll,0,1000,rateMin,rateMax);
+    *pitch = (double)map(rcPackage.pitch,0,1000,rateMin,rateMax);
+    *yaw = (double)map(rcPackage.yaw,0,1000,rateMin,rateMax);
+  }
+  else {
     // REMEMBER THIS IS DEG/S
-    *roll = (double)map(rcPackage.roll,0,1000,-15,15);
-    *pitch = (double)map(rcPackage.pitch,0,1000,-15,15);
-    *yaw = (double)map(rcPackage.yaw,0,1000,-15,15);
-//  }
+    *roll = (double)map(rcPackage.roll,0,1000,balanceMin,balanceMax);
+    *pitch = (double)map(rcPackage.pitch,0,1000,balanceMin,balanceMax);
+    *yaw = (double)map(rcPackage.yaw,0,1000,balanceMin,balanceMax);
+  }
 
 }
 
