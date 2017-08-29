@@ -60,14 +60,14 @@ struct angle {
 };
 
 struct angle accelAngles;
-struct angle gyroAngles;
+//struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 
 
 // PARAMETERS
 byte dlpf = 0;
-float compFilterAlpha = 0.9; // weight applied to gyro angle estimate
+float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
 float compFilterAlphaComplement = 1- compFilterAlpha;
 float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
 float accelAverageAlphaComplement = 1 - accelAverageAlpha;
@@ -211,10 +211,11 @@ void resetGyroChange(){
   gyroChangeAngles.yaw = 0;
 }
 
+
 void mixAngles(){
-  currentAngles.roll = ((gyroAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
-  currentAngles.pitch = ((gyroAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  currentAngles.yaw = ((gyroAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
+  currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
+  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
 }
 
 
