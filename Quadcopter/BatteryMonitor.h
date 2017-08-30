@@ -12,6 +12,7 @@
 // add capacitor?
 
 byte pinBatteryMonitor = A5;
+byte pinBatteryIndicator = 7;
 
 const float increment = 5.0 / 1024;
 
@@ -19,6 +20,9 @@ int batteryReading;
 float voltage;
 int batteryLevel;
 
+void setupBatteryMonitor(){
+  pinMode(pinBatteryIndicator,OUTPUT);
+}
 
 void calculateVoltage(){
   batteryReading = analogRead(pinBatteryMonitor);
@@ -28,4 +32,16 @@ void calculateVoltage(){
 byte calculateBatteryLevel(){
   batteryLevel = map((int)(voltage * 10.0), 31,39,0,7);
 }
+
+// could add a blinking step
+void updateBatteryIndicator(){
+  if(batteryLevel<2){
+    digitalWrite(pinBatteryIndicator,HIGH);
+  }
+}
+
+
+
+
+
 

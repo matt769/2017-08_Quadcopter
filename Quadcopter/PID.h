@@ -11,10 +11,13 @@
 
 // Review how PID deals with being turned on and off
 
-int pidRateMin = -20;
-int pidRateMax = 20;
-int pidBalanceMin = -10;
-int pidBalanceMax = 10;
+int pidRateMin = -50;  // MOTOR INPUT
+int pidRateMax = 50;  // MOTOR INPUT
+int pidBalanceMin = -10;  // DEG/S
+int pidBalanceMax = 10;  // DEG/S
+
+byte rateLoopFreq = 9;   // remove ** ~1ms **  from desired loop time to compensate to time to run code
+byte balanceLoopFreq = 45;   // remove ** ~5ms **  from desired loop time to compensate to time to run code
 
 
 struct pid {
@@ -91,12 +94,12 @@ void setupPid() {
   balanceYawSettings.kI = 0;
   balanceYawSettings.kD = 0;
 
-  pidRateRoll.SetSampleTime(20);
-  pidRatePitch.SetSampleTime(20);
-  pidRateYaw.SetSampleTime(20);
-  pidBalanceRoll.SetSampleTime(50);
-  pidBalancePitch.SetSampleTime(50);
-  pidBalanceYaw.SetSampleTime(50);
+  pidRateRoll.SetSampleTime(rateLoopFreq);
+  pidRatePitch.SetSampleTime(rateLoopFreq);
+  pidRateYaw.SetSampleTime(rateLoopFreq);
+  pidBalanceRoll.SetSampleTime(balanceLoopFreq);
+  pidBalancePitch.SetSampleTime(balanceLoopFreq);
+  pidBalanceYaw.SetSampleTime(balanceLoopFreq);
 
   pidRateRoll.SetTunings(rateRollSettings.kP,rateRollSettings.kI,rateRollSettings.kD);
   pidRatePitch.SetTunings(ratePitchSettings.kP,ratePitchSettings.kI,ratePitchSettings.kD);
@@ -116,9 +119,16 @@ void setupPid() {
 
 
 void pidRateUpdate() {
-  pidRateRoll.Compute();
-  pidRatePitch.Compute();
-  pidRateYaw.Compute();
+//  pidRateRoll.Compute();
+//  pidRatePitch.Compute();
+//  pidRateYaw.Compute();
+
+    // check that PID is returning 1 (not 0, which implies it's not eady for a new loop yet)
+
+//  Serial.println(pidRateRoll.Compute());
+//  Serial.println(pidRatePitch.Compute());
+//  Serial.println(pidRateYaw.Compute());
+//  Serial.println("");
 }
 
 void pidBalanceUpdate() {
@@ -127,6 +137,12 @@ void pidBalanceUpdate() {
   pidBalanceYaw.Compute();
 }
 
+
+void setAutoLevelTargets(){
+    balanceRollSettings.target = 0;
+    balancePitchSettings.target = 0;
+    balanceYawSettings.target = 0;
+}
 
 
 
