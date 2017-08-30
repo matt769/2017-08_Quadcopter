@@ -194,6 +194,9 @@ void loop() {
       
     }
   }
+
+    updateBatteryIndicator();
+  
 //  Serial.println(motor1pulse);
 
   if (millis() - lastPrint > 1000) {
