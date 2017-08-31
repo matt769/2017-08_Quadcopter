@@ -13,11 +13,11 @@
 
 int pidRateMin = -50;  // MOTOR INPUT
 int pidRateMax = 50;  // MOTOR INPUT
-int pidBalanceMin = -10;  // DEG/S
-int pidBalanceMax = 10;  // DEG/S
+int pidAttitudeMin = -10;  // DEG/S
+int pidAttitudeMax = 10;  // DEG/S
 
 byte rateLoopFreq = 9;   // remove ** ~1ms **  from desired loop time to compensate to time to run code
-byte balanceLoopFreq = 45;   // remove ** ~5ms **  from desired loop time to compensate to time to run code
+byte attitudeLoopFreq = 45;   // remove ** ~5ms **  from desired loop time to compensate to time to run code
 
 
 struct pid {
@@ -32,16 +32,16 @@ struct pid {
 struct pid rateRollSettings;
 struct pid ratePitchSettings;
 struct pid rateYawSettings;
-struct pid balanceRollSettings;
-struct pid balancePitchSettings;
-struct pid balanceYawSettings;
+struct pid attitudeRollSettings;
+struct pid attitudePitchSettings;
+struct pid attitudeYawSettings;
 
 PID pidRateRoll(&rateRollSettings.actual, &rateRollSettings.output, &rateRollSettings.target, rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD, DIRECT);
 PID pidRatePitch(&ratePitchSettings.actual, &ratePitchSettings.output, &ratePitchSettings.target, ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD, DIRECT);
 PID pidRateYaw(&rateYawSettings.actual, &rateYawSettings.output, &rateYawSettings.target, rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD, DIRECT);
-PID pidBalanceRoll(&balanceRollSettings.actual, &balanceRollSettings.output, &balanceRollSettings.target, balanceRollSettings.kP, balanceRollSettings.kI, balanceRollSettings.kD, DIRECT);
-PID pidBalancePitch(&balancePitchSettings.actual, &balancePitchSettings.output, &balancePitchSettings.target, balancePitchSettings.kP, balancePitchSettings.kI, balancePitchSettings.kD, DIRECT);
-PID pidBalanceYaw(&balanceYawSettings.actual, &balanceYawSettings.output, &balanceYawSettings.target, balanceYawSettings.kP, balanceYawSettings.kI, balanceYawSettings.kD, DIRECT);
+PID pidAttitudeRoll(&attitudeRollSettings.actual, &attitudeRollSettings.output, &attitudeRollSettings.target, attitudeRollSettings.kP, attitudeRollSettings.kI, attitudeRollSettings.kD, DIRECT);
+PID pidAttitudePitch(&attitudePitchSettings.actual, &attitudePitchSettings.output, &attitudePitchSettings.target, attitudePitchSettings.kP, attitudePitchSettings.kI, attitudePitchSettings.kD, DIRECT);
+PID pidAttitudeYaw(&attitudeYawSettings.actual, &attitudeYawSettings.output, &attitudeYawSettings.target, attitudeYawSettings.kP, attitudeYawSettings.kI, attitudeYawSettings.kD, DIRECT);
 
 
 
@@ -57,22 +57,22 @@ void pidRateModeOff() {
   pidRateYaw.SetMode(MANUAL);
 }
 
-void pidBalanceModeOn() {
-  pidBalanceRoll.SetMode(AUTOMATIC);
-  pidBalancePitch.SetMode(AUTOMATIC);
-  pidBalanceYaw.SetMode(AUTOMATIC);
+void pidAttitudeModeOn() {
+  pidAttitudeRoll.SetMode(AUTOMATIC);
+  pidAttitudePitch.SetMode(AUTOMATIC);
+  pidAttitudeYaw.SetMode(AUTOMATIC);
 }
 
-void pidBalanceModeOff() {
-  pidBalanceRoll.SetMode(MANUAL);
-  pidBalancePitch.SetMode(MANUAL);
-  pidBalanceYaw.SetMode(MANUAL);
+void pidAttitudeModeOff() {
+  pidAttitudeRoll.SetMode(MANUAL);
+  pidAttitudePitch.SetMode(MANUAL);
+  pidAttitudeYaw.SetMode(MANUAL);
 }
 
 void setupPid() {
 
   pidRateModeOff();
-  pidBalanceModeOff();
+  pidAttitudeModeOff();
 
   rateRollSettings.kP = 1;
   rateRollSettings.kI = 0;
@@ -84,36 +84,36 @@ void setupPid() {
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
 
-  balanceRollSettings.kP = 1;
-  balanceRollSettings.kI = 0;
-  balanceRollSettings.kD = 0;
-  balancePitchSettings.kP = 1;
-  balancePitchSettings.kI = 0;
-  balancePitchSettings.kD = 0;
-  balanceYawSettings.kP = 1;
-  balanceYawSettings.kI = 0;
-  balanceYawSettings.kD = 0;
+  attitudeRollSettings.kP = 1;
+  attitudeRollSettings.kI = 0;
+  attitudeRollSettings.kD = 0;
+  attitudePitchSettings.kP = 1;
+  attitudePitchSettings.kI = 0;
+  attitudePitchSettings.kD = 0;
+  attitudeYawSettings.kP = 1;
+  attitudeYawSettings.kI = 0;
+  attitudeYawSettings.kD = 0;
 
   pidRateRoll.SetSampleTime(rateLoopFreq);
   pidRatePitch.SetSampleTime(rateLoopFreq);
   pidRateYaw.SetSampleTime(rateLoopFreq);
-  pidBalanceRoll.SetSampleTime(balanceLoopFreq);
-  pidBalancePitch.SetSampleTime(balanceLoopFreq);
-  pidBalanceYaw.SetSampleTime(balanceLoopFreq);
+  pidAttitudeRoll.SetSampleTime(attitudeLoopFreq);
+  pidAttitudePitch.SetSampleTime(attitudeLoopFreq);
+  pidAttitudeYaw.SetSampleTime(attitudeLoopFreq);
 
   pidRateRoll.SetTunings(rateRollSettings.kP,rateRollSettings.kI,rateRollSettings.kD);
   pidRatePitch.SetTunings(ratePitchSettings.kP,ratePitchSettings.kI,ratePitchSettings.kD);
   pidRateYaw.SetTunings(rateYawSettings.kP,rateYawSettings.kI,rateYawSettings.kD);
-  pidBalanceRoll.SetTunings(balanceRollSettings.kP,balanceRollSettings.kI,balanceRollSettings.kD);
-  pidBalancePitch.SetTunings(balancePitchSettings.kP,balancePitchSettings.kI,balancePitchSettings.kD);
-  pidBalanceYaw.SetTunings(balanceYawSettings.kP,balanceYawSettings.kI,balanceYawSettings.kD);
+  pidAttitudeRoll.SetTunings(attitudeRollSettings.kP,attitudeRollSettings.kI,attitudeRollSettings.kD);
+  pidAttitudePitch.SetTunings(attitudePitchSettings.kP,attitudePitchSettings.kI,attitudePitchSettings.kD);
+  pidAttitudeYaw.SetTunings(attitudeYawSettings.kP,attitudeYawSettings.kI,attitudeYawSettings.kD);
 
   pidRateRoll.SetOutputLimits(pidRateMin,pidRateMax);
   pidRatePitch.SetOutputLimits(pidRateMin,pidRateMax);
   pidRateYaw.SetOutputLimits(pidRateMin,pidRateMax);
-  pidBalanceRoll.SetOutputLimits(pidBalanceMin,pidBalanceMax);
-  pidBalancePitch.SetOutputLimits(pidBalanceMin,pidBalanceMax);
-  pidBalanceYaw.SetOutputLimits(pidBalanceMin,pidBalanceMax);
+  pidAttitudeRoll.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
+  pidAttitudePitch.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
+  pidAttitudeYaw.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
 
 }
 
@@ -131,17 +131,30 @@ void pidRateUpdate() {
 //  Serial.println("");
 }
 
-void pidBalanceUpdate() {
-  pidBalanceRoll.Compute();
-  pidBalancePitch.Compute();
-  pidBalanceYaw.Compute();
+void pidAttitudeUpdate() {
+  pidAttitudeRoll.Compute();
+  pidAttitudePitch.Compute();
+  pidAttitudeYaw.Compute();
 }
 
 
 void setAutoLevelTargets(){
-    balanceRollSettings.target = 0;
-    balancePitchSettings.target = 0;
-    balanceYawSettings.target = 0;
+    attitudeRollSettings.target = 0;
+    attitudePitchSettings.target = 0;
+    attitudeYawSettings.target = 0;
+}
+
+
+// really this should only act if there's no user input
+// and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
+// also review these thresholds and increments
+void autolevelModifyThrottle(int *throttle, float *ZAccel){
+if(*ZAccel > 1.05){
+  *throttle -= 5;
+}
+else if (*ZAccel < 0.95) {
+  *throttle += 5;
+}
 }
 
 

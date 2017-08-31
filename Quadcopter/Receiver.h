@@ -4,7 +4,7 @@
 // Control byte
 // bit 0; 1 = Stick 1 button pressed
 // bit 1: 1 = Stick 2 button pressed
-// bit 2: 1 = Balance mode, 0 = rate mode
+// bit 2: 1 = Attitude mode, 0 = rate mode
 // bit 3; 1 = auto-level on, 0 = auto-level off
 
 
@@ -34,8 +34,8 @@ struct dataStruct rcPackage;
 
 float rateMin = -10;  // DEGREES/SECOND
 float rateMax = 10;  // DEGREES/SECOND
-float balanceMin = -20;  // DEGREES
-float balanceMax = 20;  // DEGREES
+float attitudeMin = -20;  // DEGREES
+float attitudeMax = 20;  // DEGREES
 
 bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
@@ -78,7 +78,7 @@ bool checkHeartbeat(){
 
 bool checkRadioForInputPLACEHOLDER() {
   // ADD PLACEHOLDER VALUES
-  rcPackage.throttle = 200;
+  rcPackage.throttle = 300;
   rcPackage.roll = 500;
   rcPackage.pitch = 500;
   rcPackage.yaw = 500;
@@ -98,9 +98,9 @@ void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bo
     *yaw = (double)map(rcPackage.yaw, 0, 1000, rateMin, rateMax);
   }
   else {
-    *roll = (double)map(rcPackage.roll, 0, 1000, balanceMin, balanceMax);
-    *pitch = (double)map(rcPackage.pitch, 0, 1000, balanceMin, balanceMax);
-    *yaw = (double)map(rcPackage.yaw, 0, 1000, balanceMin, balanceMax);
+    *roll = (double)map(rcPackage.roll, 0, 1000, attitudeMin, attitudeMax);
+    *pitch = (double)map(rcPackage.pitch, 0, 1000, attitudeMin, attitudeMax);
+    *yaw = (double)map(rcPackage.yaw, 0, 1000, attitudeMin, attitudeMax);
   }
 
 }

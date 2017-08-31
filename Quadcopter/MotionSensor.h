@@ -7,6 +7,10 @@
 // calibrate accel offsets
 
 
+// X = ROLL
+// Y = PITCH
+// Z = YAW
+
 // Config registers
 const byte WHO_AM_I = 117;
 const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
@@ -52,6 +56,7 @@ float gyroRes = 250.0f / 32768.0f;
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 bool sensorRead;  // indicates whether valid information was read from the sensor
+float ZAccel;
 
 struct angle {
   float roll;
@@ -218,6 +223,9 @@ void mixAngles(){
   currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
 }
 
+void measureVerticalAccel(){
+  ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
+}
 
 
 
