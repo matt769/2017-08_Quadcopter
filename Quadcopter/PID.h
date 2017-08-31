@@ -119,9 +119,9 @@ void setupPid() {
 
 
 void pidRateUpdate() {
-//  pidRateRoll.Compute();
-//  pidRatePitch.Compute();
-//  pidRateYaw.Compute();
+  pidRateRoll.Compute();
+  pidRatePitch.Compute();
+  pidRateYaw.Compute();
 
     // check that PID is returning 1 (not 0, which implies it's not eady for a new loop yet)
 

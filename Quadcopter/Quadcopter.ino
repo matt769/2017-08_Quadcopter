@@ -154,6 +154,7 @@ void loop() {
     //        Serial.println(millis());
     rateLoopLast = millis();
 //    counter += readMainSensors(); // DEBUGGING
+    readMainSensors();
     convertGyroReadingsToValues();
     rateRollSettings.actual = valGyX; // tidy up these into a function?
     ratePitchSettings.actual = valGyY;
@@ -225,17 +226,12 @@ void loop() {
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
-    //      Serial.print(rateRollSettings.target); Serial.print('\t');
-    //      Serial.print(ratePitchSettings.target); Serial.print('\t');
-    //      Serial.print(rateYawSettings.target); Serial.print('\n');
-    //      Serial.print(rateRollSettings.output); Serial.print('\t');
-    //      Serial.print(ratePitchSettings.output); Serial.print('\t');
-    //      Serial.print(rateYawSettings.output); Serial.print('\n');
+
     Serial.print(motor1pulse); Serial.print('\t');
     Serial.print(motor2pulse); Serial.print('\n');
     Serial.print(motor3pulse); Serial.print('\t');
     Serial.print(motor4pulse); Serial.print('\n');
-    Serial.print('\n');
+//    Serial.print('\n');
 //
 //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
 //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
@@ -257,7 +253,7 @@ void loop() {
 //        Serial.print(ratePitchSettings.output); Serial.print('\t');
 //        Serial.print(rateYawSettings.output); Serial.print('\n');
     //
-//    Serial.print('\n');
+    Serial.print('\n');
     lastPrint = millis();
   }
 
