@@ -5,10 +5,10 @@ Servo motor2; // front right (CCW)
 Servo motor3; // back left (CCW)
 Servo motor4; // back right (CW)
 
-byte pinMotor1 = 4; // UPDATE
-byte pinMotor2 = 5; // UPDATE
-byte pinMotor3 = 6; // UPDATE
-byte pinMotor4 = 7; // UPDATE
+byte pinMotor1 = 31; // UPDATE
+byte pinMotor2 = 33; // UPDATE
+byte pinMotor3 = 35; // UPDATE
+byte pinMotor4 = 37; // UPDATE
 
 int motor1pulse;
 int motor2pulse;

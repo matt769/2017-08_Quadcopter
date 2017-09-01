@@ -84,6 +84,10 @@ byte statusLed = A5;
 unsigned long lastPrint = 0;  // for debug only
 //int counter = 0;  // for debug only
 
+// for testing
+unsigned long offTimer = 15000;
+unsigned long timeOn;
+
 
 
 void setup() {
@@ -105,11 +109,26 @@ void setup() {
 
   pidRateModeOn(); // ideally this would only come after arming
 
+  timeOn = millis();
+
+//  setMotorsLow();
+//  delay(5000);
+  
 }
 
 
 
 void loop() {
+
+
+  if(millis() - timeOn > offTimer){
+    setMotorsLow();
+//    Serial.println("Stopping");
+    while(1){
+      
+    }
+  }
+
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
@@ -135,7 +154,7 @@ void loop() {
   }
 
 
-  rcInputThrottle = map(analogRead(A0),1023,0,1000,2000); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
+  rcInputThrottle = map(analogRead(A12),1023,0,1000,1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
 //  Serial.println(rcInputThrottle);
 
   // HANDLE STATE CHANGES
@@ -220,17 +239,17 @@ void loop() {
     }
   }
 
-    updateBatteryIndicator();
+//    updateBatteryIndicator();
   
 //  Serial.println(motor1pulse);
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
 
-    Serial.print(motor1pulse); Serial.print('\t');
-    Serial.print(motor2pulse); Serial.print('\n');
-    Serial.print(motor3pulse); Serial.print('\t');
-    Serial.print(motor4pulse); Serial.print('\n');
+//    Serial.print(motor1pulse); Serial.print('\t');
+//    Serial.print(motor2pulse); Serial.print('\n');
+//    Serial.print(motor3pulse); Serial.print('\t');
+//    Serial.print(motor4pulse); Serial.print('\n');
 //    Serial.print('\n');
 //
 //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
@@ -253,7 +272,7 @@ void loop() {
 //        Serial.print(ratePitchSettings.output); Serial.print('\t');
 //        Serial.print(rateYawSettings.output); Serial.print('\n');
     //
-    Serial.print('\n');
+//    Serial.print('\n');
     lastPrint = millis();
   }
 

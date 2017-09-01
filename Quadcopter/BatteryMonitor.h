@@ -18,7 +18,7 @@ const float increment = 5.0 / 1024;
 
 int batteryReading;
 float voltage;
-int batteryLevel;
+int batteryLevel = 0;
 
 void setupBatteryMonitor(){
   pinMode(pinBatteryIndicator,OUTPUT);

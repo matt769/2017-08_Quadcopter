@@ -8,6 +8,9 @@
 // bit 3; 1 = auto-level on, 0 = auto-level off
 
 
+// radio parameters - retransmits etc
+
+
 
 byte addresses[][6] = {"1Node", "2Node"};
 bool radioNumber = 1; // receiver should be 1 (or anything not 0)
@@ -78,7 +81,7 @@ bool checkHeartbeat(){
 
 bool checkRadioForInputPLACEHOLDER() {
   // ADD PLACEHOLDER VALUES
-  rcPackage.throttle = 300;
+  rcPackage.throttle = 200;
   rcPackage.roll = 500;
   rcPackage.pitch = 500;
   rcPackage.yaw = 500;
