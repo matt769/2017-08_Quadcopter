@@ -223,7 +223,7 @@ void mixAngles(){
   currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
 }
 
-void measureVerticalAccel(){
+void calculateVerticalAccel(){
   ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
 

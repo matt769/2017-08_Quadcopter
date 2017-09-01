@@ -1,48 +1,56 @@
-// renamed balance to attitude
-// added a function for dealing with throttle in autolevel mode
-//    not actually being run in main loop
-//    and need to add some logic around when this is actually used (i.e. user may want to retain control of throttle)
-// added/removed comments
+// add OFF function from transimtter
+// added sending of acknowledgement payload to transmitter
+// included auto throttle control when radio connection lost
 
 
 
-// RECEIVER (ignore for now - use direct control?)
-
-// after main framework done, test timings and speed up (ONLY IF REQUIRED)
-// rename all X/Y/Z as roll/pitch/yaw?
-// Need timeout on radio in case of 'freeze'
-
-// CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
-
-// May need to re-think how handling change of state between rate and balance
-
-// scaling according to voltage
-
-// turn on auto level when there are 5 missed transmissions (based on elapsed time since last)
-// OR user turns in on in control byte
-// need to address what is happening with throttle in case of lost input
-// also need to keep overriding user input for the other controls
-// I could put a filter on Z axis accel value to see if QC is going up or down, and modify throttle accordingly
-// could add another PID for this
-// really need barometer too though
-
-// what else is required in SOFTWARE order for it to actually fly
-// (aside from testing existing stuff)
-//  - LOW THROTTLE 'LIMIT'
-
-// and in HARDWARE
-// make frame to hold/test it
-
-// print some lined/squared paper
-
-// order some thinner/more flexible wire? mabye can get from maplins?
-
+// SOFTWARE
 // starting values for PID
 // in YMFC example (which is overall very similar)
 // for roll and pitch, P = 1.4, I = 0.05, D = 15
 // for yaw, P = 4.0, I = 0.02, D = 0
 // P seems really low!
 // and max PID output is 400 - this seems really high!
+
+// May need to re-think how handling change of state between rate and balance
+
+// possible to not update the motor pulse until after the current one (if active) has finished.
+
+// what else is required in SOFTWARE order for it to actually fly
+// (aside from testing existing stuff)
+//  - LOW THROTTLE 'LIMIT'
+// but don't want to prevent them from being turned off completely if that is desired
+
+// CHange auto throttle control to PID
+// really need barometer too though
+
+// Need timeout on radio in case of 'freeze'
+
+// CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
+
+// stick deadband (set in Tx?)
+
+// test changing Servo refresh rate
+
+
+
+// GENERAL
+// CONNECT ESC signal grounds! may help with the stutter
+// add voltage divider and battery monitor to breadboard
+// Balance propellors!
+// CHeck for capacitors connected to power system
+// buy safety goggles
+// make frame to hold/test it
+// I NEED MORE BUTTONS ON MY TRANSMITTER!! (will have to use the stick buttons for now, or cycle through options with a button and confirm with button hold)
+// after main framework done, test timings and speed up (ONLY IF REQUIRED)
+
+// LATER
+// enable tuning of PID parameters via the transmitter?
+//  store in EEPROM
+// measure CPU 'load'?
+//  would probably have to be based on loop time
+// scale throttle based on voltage
+
 
 #include <I2C.h>
 #include "Servo.h"
@@ -51,12 +59,12 @@
 #include <PID_v1.h>
 
 #include "debug_and_misc.h"
-#include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "PID.h"
 #include "Receiver.h"
 #include "Motors.h"
+#include "BatteryMonitor.h"
 
 
 int rcInputThrottle;
@@ -67,6 +75,9 @@ byte RATE = 0;
 byte BALANCE = 1;
 byte MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
 byte PREV_MODE = RATE;
+
+bool KILL = 0;
+
 
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
 //rateLoopFreq defined in PID.h
@@ -93,8 +104,8 @@ unsigned long timeOn;
 void setup() {
   Serial.begin(115200);
 
-  pinMode(statusLed,OUTPUT);
-  
+  pinMode(statusLed, OUTPUT);
+
   setupBatteryMonitor();
   setupI2C();
   setupMotionSensor();
@@ -104,16 +115,22 @@ void setup() {
 
   initialiseCurrentAngles();
 
-  Serial.println(F("Setup complete"));
-  digitalWrite(statusLed,HIGH);
+  // wait for radio connection
+  while (!checkRadioForInput());
+
 
   pidRateModeOn(); // ideally this would only come after arming
 
+
+  Serial.println(F("Setup complete"));
+  digitalWrite(statusLed, HIGH);
+
+
   timeOn = millis();
 
-//  setMotorsLow();
-//  delay(5000);
-  
+  //  setMotorsLow();
+  //  delay(5000);
+
 }
 
 
@@ -121,20 +138,26 @@ void setup() {
 void loop() {
 
 
-  if(millis() - timeOn > offTimer){
+  if (millis() - timeOn > offTimer) {
     setMotorsLow();
-//    Serial.println("Stopping");
-    while(1){
-      
+    //    Serial.println("Stopping");
+    while (1) {
+
     }
   }
 
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
+    // we don't need to bother doing any of this stuff if there's no actual input
     if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
+      if (getKill()) {
+        setMotorsLow();
+        while (1);
+      }
       attitude_mode = getMode();
       auto_level = !checkHeartbeat() || getAutolevel();
+
       if (attitude_mode || auto_level) {
         mapRcToPidInput(&rcInputThrottle, &attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
         MODE = BALANCE;
@@ -143,23 +166,34 @@ void loop() {
         mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
         MODE = RATE;
       }
+
+    }
+
+    
+   // update battery info
+   calculateBatteryVoltage();
+   calculateBatteryLevel();
+   updateBatteryIndicator();  // could go in its own loop
+  }
+
+
+  // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
+  if (auto_level) { // if no communication received, OR user has specified auto-level
+    setAutoLevelTargets();
+    // If connection lost then also change throttle so that QC is descending slowly
+    if(!rxHeartbeat){
+        calculateVerticalAccel();
+        connectionLostDescend(&rcInputThrottle, &ZAccel);
     }
   }
 
-  // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
-  if(auto_level){  // if no communication receiver, OR user has specified auto-level
-    // need to address what is happening with throttle in case of lost input
-    // also need to keep overriding user input for the other controls
-    setAutoLevelTargets();
-  }
 
-
-  rcInputThrottle = map(analogRead(A12),1023,0,1000,1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
-//  Serial.println(rcInputThrottle);
+  rcInputThrottle = map(analogRead(A12), 1023, 0, 1000, 1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
+  //  Serial.println(rcInputThrottle);
 
   // HANDLE STATE CHANGES
-  if(MODE != PREV_MODE){
-    if(MODE == BALANCE){
+  if (MODE != PREV_MODE) {
+    if (MODE == BALANCE) {
       pidAttitudeModeOn();
     }
     else {
@@ -172,7 +206,7 @@ void loop() {
   if (millis() - rateLoopLast > rateLoopFreq) {
     //        Serial.println(millis());
     rateLoopLast = millis();
-//    counter += readMainSensors(); // DEBUGGING
+//    counter ++; // DEBUGGING
     readMainSensors();
     convertGyroReadingsToValues();
     rateRollSettings.actual = valGyX; // tidy up these into a function?
@@ -210,7 +244,7 @@ void loop() {
     //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
     //    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
     //    Serial.print(counter); Serial.print('\n');
-//    counter = 0;
+    //    counter = 0;
     //    Serial.print('\n');
 
     if (attitude_mode) {
@@ -221,58 +255,41 @@ void loop() {
       rateYawSettings.target = attitudeYawSettings.output;
 
       rateYawSettings.target = 0;   // OVERIDE THE YAW BALANCE PID OUTPUT
-      
-//      Serial.print("Actual: "); Serial.print('\t');
-//      Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-//      Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-//      Serial.print(attitudeYawSettings.actual); Serial.print('\n');
-//      Serial.print("Target: "); Serial.print('\t');
-//      Serial.print(attitudeRollSettings.target); Serial.print('\t');
-//      Serial.print(attitudePitchSettings.target); Serial.print('\t');
-//      Serial.print(attitudeYawSettings.target); Serial.print('\n');
-//      Serial.print("Output: "); Serial.print('\t');
-//      Serial.print(attitudeRollSettings.output); Serial.print('\t');
-//      Serial.print(attitudePitchSettings.output); Serial.print('\t');
-//      Serial.print(attitudeYawSettings.output); Serial.print('\n');
-//      Serial.print('\n');
-      
     }
   }
 
-//    updateBatteryIndicator();
-  
-//  Serial.println(motor1pulse);
+
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
 
-//    Serial.print(motor1pulse); Serial.print('\t');
-//    Serial.print(motor2pulse); Serial.print('\n');
-//    Serial.print(motor3pulse); Serial.print('\t');
-//    Serial.print(motor4pulse); Serial.print('\n');
-//    Serial.print('\n');
-//
-//        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-//        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-//        Serial.print(attitudeYawSettings.actual); Serial.print('\n');
-//        Serial.print(attitudeRollSettings.target); Serial.print('\t');
-//        Serial.print(attitudePitchSettings.target); Serial.print('\t');
-//        Serial.print(attitudeYawSettings.target); Serial.print('\n');
-//        Serial.print(attitudeRollSettings.output); Serial.print('\t');
-//        Serial.print(attitudePitchSettings.output); Serial.print('\t');
-//        Serial.print(attitudeYawSettings.output); Serial.print('\n');
-//
-//        Serial.print(rateRollSettings.actual); Serial.print('\t');
-//        Serial.print(ratePitchSettings.actual); Serial.print('\t');
-//        Serial.print(rateYawSettings.actual); Serial.print('\n');
-//        Serial.print(rateRollSettings.target); Serial.print('\t');
-//        Serial.print(ratePitchSettings.target); Serial.print('\t');
-//        Serial.print(rateYawSettings.target); Serial.print('\n');
-//        Serial.print(rateRollSettings.output); Serial.print('\t');
-//        Serial.print(ratePitchSettings.output); Serial.print('\t');
-//        Serial.print(rateYawSettings.output); Serial.print('\n');
+    //    Serial.print(motor1pulse); Serial.print('\t');
+    //    Serial.print(motor2pulse); Serial.print('\n');
+    //    Serial.print(motor3pulse); Serial.print('\t');
+    //    Serial.print(motor4pulse); Serial.print('\n');
+    //    Serial.print('\n');
     //
-//    Serial.print('\n');
+    //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
+    //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
+    //        Serial.print(attitudeYawSettings.actual); Serial.print('\n');
+    //        Serial.print(attitudeRollSettings.target); Serial.print('\t');
+    //        Serial.print(attitudePitchSettings.target); Serial.print('\t');
+    //        Serial.print(attitudeYawSettings.target); Serial.print('\n');
+    //        Serial.print(attitudeRollSettings.output); Serial.print('\t');
+    //        Serial.print(attitudePitchSettings.output); Serial.print('\t');
+    //        Serial.print(attitudeYawSettings.output); Serial.print('\n');
+    //
+    //        Serial.print(rateRollSettings.actual); Serial.print('\t');
+    //        Serial.print(ratePitchSettings.actual); Serial.print('\t');
+    //        Serial.print(rateYawSettings.actual); Serial.print('\n');
+    //        Serial.print(rateRollSettings.target); Serial.print('\t');
+    //        Serial.print(ratePitchSettings.target); Serial.print('\t');
+    //        Serial.print(rateYawSettings.target); Serial.print('\n');
+    //        Serial.print(rateRollSettings.output); Serial.print('\t');
+    //        Serial.print(ratePitchSettings.output); Serial.print('\t');
+    //        Serial.print(rateYawSettings.output); Serial.print('\n');
+    //
+    //    Serial.print('\n');
     lastPrint = millis();
   }
 

@@ -148,7 +148,8 @@ void setAutoLevelTargets(){
 // really this should only act if there's no user input
 // and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
 // also review these thresholds and increments
-void autolevelModifyThrottle(int *throttle, float *ZAccel){
+// change this to be full PID
+void connectionLostDescend(int *throttle, float *ZAccel){
 if(*ZAccel > 1.05){
   *throttle -= 5;
 }
