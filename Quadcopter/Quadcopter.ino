@@ -5,6 +5,10 @@
 // check that EVERY VALUE from radio is within bounds (just for testing)
 // change name of rcInputThrottle
 // Why is kill firing randomly
+// consider how throttle being handled
+
+// input isn't changing attitude PID target
+
 
 // SOFTWARE
 // starting values for PID
@@ -13,24 +17,6 @@
 // for yaw, P = 4.0, I = 0.02, D = 0
 // P seems really low!
 // and max PID output is 400 - this seems really high!
-
-// May need to re-think how handling change of state between rate and balance
-
-// possible to not update the motor pulse until after the current one (if active) has finished.
-
-// what else is required in SOFTWARE order for it to actually fly
-// (aside from testing existing stuff)
-
-
-// CHange auto throttle control to PID
-// really need barometer too though
-
-// Need timeout on radio in case of 'freeze'
-
-// CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
-
-// test changing Servo refresh rate
-
 
 
 // GENERAL
@@ -50,7 +36,13 @@
 //  would probably have to be based on loop time
 // scale throttle based on voltage
 // change 'mode' to just be attitude on/off rather than rate/attiture, because rate will always happen in the background
-
+// Need timeout on radio in case of 'freeze' - seems to be ok so far
+// May need to re-think how handling change of state between rate and balance
+// possible to not update the motor pulse until after the current one (if active) has finished.
+// CHange auto throttle control to PID
+// really need barometer too though
+// CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
+// test changing Servo refresh rate
 
 
 #include <I2C.h>
@@ -59,7 +51,6 @@
 #include <RF24.h>
 #include <PID_v1.h>
 
-#include "debug_and_misc.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "PID.h"
@@ -120,28 +111,24 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection
-  //while (!checkRadioForInput());
-
+  // this doesn't seem to work
+  while (!checkRadioForInput());
 
   pidRateModeOn(); // ideally this would only come after arming
-
 
   Serial.println(F("Setup complete"));
   digitalWrite(statusLed, HIGH);
 
-
-  timeOn = millis();
+  timeOn = millis();  // DEBUGGING
 
   //  setMotorsLow();
   //  delay(5000);
-
 }
 
 
 
 void loop() {
 
-  //  Serial.println("0");
 
   // FOR TESTING
   //  if (millis() - timeOn > offTimer) {
@@ -155,17 +142,10 @@ void loop() {
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
-    //    Serial.println("x");
     // we don't need to bother doing any of this stuff if there's no actual input
-    //    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
-    //    Serial.print("a");
     if (checkRadioForInput()) {
-//      printPackage();
-
-
       attitude_mode = getMode();
       auto_level = !checkHeartbeat() || getAutolevel();
-
       if (attitude_mode || auto_level) {
         mapRcToPidInput(&rcInputThrottle, &attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
         MODE = BALANCE;
@@ -174,7 +154,6 @@ void loop() {
         mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
         MODE = RATE;
       }
-
       // getKill() seems to fire a bit randomly // address on Tx side?
       // HAVE REMOVED FOR NOW - NEED TO REINSTATE ASAP
       if (getKill() && (rcInputThrottle < 1050)) {
@@ -182,9 +161,7 @@ void loop() {
         Serial.println("KILL");
 //        while (1);  //
       }
-
     }
-    //    Serial.println("b");
     receiverLast = millis();
 
     // update battery info
@@ -204,9 +181,7 @@ void loop() {
     }
   }
 
-
   //rcInputThrottle = map(analogRead(A12), 1023, 0, 1000, 1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
-  //  Serial.println(rcInputThrottle);
 
   // HANDLE STATE CHANGES
   if (MODE != PREV_MODE) {
@@ -225,10 +200,7 @@ void loop() {
 
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
-
-    //        Serial.println(millis());
     rateLoopLast = millis();
-    //    counter ++; // DEBUGGING
     readMainSensors();
     convertGyroReadingsToValues();
     rateRollSettings.actual = valGyX; // tidy up these into a function?
@@ -239,19 +211,14 @@ void loop() {
     //capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
     updateMotors();
 
+    // required for attitude calculations
     accumulateGyroChange();
-
-    //    Serial.print("GyroChange:"); Serial.print('\t');
-    //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
-    //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
-    //    Serial.print(gyroChangeAngles.yaw); Serial.print('\n');
     accumulateAccelReadings();  // or should I just take these in attitude loop?
   }
 
   // RUN ATTITUDE LOOP
   // Note that the attitude PID itself will not run unless QC is in ATTITUDE mode
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
-    //    Serial.print("e");
     attitudeLoopLast = millis();
 
     calcAnglesAccel();
@@ -262,14 +229,6 @@ void loop() {
     attitudePitchSettings.actual = currentAngles.pitch;
     attitudeYawSettings.actual = currentAngles.yaw;
 
-    //    Serial.print("InDegrees: "); Serial.print('\t');
-    //    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-    //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-    //    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
-    //    Serial.print(counter); Serial.print('\n');
-    //    counter = 0;
-    //    Serial.print('\n');
-
     if (attitude_mode) {
       pidAttitudeUpdate();
       // set rate setpoints
@@ -279,11 +238,10 @@ void loop() {
 
       rateYawSettings.target = 0;   // OVERIDE THE YAW BALANCE PID OUTPUT
     }
-    //    Serial.println("f");
   }
 
 
-
+  // DEBUGGONG
   if (millis() - lastPrint > 1000) {
     Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
@@ -317,7 +275,6 @@ void loop() {
         Serial.print('\n');
     lastPrint = millis();
   }
-  //  Serial.println("xx");
 
 
 } // loop

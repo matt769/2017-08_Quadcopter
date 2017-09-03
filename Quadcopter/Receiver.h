@@ -160,6 +160,7 @@ void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bo
   *throttle = map(rcPackage.throttle,0,255,1000,2000); // should probably just provide it as the correct range
 //    *throttle = rcPackage.throttle;
 //  Serial.println("X");
+//Serial.println(*mode);
   if (!*mode) {
     *roll = (double)map(rcPackage.roll, 0,255, rateMin, rateMax);
     *pitch = (double)map(rcPackage.pitch, 0,255, rateMin, rateMax);
