@@ -141,24 +141,23 @@ void loop() {
   if (millis() - receiverLast > receiverFreq) {
     // we don't need to bother doing any of this stuff if there's no actual input
     if (checkRadioForInput()) {
+      // CHECK MODES
       attitude_mode = getMode();
       auto_level = getAutolevel() || !checkHeartbeat();
-
-
-      
-      if (attitude_mode || auto_level) {
-        mapRcToPidInput(&rcInputThrottle, &attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
-        MODE = BALANCE;
-      }
-      else {
-        mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
-        MODE = RATE;
-      }
-      // getKill() seems to fire a bit randomly // address on Tx side?
       if (getKill() && (rcInputThrottle < 1050)) {
         setMotorsLow();
         Serial.println("KILL");
         while (1);  //
+      }
+      // MAP CONTROL VALUES
+      mapThrottle(&rcInputThrottle);
+      if (attitude_mode || auto_level) {
+        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
+        MODE = BALANCE;
+      }
+      else {
+        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
+        MODE = RATE;
       }
     }
     receiverLast = millis();
