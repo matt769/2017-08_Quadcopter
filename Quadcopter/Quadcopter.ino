@@ -1,9 +1,3 @@
-// add OFF function from transimtter
-// added sending of acknowledgement payload to transmitter
-// included auto throttle control when radio connection lost
-
-
-
 // SOFTWARE
 // starting values for PID
 // in YMFC example (which is overall very similar)
@@ -84,7 +78,7 @@ bool KILL = 0;
 unsigned long rateLoopLast = 0;
 //attitudeLoopFreq defined in PID.h
 unsigned long attitudeLoopLast = 0;
-byte receiverFreq = 20;  // although this can also be controlled on the transmitter side
+byte receiverFreq = 50;  // although this can also be controlled on the transmitter side
 unsigned long receiverLast = 0;
 
 byte statusLed = A5;
@@ -109,14 +103,14 @@ void setup() {
   setupBatteryMonitor();
   setupI2C();
   setupMotionSensor();
-  //  setupRadio();   ignore for now
+  setupRadio();
   setupPid();
   setupMotors();
 
   initialiseCurrentAngles();
 
   // wait for radio connection
-  while (!checkRadioForInput());
+  //while (!checkRadioForInput());
 
 
   pidRateModeOn(); // ideally this would only come after arming
@@ -149,8 +143,10 @@ void loop() {
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
+    //    Serial.println("x");
     // we don't need to bother doing any of this stuff if there's no actual input
-    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
+    //    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
+    if (checkRadioForInput()) {
       if (getKill()) {
         setMotorsLow();
         while (1);
@@ -169,11 +165,11 @@ void loop() {
 
     }
 
-    
-   // update battery info
-   calculateBatteryVoltage();
-   calculateBatteryLevel();
-   updateBatteryIndicator();  // could go in its own loop
+
+    // update battery info
+    calculateBatteryVoltage();
+    calculateBatteryLevel();
+    updateBatteryIndicator();  // could go in its own loop
   }
 
 
@@ -181,9 +177,9 @@ void loop() {
   if (auto_level) { // if no communication received, OR user has specified auto-level
     setAutoLevelTargets();
     // If connection lost then also change throttle so that QC is descending slowly
-    if(!rxHeartbeat){
-        calculateVerticalAccel();
-        connectionLostDescend(&rcInputThrottle, &ZAccel);
+    if (!rxHeartbeat) {
+      calculateVerticalAccel();
+      connectionLostDescend(&rcInputThrottle, &ZAccel);
     }
   }
 
@@ -206,7 +202,7 @@ void loop() {
   if (millis() - rateLoopLast > rateLoopFreq) {
     //        Serial.println(millis());
     rateLoopLast = millis();
-//    counter ++; // DEBUGGING
+    //    counter ++; // DEBUGGING
     readMainSensors();
     convertGyroReadingsToValues();
     rateRollSettings.actual = valGyX; // tidy up these into a function?
@@ -262,7 +258,7 @@ void loop() {
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
-
+    printPackage();
     //    Serial.print(motor1pulse); Serial.print('\t');
     //    Serial.print(motor2pulse); Serial.print('\n');
     //    Serial.print(motor3pulse); Serial.print('\t');
@@ -292,7 +288,7 @@ void loop() {
     //    Serial.print('\n');
     lastPrint = millis();
   }
-
+  //  Serial.println("xx");
 
 
 } // loop

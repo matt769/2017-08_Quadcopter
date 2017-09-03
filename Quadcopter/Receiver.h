@@ -57,6 +57,18 @@ void setupRadio() {
   // RADIO
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);  // MIN, LOW, HIGH, MAX
+
+
+  
+  // Open a writing and reading pipe on each radio, MUST BE OPPOSITE addresses to the receiver
+  if(radioNumber){
+    radio.openWritingPipe(addresses[1]);
+    radio.openReadingPipe(1,addresses[0]);
+  }else{
+    radio.openWritingPipe(addresses[0]);
+    radio.openReadingPipe(1,addresses[1]);
+  }
+
   radio.enableAckPayload();
   radio.enableDynamicPayloads();
 // RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps // slower is more reliable and gives longer range
@@ -65,17 +77,17 @@ void setupRadio() {
 //   * max is 15.  0 means 250us, 15 means 4000us.
 //   * @param count How many retries before giving up, max 15
 //  radio.setRetries();   // default is setRetries(5,15) // note restrictions due to ack payload
-
-  
-  // Open a writing and reading pipe on each radio, MUST BE OPPOSITE addresses to the receiver
-  radio.openWritingPipe(addresses[0]);
-  radio.openReadingPipe(1, addresses[1]);
+ 
   radio.startListening();
+//  Serial.println(radio.isChipConnected());
 }
 
 bool checkRadioForInput() {
+//  Serial.println("0");
   if ( radio.available()) {
+//    Serial.println("1");
     while (radio.available()) {
+//      Serial.println("2");
       radio.read( &rcPackage, sizeof(rcPackage) );
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
@@ -157,5 +169,15 @@ bool getAutolevel() {
 
 bool getKill() {
   return bitRead(rcPackage.control, 7);
+}
+
+
+void printPackage(){
+  Serial.print(rcPackage.throttle);Serial.print('\t');
+  Serial.print(rcPackage.pitch);Serial.print('\t');
+  Serial.print(rcPackage.roll);Serial.print('\t');
+  Serial.print(rcPackage.yaw);Serial.print('\t');
+  Serial.print(rcPackage.control);Serial.print('\t');
+  Serial.print(rcPackage.checksum);Serial.print('\n');
 }
 

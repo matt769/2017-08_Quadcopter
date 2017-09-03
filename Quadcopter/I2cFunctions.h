@@ -1,5 +1,6 @@
 // some of these functions aren't technically related to I2C, but that's what I'm using them for here
 
+// review timeout
 
 boolean i2cTimeout;
 
