@@ -11,8 +11,8 @@
 
 // Review how PID deals with being turned on and off
 
-int pidRateMin = -50;  // MOTOR INPUT
-int pidRateMax = 50;  // MOTOR INPUT
+int pidRateMin = -100;  // MOTOR INPUT
+int pidRateMax = 100;  // MOTOR INPUT
 int pidAttitudeMin = -10;  // DEG/S
 int pidAttitudeMax = 10;  // DEG/S
 
@@ -74,13 +74,13 @@ void setupPid() {
   pidRateModeOff();
   pidAttitudeModeOff();
 
-  rateRollSettings.kP = 1;
+  rateRollSettings.kP = 10;
   rateRollSettings.kI = 0;
   rateRollSettings.kD = 0;
-  ratePitchSettings.kP = 1;
+  ratePitchSettings.kP = 10;
   ratePitchSettings.kI = 0;
   ratePitchSettings.kD = 0;
-  rateYawSettings.kP = 1;
+  rateYawSettings.kP = 10;
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
 

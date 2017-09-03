@@ -16,7 +16,7 @@ int motor3pulse;
 int motor4pulse;
 
 
-void setupMotors(){
+void setupMotors() {
   motor1.writeMicroseconds(1500);
   motor1.attach(pinMotor1);
   motor2.writeMicroseconds(1500);
@@ -27,25 +27,28 @@ void setupMotors(){
   motor4.attach(pinMotor4);
 }
 
-void calculateMotorInput(int *throttle, double *rollOffset, double *pitchOffset, double *yawOffset){
+void calculateMotorInput(int *throttle, double *rollOffset, double *pitchOffset, double *yawOffset) {
   motor1pulse = *throttle + *rollOffset - *pitchOffset + *yawOffset;
   motor2pulse = *throttle - *rollOffset - *pitchOffset - *yawOffset;
   motor3pulse = *throttle + *rollOffset + *pitchOffset - *yawOffset;
   motor4pulse = *throttle - *rollOffset + *pitchOffset + *yawOffset;
 }
 // alternatively I could just cap throttle by pidRateMax*3
-void capMotorInputNearMaxThrottle(){
-  int maxMotorValue = max(motor1pulse,max(motor2pulse,max(motor3pulse,motor4pulse)));
-  int adj = max(maxMotorValue - 2000, 0);
-  motor1pulse -= adj;
-  motor2pulse -= adj;
-  motor3pulse -= adj;
-  motor4pulse -= adj;
+void capMotorInputNearMaxThrottle() {
+  int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
+  int adj = maxMotorValue - 2000;
+  if (adj > 0) {
+    motor1pulse -= adj;
+    motor2pulse -= adj;
+    motor3pulse -= adj;
+    motor4pulse -= adj;
+  }
+
 }
 
 
 
-void updateMotors(){
+void updateMotors() {
   motor1.writeMicroseconds(motor1pulse);
   motor2.writeMicroseconds(motor2pulse);
   motor3.writeMicroseconds(motor3pulse);
@@ -56,19 +59,19 @@ void updateMotors(){
 
 
 // FOR TESTING ONLY
-void setMotorsLow(){
+void setMotorsLow() {
   motor1.writeMicroseconds(1000);
   motor2.writeMicroseconds(1000);
   motor3.writeMicroseconds(1000);
   motor4.writeMicroseconds(1000);
 }
-void setMotorsHigh(){
+void setMotorsHigh() {
   motor1.writeMicroseconds(2000);
   motor2.writeMicroseconds(2000);
   motor3.writeMicroseconds(2000);
   motor4.writeMicroseconds(2000);
 }
-void setMotorsCustom(int input){
+void setMotorsCustom(int input) {
   motor1.writeMicroseconds(input);
   motor2.writeMicroseconds(input);
   motor3.writeMicroseconds(input);

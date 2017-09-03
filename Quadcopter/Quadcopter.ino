@@ -1,10 +1,6 @@
-// Change package to all bytes (I don't need so much resolution)
-// LOW THROTTLE 'LIMIT'
-//    but don't want to prevent them from being turned off completely if that is desired
 // stick deadband (set in Tx?)
 // check that EVERY VALUE from radio is within bounds (just for testing)
-// change name of rcInputThrottle
-// consider how throttle being handled
+
 
 
 // SOFTWARE
@@ -40,6 +36,8 @@
 // really need barometer too though
 // CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
 // test changing Servo refresh rate
+// change name of rcInputThrottle
+// Change package to all bytes (I don't need so much resolution)
 
 
 #include <I2C.h>
@@ -207,7 +205,7 @@ void loop() {
     rateYawSettings.actual = valGyZ;
     pidRateUpdate();
     calculateMotorInput(&rcInputThrottle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
-    //capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
+    capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
     updateMotors();
 
     // required for attitude calculations
@@ -245,21 +243,21 @@ void loop() {
 
 
     
-    Serial.print(rcInputThrottle); Serial.print('\t');
+//    Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
-    //    Serial.print(motor1pulse); Serial.print('\t');
-    //    Serial.print(motor2pulse); Serial.print('\n');
-    //    Serial.print(motor3pulse); Serial.print('\t');
-    //    Serial.print(motor4pulse); Serial.print('\n');
-    //    Serial.print('\n');
+//        Serial.print(motor1pulse); Serial.print('\t');
+//        Serial.print(motor2pulse); Serial.print('\n');
+//        Serial.print(motor3pulse); Serial.print('\t');
+//        Serial.print(motor4pulse); Serial.print('\n');
+//        Serial.print('\n');
     //
     //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
 //            Serial.print(attitudeYawSettings.actual); Serial.print('\n');
-            Serial.print(attitudeRollSettings.target); Serial.print('\t');
-            Serial.print(attitudePitchSettings.target); Serial.print('\t');
-            Serial.print(attitudeYawSettings.target); Serial.print('\t');
+//            Serial.print(attitudeRollSettings.target); Serial.print('\t');
+//            Serial.print(attitudePitchSettings.target); Serial.print('\t');
+//            Serial.print(attitudeYawSettings.target); Serial.print('\t');
     //        Serial.print(attitudeRollSettings.output); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.output); Serial.print('\t');
     //        Serial.print(attitudeYawSettings.output); Serial.print('\n');
@@ -267,14 +265,14 @@ void loop() {
 //            Serial.print(rateRollSettings.actual); Serial.print('\t');
 //            Serial.print(ratePitchSettings.actual); Serial.print('\t');
 //            Serial.print(rateYawSettings.actual); Serial.print('\t');
-            Serial.print(rateRollSettings.target); Serial.print('\t');
-            Serial.print(ratePitchSettings.target); Serial.print('\t');
-            Serial.print(rateYawSettings.target); Serial.print('\t');
+//            Serial.print(rateRollSettings.target); Serial.print('\t');
+//            Serial.print(ratePitchSettings.target); Serial.print('\t');
+//            Serial.print(rateYawSettings.target); Serial.print('\t');
     //        Serial.print(rateRollSettings.output); Serial.print('\t');
     //        Serial.print(ratePitchSettings.output); Serial.print('\t');
     //        Serial.print(rateYawSettings.output); Serial.print('\n');
     //
-        Serial.print('\n');
+//        Serial.print('\n');
     lastPrint = millis();
   }
 
