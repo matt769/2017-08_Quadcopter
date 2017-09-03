@@ -152,7 +152,7 @@ bool checkHeartbeat(){
 //  return true;
 //}
 
-void mapThrottle(*throttle){
+void mapThrottle(int *throttle){
   *throttle = map(rcPackage.throttle,0,255,1000,2000);
 }
 
