@@ -109,21 +109,18 @@ void setupRadio() {
 bool checkRadioForInput() {
 //  Serial.print("0");
   if ( radio.available()) {
-//    Serial.print("1");
     while (radio.available()) {
       radio.read( &rcPackage, sizeof(rcPackage) );
-//      Serial.print("2");
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
-//    Serial.print("3");
     statusForAck = highByte(millis());  // PLACEHOLDER
-//    Serial.print("4");
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
-//    Serial.print("5");
+    if(rcPackage.checksum != calculateCheckSum()){
+      radio.flush_rx();
+      return false;
+    }
     lastRxReceived = millis();
-//    Serial.print("6");
     radio.flush_rx(); // probably remove
-//    Serial.println("7");
     return true;
   }
   return false;

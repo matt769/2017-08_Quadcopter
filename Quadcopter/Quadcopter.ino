@@ -4,10 +4,7 @@
 // stick deadband (set in Tx?)
 // check that EVERY VALUE from radio is within bounds (just for testing)
 // change name of rcInputThrottle
-// Why is kill firing randomly
 // consider how throttle being handled
-
-// input isn't changing attitude PID target
 
 
 // SOFTWARE
@@ -145,7 +142,10 @@ void loop() {
     // we don't need to bother doing any of this stuff if there's no actual input
     if (checkRadioForInput()) {
       attitude_mode = getMode();
-      auto_level = !checkHeartbeat() || getAutolevel();
+      auto_level = getAutolevel() || !checkHeartbeat();
+
+
+      
       if (attitude_mode || auto_level) {
         mapRcToPidInput(&rcInputThrottle, &attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
         MODE = BALANCE;
@@ -155,11 +155,10 @@ void loop() {
         MODE = RATE;
       }
       // getKill() seems to fire a bit randomly // address on Tx side?
-      // HAVE REMOVED FOR NOW - NEED TO REINSTATE ASAP
       if (getKill() && (rcInputThrottle < 1050)) {
-//        setMotorsLow();
+        setMotorsLow();
         Serial.println("KILL");
-//        while (1);  //
+        while (1);  //
       }
     }
     receiverLast = millis();
@@ -185,6 +184,7 @@ void loop() {
 
   // HANDLE STATE CHANGES
   if (MODE != PREV_MODE) {
+    printPackage();
     if (MODE == BALANCE) {
       pidAttitudeModeOn();
       Serial.println(F("Entering attitude mode"));
@@ -243,6 +243,9 @@ void loop() {
 
   // DEBUGGONG
   if (millis() - lastPrint > 1000) {
+
+
+    
     Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
