@@ -157,17 +157,18 @@ bool checkHeartbeat(){
 
 
 void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bool *mode) {
-  *throttle = map(rcPackage.throttle,0,1000,1000,2000); // should probably just provide it as the correct range
+  *throttle = map(rcPackage.throttle,0,255,1000,2000); // should probably just provide it as the correct range
+//    *throttle = rcPackage.throttle;
 //  Serial.println("X");
   if (!*mode) {
-    *roll = (double)map(rcPackage.roll, 0, 1000, rateMin, rateMax);
-    *pitch = (double)map(rcPackage.pitch, 0, 1000, rateMin, rateMax);
-    *yaw = (double)map(rcPackage.yaw, 0, 1000, rateMin, rateMax);
+    *roll = (double)map(rcPackage.roll, 0,255, rateMin, rateMax);
+    *pitch = (double)map(rcPackage.pitch, 0,255, rateMin, rateMax);
+    *yaw = (double)map(rcPackage.yaw, 0,255, rateMin, rateMax);
   }
   else {
-    *roll = (double)map(rcPackage.roll, 0, 1000, attitudeMin, attitudeMax);
-    *pitch = (double)map(rcPackage.pitch, 0, 1000, attitudeMin, attitudeMax);
-    *yaw = (double)map(rcPackage.yaw, 0, 1000, attitudeMin, attitudeMax);
+    *roll = (double)map(rcPackage.roll, 0,255, attitudeMin, attitudeMax);
+    *pitch = (double)map(rcPackage.pitch, 0,255, attitudeMin, attitudeMax);
+    *yaw = (double)map(rcPackage.yaw, 0,255, attitudeMin, attitudeMax);
   }
 
 }

@@ -3,6 +3,8 @@
 //    but don't want to prevent them from being turned off completely if that is desired
 // stick deadband (set in Tx?)
 // check that EVERY VALUE from radio is within bounds (just for testing)
+// change name of rcInputThrottle
+// Why is kill firing randomly
 
 // SOFTWARE
 // starting values for PID
@@ -88,6 +90,9 @@ unsigned long receiverLast = 0;
 
 byte statusLed = A5;
 
+const int MIN_THROTTLE = 1100;  // CHECK THIS
+//const int MAX_THROTTLE = 1800;  // CHECK THIS
+
 
 
 // DEBUG
@@ -155,23 +160,9 @@ void loop() {
     //    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
     //    Serial.print("a");
     if (checkRadioForInput()) {
-      printPackage();
-      
-      // this seems to fire a bit randomly
-      // on Tx side, require it to stay pressed for some time before activating
-      // remove this functionality for now
-      if (getKill()) {
-        // require this to be sent several times to activate
-        // need to reset if not received all at once
-//        countKillCommand ++;
-//        Serial.println("KILL_CMD");
-//        if (countKillCommand > 5) {
-//          setMotorsLow();
-//          Serial.println("KILL");
-//          while (1);  //
-//        }
-      }
-      
+//      printPackage();
+
+
       attitude_mode = getMode();
       auto_level = !checkHeartbeat() || getAutolevel();
 
@@ -182,6 +173,14 @@ void loop() {
       else {
         mapRcToPidInput(&rcInputThrottle, &rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
         MODE = RATE;
+      }
+
+      // getKill() seems to fire a bit randomly // address on Tx side?
+      // HAVE REMOVED FOR NOW - NEED TO REINSTATE ASAP
+      if (getKill() && (rcInputThrottle < 1050)) {
+//        setMotorsLow();
+        Serial.println("KILL");
+//        while (1);  //
       }
 
     }
@@ -286,8 +285,9 @@ void loop() {
 
 
   if (millis() - lastPrint > 1000) {
+    Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
-//    printPackage();
+    //    printPackage();
     //    Serial.print(motor1pulse); Serial.print('\t');
     //    Serial.print(motor2pulse); Serial.print('\n');
     //    Serial.print(motor3pulse); Serial.print('\t');
@@ -296,25 +296,25 @@ void loop() {
     //
     //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-    //        Serial.print(attitudeYawSettings.actual); Serial.print('\n');
-    //        Serial.print(attitudeRollSettings.target); Serial.print('\t');
-    //        Serial.print(attitudePitchSettings.target); Serial.print('\t');
-    //        Serial.print(attitudeYawSettings.target); Serial.print('\n');
+//            Serial.print(attitudeYawSettings.actual); Serial.print('\n');
+            Serial.print(attitudeRollSettings.target); Serial.print('\t');
+            Serial.print(attitudePitchSettings.target); Serial.print('\t');
+            Serial.print(attitudeYawSettings.target); Serial.print('\t');
     //        Serial.print(attitudeRollSettings.output); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.output); Serial.print('\t');
     //        Serial.print(attitudeYawSettings.output); Serial.print('\n');
     //
-    //        Serial.print(rateRollSettings.actual); Serial.print('\t');
-    //        Serial.print(ratePitchSettings.actual); Serial.print('\t');
-    //        Serial.print(rateYawSettings.actual); Serial.print('\n');
-    //        Serial.print(rateRollSettings.target); Serial.print('\t');
-    //        Serial.print(ratePitchSettings.target); Serial.print('\t');
-    //        Serial.print(rateYawSettings.target); Serial.print('\n');
+//            Serial.print(rateRollSettings.actual); Serial.print('\t');
+//            Serial.print(ratePitchSettings.actual); Serial.print('\t');
+//            Serial.print(rateYawSettings.actual); Serial.print('\t');
+            Serial.print(rateRollSettings.target); Serial.print('\t');
+            Serial.print(ratePitchSettings.target); Serial.print('\t');
+            Serial.print(rateYawSettings.target); Serial.print('\t');
     //        Serial.print(rateRollSettings.output); Serial.print('\t');
     //        Serial.print(ratePitchSettings.output); Serial.print('\t');
     //        Serial.print(rateYawSettings.output); Serial.print('\n');
     //
-    //    Serial.print('\n');
+        Serial.print('\n');
     lastPrint = millis();
   }
   //  Serial.println("xx");
