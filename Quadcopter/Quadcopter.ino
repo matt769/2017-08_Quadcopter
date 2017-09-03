@@ -131,7 +131,7 @@ void setup() {
 
 void loop() {
 
-
+  // FOR TESTING
   if (millis() - timeOn > offTimer) {
     setMotorsLow();
     //    Serial.println("Stopping");
@@ -147,6 +147,7 @@ void loop() {
     // we don't need to bother doing any of this stuff if there's no actual input
     //    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
     if (checkRadioForInput()) {
+
       if (getKill()) {
         setMotorsLow();
         while (1);
@@ -165,6 +166,7 @@ void loop() {
 
     }
 
+    receiverLast = millis();
 
     // update battery info
     calculateBatteryVoltage();
@@ -184,7 +186,7 @@ void loop() {
   }
 
 
-  rcInputThrottle = map(analogRead(A12), 1023, 0, 1000, 1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
+  //rcInputThrottle = map(analogRead(A12), 1023, 0, 1000, 1300); // OVERRIDE THROTTLE WITH MANUAL INPUT  *DEBUGGING*
   //  Serial.println(rcInputThrottle);
 
   // HANDLE STATE CHANGES
@@ -258,7 +260,7 @@ void loop() {
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
-    printPackage();
+
     //    Serial.print(motor1pulse); Serial.print('\t');
     //    Serial.print(motor2pulse); Serial.print('\n');
     //    Serial.print(motor3pulse); Serial.print('\t');

@@ -33,16 +33,16 @@ const byte BATTERY_LOW = 3;
 // Bits 5,6,7 show battery level (that gives 8 segments)
 
 
-struct dataStruct {
-  int throttle; // number 1000 to 2000
-  int roll;     // number 1000 to 2000
-  int pitch;    // number 1000 to 2000
-  int yaw;     // number 1000 to 2000
+struct dataStruct{
+  int throttle; // number 0 to 1000
+  int roll;     // number 0 to 1000
+  int pitch;    // number 0 to 1000
+  int yaw;     // number 0 to 1000
   byte control; // for some control bits
   byte checksum;
-};
+} rcPackage;
 
-struct dataStruct rcPackage;
+
 
 float rateMin = -10;  // DEGREES/SECOND
 float rateMax = 10;  // DEGREES/SECOND
@@ -53,12 +53,29 @@ bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
 unsigned long heartbeatTimeout = 1000;
 
+
+void printPackage(){
+  Serial.print(rcPackage.throttle);Serial.print('\t');
+  Serial.print(rcPackage.pitch);Serial.print('\t');
+  Serial.print(rcPackage.roll);Serial.print('\t');
+  Serial.print(rcPackage.yaw);Serial.print('\t');
+  Serial.print(rcPackage.control);Serial.print('\t');
+  Serial.print(rcPackage.checksum);Serial.print('\n');
+}
+
 void setupRadio() {
   // RADIO
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);  // MIN, LOW, HIGH, MAX
 
-
+  radio.enableAckPayload();
+  radio.enableDynamicPayloads();
+// RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps // slower is more reliable and gives longer range
+  radio.setDataRate(RF24_250KBPS);
+//   * @param delay How long to wait between each retry, in multiples of 250us,
+//   * max is 15.  0 means 250us, 15 means 4000us.
+//   * @param count How many retries before giving up, max 15
+//  radio.setRetries();   // default is setRetries(5,15) // note restrictions due to ack payload
   
   // Open a writing and reading pipe on each radio, MUST BE OPPOSITE addresses to the receiver
   if(radioNumber){
@@ -69,30 +86,41 @@ void setupRadio() {
     radio.openReadingPipe(1,addresses[1]);
   }
 
-  radio.enableAckPayload();
-  radio.enableDynamicPayloads();
-// RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps // slower is more reliable and gives longer range
-  radio.setDataRate(RF24_250KBPS);
-//   * @param delay How long to wait between each retry, in multiples of 250us,
-//   * max is 15.  0 means 250us, 15 means 4000us.
-//   * @param count How many retries before giving up, max 15
-//  radio.setRetries();   // default is setRetries(5,15) // note restrictions due to ack payload
+
  
   radio.startListening();
 //  Serial.println(radio.isChipConnected());
 }
 
+
+byte calculateCheckSum(){
+  byte sum = 0;
+  sum += rcPackage.throttle;
+  sum += rcPackage.pitch;
+  sum += rcPackage.roll;
+  sum += rcPackage.yaw;
+  sum += rcPackage.control;
+  sum = 1 - sum;
+  return sum;
+}
+
 bool checkRadioForInput() {
-//  Serial.println("0");
+//  bool tmp = radio.available();
+//  Serial.println(tmp);
+//  Serial.println(rcPackage.throttle);
+//  if ( tmp) {
   if ( radio.available()) {
-//    Serial.println("1");
     while (radio.available()) {
-//      Serial.println("2");
       radio.read( &rcPackage, sizeof(rcPackage) );
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
+    statusForAck = highByte(millis());  // PLACEHOLDER
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
     lastRxReceived = millis();
+    printPackage();
+//    Serial.print("Checksum difference"); 
+//    Serial.println(rcPackage.checksum - calculateCheckSum());
+    radio.flush_rx(); // probably remove
     return true;
   }
   return false;
@@ -111,22 +139,22 @@ bool checkHeartbeat(){
 
 
 
-bool checkRadioForInputPLACEHOLDER() {
-  // ADD PLACEHOLDER VALUES
-  rcPackage.throttle = 200;
-  rcPackage.roll = 500;
-  rcPackage.pitch = 500;
-  rcPackage.yaw = 500;
-  rcPackage.control = B00000000;
-  rxHeartbeat = true;
-  lastRxReceived = millis();
-  return true;
-}
+//bool checkRadioForInputPLACEHOLDER() {
+//  // ADD PLACEHOLDER VALUES
+//  rcPackage.throttle = 200;
+//  rcPackage.roll = 500;
+//  rcPackage.pitch = 500;
+//  rcPackage.yaw = 500;
+//  rcPackage.control = B00000000;
+//  rxHeartbeat = true;
+//  lastRxReceived = millis();
+//  return true;
+//}
 
 
 void mapRcToPidInput(int *throttle, double *roll, double *pitch, double *yaw, bool *mode) {
   *throttle = map(rcPackage.throttle,0,1000,1000,2000); // should probably just provide it as the correct range
-
+//  Serial.println("X");
   if (!*mode) {
     *roll = (double)map(rcPackage.roll, 0, 1000, rateMin, rateMax);
     *pitch = (double)map(rcPackage.pitch, 0, 1000, rateMin, rateMax);
@@ -172,12 +200,5 @@ bool getKill() {
 }
 
 
-void printPackage(){
-  Serial.print(rcPackage.throttle);Serial.print('\t');
-  Serial.print(rcPackage.pitch);Serial.print('\t');
-  Serial.print(rcPackage.roll);Serial.print('\t');
-  Serial.print(rcPackage.yaw);Serial.print('\t');
-  Serial.print(rcPackage.control);Serial.print('\t');
-  Serial.print(rcPackage.checksum);Serial.print('\n');
-}
+
 
