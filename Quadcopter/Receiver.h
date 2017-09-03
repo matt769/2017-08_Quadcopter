@@ -54,20 +54,32 @@ unsigned long lastRxReceived = 0;
 unsigned long heartbeatTimeout = 1000;
 
 
+
+byte calculateCheckSum(){
+  byte sum = 0;
+  sum += rcPackage.throttle;
+  sum += rcPackage.pitch;
+  sum += rcPackage.roll;
+  sum += rcPackage.yaw;
+  sum += rcPackage.control;
+  sum = 1 - sum;
+  return sum;
+}
+
 void printPackage(){
   Serial.print(rcPackage.throttle);Serial.print('\t');
-  Serial.print(rcPackage.pitch);Serial.print('\t');
   Serial.print(rcPackage.roll);Serial.print('\t');
+  Serial.print(rcPackage.pitch);Serial.print('\t');
   Serial.print(rcPackage.yaw);Serial.print('\t');
   Serial.print(rcPackage.control);Serial.print('\t');
-  Serial.print(rcPackage.checksum);Serial.print('\n');
+  Serial.print(rcPackage.checksum);Serial.print('\t');
+  Serial.print("CHKSUM_DIFF: ");Serial.println(rcPackage.checksum - calculateCheckSum());
 }
 
 void setupRadio() {
   // RADIO
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);  // MIN, LOW, HIGH, MAX
-
   radio.enableAckPayload();
   radio.enableDynamicPayloads();
 // RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps // slower is more reliable and gives longer range
@@ -93,34 +105,25 @@ void setupRadio() {
 }
 
 
-byte calculateCheckSum(){
-  byte sum = 0;
-  sum += rcPackage.throttle;
-  sum += rcPackage.pitch;
-  sum += rcPackage.roll;
-  sum += rcPackage.yaw;
-  sum += rcPackage.control;
-  sum = 1 - sum;
-  return sum;
-}
 
 bool checkRadioForInput() {
-//  bool tmp = radio.available();
-//  Serial.println(tmp);
-//  Serial.println(rcPackage.throttle);
-//  if ( tmp) {
+//  Serial.print("0");
   if ( radio.available()) {
+//    Serial.print("1");
     while (radio.available()) {
       radio.read( &rcPackage, sizeof(rcPackage) );
+//      Serial.print("2");
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
+//    Serial.print("3");
     statusForAck = highByte(millis());  // PLACEHOLDER
+//    Serial.print("4");
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
+//    Serial.print("5");
     lastRxReceived = millis();
-    printPackage();
-//    Serial.print("Checksum difference"); 
-//    Serial.println(rcPackage.checksum - calculateCheckSum());
+//    Serial.print("6");
     radio.flush_rx(); // probably remove
+//    Serial.println("7");
     return true;
   }
   return false;
@@ -128,6 +131,7 @@ bool checkRadioForInput() {
 
 bool checkHeartbeat(){
   if(millis()-lastRxReceived > heartbeatTimeout){
+    Serial.println(F("Lost connection"));
     rxHeartbeat = false;
   }
   else {

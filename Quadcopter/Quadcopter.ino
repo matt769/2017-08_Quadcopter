@@ -1,3 +1,9 @@
+// Change package to all bytes (I don't need so much resolution)
+// LOW THROTTLE 'LIMIT'
+//    but don't want to prevent them from being turned off completely if that is desired
+// stick deadband (set in Tx?)
+// check that EVERY VALUE from radio is within bounds (just for testing)
+
 // SOFTWARE
 // starting values for PID
 // in YMFC example (which is overall very similar)
@@ -12,8 +18,7 @@
 
 // what else is required in SOFTWARE order for it to actually fly
 // (aside from testing existing stuff)
-//  - LOW THROTTLE 'LIMIT'
-// but don't want to prevent them from being turned off completely if that is desired
+
 
 // CHange auto throttle control to PID
 // really need barometer too though
@@ -21,8 +26,6 @@
 // Need timeout on radio in case of 'freeze'
 
 // CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
-
-// stick deadband (set in Tx?)
 
 // test changing Servo refresh rate
 
@@ -44,6 +47,8 @@
 // measure CPU 'load'?
 //  would probably have to be based on loop time
 // scale throttle based on voltage
+// change 'mode' to just be attitude on/off rather than rate/attiture, because rate will always happen in the background
+
 
 
 #include <I2C.h>
@@ -71,7 +76,7 @@ byte MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
 byte PREV_MODE = RATE;
 
 bool KILL = 0;
-
+static byte countKillCommand = 0;
 
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
 //rateLoopFreq defined in PID.h
@@ -131,14 +136,16 @@ void setup() {
 
 void loop() {
 
-  // FOR TESTING
-  if (millis() - timeOn > offTimer) {
-    setMotorsLow();
-    //    Serial.println("Stopping");
-    while (1) {
+  //  Serial.println("0");
 
-    }
-  }
+  // FOR TESTING
+  //  if (millis() - timeOn > offTimer) {
+  //    setMotorsLow();
+  //    //    Serial.println("Stopping");
+  //    while (1) {
+  //
+  //    }
+  //  }
 
 
   // CHECK FOR USER INPUT
@@ -146,12 +153,25 @@ void loop() {
     //    Serial.println("x");
     // we don't need to bother doing any of this stuff if there's no actual input
     //    if (checkRadioForInputPLACEHOLDER()) { // currently contains placeholder values
+    //    Serial.print("a");
     if (checkRadioForInput()) {
-
+      printPackage();
+      
+      // this seems to fire a bit randomly
+      // on Tx side, require it to stay pressed for some time before activating
+      // remove this functionality for now
       if (getKill()) {
-        setMotorsLow();
-        while (1);
+        // require this to be sent several times to activate
+        // need to reset if not received all at once
+//        countKillCommand ++;
+//        Serial.println("KILL_CMD");
+//        if (countKillCommand > 5) {
+//          setMotorsLow();
+//          Serial.println("KILL");
+//          while (1);  //
+//        }
       }
+      
       attitude_mode = getMode();
       auto_level = !checkHeartbeat() || getAutolevel();
 
@@ -165,7 +185,7 @@ void loop() {
       }
 
     }
-
+    //    Serial.println("b");
     receiverLast = millis();
 
     // update battery info
@@ -193,15 +213,20 @@ void loop() {
   if (MODE != PREV_MODE) {
     if (MODE == BALANCE) {
       pidAttitudeModeOn();
+      Serial.println(F("Entering attitude mode"));
+      PREV_MODE = BALANCE;
     }
     else {
       pidAttitudeModeOff();
+      Serial.println(F("Leaving attitude mode"));
+      PREV_MODE = RATE;
     }
   }
 
 
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
+
     //        Serial.println(millis());
     rateLoopLast = millis();
     //    counter ++; // DEBUGGING
@@ -227,6 +252,7 @@ void loop() {
   // RUN ATTITUDE LOOP
   // Note that the attitude PID itself will not run unless QC is in ATTITUDE mode
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
+    //    Serial.print("e");
     attitudeLoopLast = millis();
 
     calcAnglesAccel();
@@ -254,13 +280,14 @@ void loop() {
 
       rateYawSettings.target = 0;   // OVERIDE THE YAW BALANCE PID OUTPUT
     }
+    //    Serial.println("f");
   }
 
 
 
   if (millis() - lastPrint > 1000) {
     //    Serial.print(valGyX); Serial.print('\n');
-
+//    printPackage();
     //    Serial.print(motor1pulse); Serial.print('\t');
     //    Serial.print(motor2pulse); Serial.print('\n');
     //    Serial.print(motor3pulse); Serial.print('\t');
