@@ -1,5 +1,9 @@
-// stick deadband (set in Tx?)
-// check that EVERY VALUE from radio is within bounds (just for testing)
+// stick deadband - SET IN TX
+
+// output gyro/accel readings that can be used by processing
+// chek with motors running
+
+//hope that motion sensor response is fast enought that I don't need to use JR DMP code
 
 
 
