@@ -1,4 +1,3 @@
-// stick deadband - SET IN TX
 
 // output gyro/accel readings that can be used by processing
 // chek with motors running

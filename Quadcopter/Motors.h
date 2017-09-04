@@ -15,6 +15,7 @@ int motor2pulse;
 int motor3pulse;
 int motor4pulse;
 
+const int ZERO_THROTTLE = 1000;
 
 void setupMotors() {
   motor1.writeMicroseconds(1500);
@@ -48,10 +49,10 @@ void capMotorInputNearMaxThrottle() {
 
 void capMotorInputNearMinThrottle(){
   //at the very least, stop pulse going below 1000
-  if(motor1pulse<1000) motor1pulse = 1000;
-  if(motor2pulse<1000) motor2pulse = 1000;
-  if(motor3pulse<1000) motor3pulse = 1000;
-  if(motor4pulse<1000) motor4pulse = 1000;
+  if(motor1pulse<ZERO_THROTTLE) motor1pulse = ZERO_THROTTLE;
+  if(motor2pulse<ZERO_THROTTLE) motor2pulse = ZERO_THROTTLE;
+  if(motor3pulse<ZERO_THROTTLE) motor3pulse = ZERO_THROTTLE;
+  if(motor4pulse<ZERO_THROTTLE) motor4pulse = ZERO_THROTTLE;
 }
 
 
