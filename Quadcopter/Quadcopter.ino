@@ -126,9 +126,15 @@ void setup() {
 
 
 
+unsigned long loopStart;
+unsigned long loopDuration = 0;
+unsigned long maxLoopDuration = 0;
+
+
 void loop() {
-
-
+  
+  loopStart = millis();
+  
   // FOR TESTING
   //  if (millis() - timeOn > offTimer) {
   //    setMotorsLow();
@@ -256,6 +262,7 @@ void loop() {
 //        Serial.print(motor4pulse); Serial.print('\n');
 //        Serial.print('\n');
     //
+    Serial.println(maxLoopDuration);
     //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
 //            Serial.print(attitudeYawSettings.actual); Serial.print('\n');
@@ -279,6 +286,7 @@ void loop() {
 //        Serial.print('\n');
     lastPrint = millis();
   }
-
+  loopDuration = millis() - loopStart;
+  maxLoopDuration = max(maxLoopDuration,loopDuration);
 
 } // loop

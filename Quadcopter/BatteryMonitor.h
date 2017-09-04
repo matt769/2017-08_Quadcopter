@@ -11,7 +11,7 @@
 // is there any change of initial high voltage?
 // add capacitor?
 
-byte pinBatteryMonitor = A12;
+byte pinBatteryMonitor = A5;
 byte pinBatteryIndicator = 7;
 const float scale = 5.0 / 1024;
 int batteryReading;
