@@ -133,7 +133,7 @@ unsigned long maxLoopDuration = 0;
 
 void loop() {
   
-  loopStart = millis();
+//  loopStart = micros();
   
   // FOR TESTING
   //  if (millis() - timeOn > offTimer) {
@@ -216,6 +216,7 @@ void loop() {
     pidRateUpdate();
     calculateMotorInput(&rcInputThrottle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
     capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
+    capMotorInputNearMinThrottle();
     updateMotors();
 
     // required for attitude calculations
@@ -256,13 +257,13 @@ void loop() {
 //    Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
-//        Serial.print(motor1pulse); Serial.print('\t');
-//        Serial.print(motor2pulse); Serial.print('\n');
-//        Serial.print(motor3pulse); Serial.print('\t');
-//        Serial.print(motor4pulse); Serial.print('\n');
-//        Serial.print('\n');
+        Serial.print(motor1pulse); Serial.print('\t');
+        Serial.print(motor2pulse); Serial.print('\n');
+        Serial.print(motor3pulse); Serial.print('\t');
+        Serial.print(motor4pulse); Serial.print('\n');
+        Serial.print('\n');
     //
-    Serial.println(maxLoopDuration);
+//    Serial.println(maxLoopDuration);
     //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
 //            Serial.print(attitudeYawSettings.actual); Serial.print('\n');
@@ -286,7 +287,9 @@ void loop() {
 //        Serial.print('\n');
     lastPrint = millis();
   }
-  loopDuration = millis() - loopStart;
-  maxLoopDuration = max(maxLoopDuration,loopDuration);
+
+
+//  loopDuration = micros() - loopStart;
+//  maxLoopDuration = max(maxLoopDuration,loopDuration);
 
 } // loop

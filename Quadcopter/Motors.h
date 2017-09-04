@@ -46,6 +46,15 @@ void capMotorInputNearMaxThrottle() {
 
 }
 
+void capMotorInputNearMinThrottle(){
+  //at the very least, stop pulse going below 1000
+  if(motor1pulse<1000) motor1pulse = 1000;
+  if(motor2pulse<1000) motor2pulse = 1000;
+  if(motor3pulse<1000) motor3pulse = 1000;
+  if(motor4pulse<1000) motor4pulse = 1000;
+}
+
+
 
 
 void updateMotors() {
