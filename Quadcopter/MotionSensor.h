@@ -40,9 +40,9 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
 // Do I need to handle the offsets myself? (if not using DMP?)
-int16_t GyXOffset = -274;
-int16_t GyYOffset = -321;
-int16_t GyZOffset = -472;
+int16_t GyXOffset = -399; 
+int16_t GyYOffset = 327;
+int16_t GyZOffset = 210;
 int16_t AccelXOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
 int16_t AccelYOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
 int16_t AccelZOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
@@ -71,7 +71,7 @@ struct angle currentAngles;
 
 
 // PARAMETERS
-byte dlpf = 0;
+byte dlpf = 1;
 float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
 float compFilterAlphaComplement = 1- compFilterAlpha;
 float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
@@ -88,7 +88,7 @@ void setupMotionSensor() {
   writeRegister(MPU_ADDRESS,PWR_MGMT_1,0);  // wake up the MPU-6050
 //  writeBits(MPU_ADDRESS,INT_PIN_CFG,0,1,0); // Set interupt Active High - this is already default
 //  writeBitsNew(MPU_ADDRESS,INT_ENABLE,0,1,1); // Enable Data Ready interupt
-  writeBitsNew(MPU_ADDRESS,CONFIG,0,3,0); // set low pass filter to 0 - may need to review
+  writeBitsNew(MPU_ADDRESS,CONFIG,0,3,3); // set low pass filter to 3 (42Hz) - may need to review
   writeBitsNew(MPU_ADDRESS,PWR_MGMT_1,0,3,1); // sets clock source to X axis gyro (as recommended in user guide)
 
 
@@ -226,6 +226,28 @@ void mixAngles(){
 void calculateVerticalAccel(){
   ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
+
+
+
+
+void outputForProcessing(float a, float b, float c){
+  Serial.print(a);Serial.print('\t');
+  Serial.print(b);Serial.print('\t');
+  Serial.print(c);Serial.print('\t');
+  Serial.print('\n');
+
+  
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

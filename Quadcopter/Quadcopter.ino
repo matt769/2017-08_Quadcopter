@@ -109,8 +109,7 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection
-  // this doesn't seem to work
-  while (!checkRadioForInput());
+//  while (!checkRadioForInput());
 
   pidRateModeOn(); // ideally this would only come after arming
 
@@ -209,6 +208,9 @@ void loop() {
     rateLoopLast = millis();
     readMainSensors();
     convertGyroReadingsToValues();
+
+//    outputForProcessing(valGyX,valGyY,valGyZ);
+    
     rateRollSettings.actual = valGyX; // tidy up these into a function?
     ratePitchSettings.actual = valGyY;
     rateYawSettings.actual = valGyZ;
@@ -231,6 +233,8 @@ void loop() {
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
+
+    outputForProcessing(currentAngles.roll,currentAngles.roll,currentAngles.yaw);
 
     attitudeRollSettings.actual = currentAngles.roll;
     attitudePitchSettings.actual = currentAngles.pitch;
@@ -256,11 +260,11 @@ void loop() {
 //    Serial.print(rcInputThrottle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
-        Serial.print(motor1pulse); Serial.print('\t');
-        Serial.print(motor2pulse); Serial.print('\n');
-        Serial.print(motor3pulse); Serial.print('\t');
-        Serial.print(motor4pulse); Serial.print('\n');
-        Serial.print('\n');
+//        Serial.print(motor1pulse); Serial.print('\t');
+//        Serial.print(motor2pulse); Serial.print('\n');
+//        Serial.print(motor3pulse); Serial.print('\t');
+//        Serial.print(motor4pulse); Serial.print('\n');
+//        Serial.print('\n');
     //
 //    Serial.println(maxLoopDuration);
     //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
