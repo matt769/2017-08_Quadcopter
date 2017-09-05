@@ -71,10 +71,10 @@ struct angle currentAngles;
 
 
 // PARAMETERS
-const byte DPLF_VALUE = 3;  // set low pass filter to 3 (42Hz) - may need to review
-const float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
+const byte DPLF_VALUE = 0;  // set low pass filter 
+const float compFilterAlpha = 0.8; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1- compFilterAlpha;
-const float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
+const float accelAverageAlpha = 0.2; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
 
 
@@ -134,12 +134,21 @@ byte getInteruptStatus(byte address){
   return readRegister(address,INT_STATUS);
 }
 
+
+
 void convertGyroReadingsToValues(){
 
   valGyX = (GyX - GyXOffset) * gyroRes;
   valGyY = (GyY - GyYOffset) * gyroRes;
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
+
+//void convertGyroReadingsToValues(){
+//
+//  valGyX = (valGyX * 0.7) + (GyX - GyXOffset) * gyroRes * 0.3;
+//  valGyY = (valGyY * 0.7) + (GyY - GyYOffset) * gyroRes * 0.3;
+//  valGyZ = (valGyZ * 0.7) + (GyZ - GyZOffset) * gyroRes * 0.3;
+//}
 
 void accumulateGyroChange(){
   float interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)

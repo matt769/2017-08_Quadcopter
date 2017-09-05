@@ -16,8 +16,8 @@ int pidRateMax = 100;  // MOTOR INPUT
 int pidAttitudeMin = -10;  // DEG/S
 int pidAttitudeMax = 10;  // DEG/S
 
-byte rateLoopFreq = 9;   // remove ** ~1ms **  from desired loop time to compensate to time to run code
-byte attitudeLoopFreq = 45;   // remove ** ~5ms **  from desired loop time to compensate to time to run code
+byte rateLoopFreq = 5;  // 200Hz
+byte attitudeLoopFreq = 50; // 20Hz
 
 
 struct pid {
@@ -142,6 +142,26 @@ void setAutoLevelTargets(){
     attitudeRollSettings.target = 0;
     attitudePitchSettings.target = 0;
     attitudeYawSettings.target = 0;
+}
+
+//void setAttitudePidTargets(float *roll, float *pitch, float *yaw){
+//    attitudeRollSettings.target = *roll;
+//    attitudePitchSettings.target = *pitch;
+//    attitudeYawSettings.target = *yaw;
+//}
+
+void setRatePidTargets(float *roll, float *pitch, float *yaw){
+    rateRollSettings.target = *roll;
+    ratePitchSettings.target = *pitch;
+    rateYawSettings.target = *yaw;
+}
+
+
+
+void setAttitudePidActual(float *roll, float *pitch, float *yaw){
+    attitudeRollSettings.actual = *roll;
+    attitudePitchSettings.actual = *pitch;
+    attitudeYawSettings.actual = *yaw;
 }
 
 
