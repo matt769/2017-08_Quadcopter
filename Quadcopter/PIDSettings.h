@@ -156,6 +156,11 @@ void setRatePidTargets(float *roll, float *pitch, float *yaw){
     rateYawSettings.target = *yaw;
 }
 
+void setRatePidActual(float *roll, float *pitch, float *yaw){
+    rateRollSettings.actual = *roll;
+    ratePitchSettings.actual = *pitch;
+    rateYawSettings.actual = *yaw;
+}
 
 
 void setAttitudePidActual(float *roll, float *pitch, float *yaw){

@@ -187,7 +187,7 @@ void loop() {
     rateLoopLast = millis();
     readMainSensors();
     convertGyroReadingsToValues();
-    setRatePidTargets(&valGyX, &valGyY, &valGyZ);
+    setRatePidActual(&valGyX, &valGyY, &valGyZ);
     pidRateUpdate();
     calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
     capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
