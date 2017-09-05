@@ -224,6 +224,7 @@ void loop() {
     // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings();  // or should I just take these in attitude loop?
+//    outputForProcessing(AcX,AcY,AcZ);
   }
 
   // RUN ATTITUDE LOOP
@@ -235,9 +236,10 @@ void loop() {
     mixAngles();
     resetGyroChange();
 
+//    outputForProcessing(gyroChangeAngles.roll,gyroChangeAngles.pitch,gyroChangeAngles.yaw);
 //    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
 //    outputForProcessing(accelAngles.roll,accelAngles.pitch,accelAngles.yaw);
-    outputForProcessing(AcX,AcY,AcZ);
+    
 
     attitudeRollSettings.actual = currentAngles.roll;
     attitudePitchSettings.actual = currentAngles.pitch;

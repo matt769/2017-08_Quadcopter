@@ -142,7 +142,7 @@ void convertGyroReadingsToValues(){
 
 void accumulateGyroChange(){
   // have to convert gyro readings to values every time anyway, so can use the values here
-  float interval = (lastReadingTime - thisReadingTime) * 0.000001;  // convert to seconds (from micros)
+  float interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
 //  Serial.print(thisReadingTime);Serial.print('\t');Serial.print(lastReadingTime);Serial.print('\n');
 //  Serial.print(interval);Serial.print('\t');Serial.print(valGyX);Serial.print('\t');Serial.print(valGyY);Serial.print('\t');Serial.print(valGyZ);Serial.print('\n');
 //  Serial.print(interval);Serial.print('\t');Serial.print(gyroChangeAngles.roll);Serial.print('\t');Serial.print(gyroChangeAngles.pitch);Serial.print('\t');Serial.print(gyroChangeAngles.yaw);Serial.print('\n');
