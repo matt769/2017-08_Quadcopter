@@ -106,8 +106,7 @@ void setupMotionSensor() {
 
 bool readMainSensors() {
   //
-  lastReadingTime = thisReadingTime;
-  thisReadingTime = micros();
+
   I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
   // read the most significant bit register into the variable then shift to the left
   // and binary add the least significant
@@ -120,6 +119,8 @@ bool readMainSensors() {
   GyY=I2c.receive()<<8|I2c.receive();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   GyZ=I2c.receive()<<8|I2c.receive();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
   sensorRead = true;
+  lastReadingTime = thisReadingTime;
+  thisReadingTime = micros();
   }
   else {
     sensorRead = false;
@@ -141,14 +142,10 @@ void convertGyroReadingsToValues(){
 }
 
 void accumulateGyroChange(){
-  // have to convert gyro readings to values every time anyway, so can use the values here
   float interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
-//  Serial.print(thisReadingTime);Serial.print('\t');Serial.print(lastReadingTime);Serial.print('\n');
-//  Serial.print(interval);Serial.print('\t');Serial.print(valGyX);Serial.print('\t');Serial.print(valGyY);Serial.print('\t');Serial.print(valGyZ);Serial.print('\n');
-//  Serial.print(interval);Serial.print('\t');Serial.print(gyroChangeAngles.roll);Serial.print('\t');Serial.print(gyroChangeAngles.pitch);Serial.print('\t');Serial.print(gyroChangeAngles.yaw);Serial.print('\n');
-  gyroChangeAngles.roll += valGyX / interval;
-  gyroChangeAngles.pitch += valGyY / interval;
-  gyroChangeAngles.yaw += valGyZ / interval;
+  gyroChangeAngles.roll += valGyX * interval;
+  gyroChangeAngles.pitch += valGyY * interval;
+  gyroChangeAngles.yaw += valGyZ * interval;
 }
 
 void accumulateAccelReadings(){

@@ -237,7 +237,7 @@ void loop() {
     resetGyroChange();
 
 //    outputForProcessing(gyroChangeAngles.roll,gyroChangeAngles.pitch,gyroChangeAngles.yaw);
-//    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
+    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
 //    outputForProcessing(accelAngles.roll,accelAngles.pitch,accelAngles.yaw);
     
 
