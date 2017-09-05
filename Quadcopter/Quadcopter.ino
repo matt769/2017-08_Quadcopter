@@ -210,6 +210,7 @@ void loop() {
     convertGyroReadingsToValues();
 
 //    outputForProcessing(valGyX,valGyY,valGyZ);
+//    outputForProcessing(GyX,GyY,GyZ);
     
     rateRollSettings.actual = valGyX; // tidy up these into a function?
     ratePitchSettings.actual = valGyY;
@@ -234,7 +235,9 @@ void loop() {
     mixAngles();
     resetGyroChange();
 
-    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
+//    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
+//    outputForProcessing(accelAngles.roll,accelAngles.pitch,accelAngles.yaw);
+    outputForProcessing(AcX,AcY,AcZ);
 
     attitudeRollSettings.actual = currentAngles.roll;
     attitudePitchSettings.actual = currentAngles.pitch;

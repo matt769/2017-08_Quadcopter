@@ -40,12 +40,12 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
 // Do I need to handle the offsets myself? (if not using DMP?)
-int16_t GyXOffset = -399; 
-int16_t GyYOffset = 327;
-int16_t GyZOffset = 210;
-int16_t AccelXOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
-int16_t AccelYOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
-int16_t AccelZOffset = 0;   // REQUIRES DERIVING FOR NEW MPU
+int16_t GyXOffset = -419; 
+int16_t GyYOffset = 328;
+int16_t GyZOffset = 206;
+int16_t AccelXOffset = 705;   // REQUIRES DERIVING FOR NEW MPU
+int16_t AccelYOffset = -118;   // REQUIRES DERIVING FOR NEW MPU
+int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
 
 // MEASUREMENT
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // raw measurement values
@@ -155,12 +155,10 @@ void accumulateAccelReadings(){
   // can filter on the accel readings without having to convert to values until we need to calculate an actual angle
   // actually, don't need to convert to values at all because we only need relative values
   // use a cyclic buffer ot just sum and low pass filter as we go?
-//  Serial.print(AcX);Serial.print('\t');
-//  Serial.print(AcY);Serial.print('\t');
-//  Serial.print(AcZ);Serial.print('\t');
-//  Serial.print(AcXAve);Serial.print('\t');
-//  Serial.print(AcYAve);Serial.print('\t');
-//  Serial.print(AcZAve);Serial.print('\n');
+
+  AcX = AcX - AccelXOffset;
+  AcY = AcY - AccelYOffset;
+  AcZ = AcZ - AccelZOffset;
   
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
