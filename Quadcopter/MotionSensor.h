@@ -71,11 +71,11 @@ struct angle currentAngles;
 
 
 // PARAMETERS
-byte dlpf = 1;
-float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
-float compFilterAlphaComplement = 1- compFilterAlpha;
-float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
-float accelAverageAlphaComplement = 1 - accelAverageAlpha;
+const byte DPLF_VALUE = 3;  // set low pass filter to 3 (42Hz) - may need to review
+const float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
+const float compFilterAlphaComplement = 1- compFilterAlpha;
+const float accelAverageAlpha = 0.1; // weight applied to new accel angle calculation in complementary filter
+const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
 
 
 void setupMotionSensor() {
@@ -88,7 +88,7 @@ void setupMotionSensor() {
   writeRegister(MPU_ADDRESS,PWR_MGMT_1,0);  // wake up the MPU-6050
 //  writeBits(MPU_ADDRESS,INT_PIN_CFG,0,1,0); // Set interupt Active High - this is already default
 //  writeBitsNew(MPU_ADDRESS,INT_ENABLE,0,1,1); // Enable Data Ready interupt
-  writeBitsNew(MPU_ADDRESS,CONFIG,0,3,3); // set low pass filter to 3 (42Hz) - may need to review
+  writeBitsNew(MPU_ADDRESS,CONFIG,0,3,DPLF_VALUE); // set low pass filter
   writeBitsNew(MPU_ADDRESS,PWR_MGMT_1,0,3,1); // sets clock source to X axis gyro (as recommended in user guide)
 
 

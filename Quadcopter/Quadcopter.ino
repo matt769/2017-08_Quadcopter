@@ -234,7 +234,7 @@ void loop() {
     mixAngles();
     resetGyroChange();
 
-    outputForProcessing(currentAngles.roll,currentAngles.roll,currentAngles.yaw);
+    outputForProcessing(currentAngles.roll,currentAngles.pitch,currentAngles.yaw);
 
     attitudeRollSettings.actual = currentAngles.roll;
     attitudePitchSettings.actual = currentAngles.pitch;
