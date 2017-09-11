@@ -21,12 +21,12 @@ byte attitudeLoopFreq = 50; // 20Hz
 
 
 struct pid {
-  double actual;  // these all need to be double since that's what the PID onstructor requires (although could change just for thi?)
-  double output;
-  double target;
-  double kP;
-  double kI;
-  double kD;
+  float actual;  // these all need to be float since that's what the PID onstructor requires (although could change just for thi?)
+  float output;
+  float target;
+  float kP;
+  float kI;
+  float kD;
 };
 
 struct pid rateRollSettings;
@@ -150,20 +150,20 @@ void setAutoLevelTargets(){
 //    attitudeYawSettings.target = *yaw;
 //}
 
-void setRatePidTargets(double *roll, double *pitch, double *yaw){
+void setRatePidTargets(float *roll, float *pitch, float *yaw){
     rateRollSettings.target = *roll;
     ratePitchSettings.target = *pitch;
     rateYawSettings.target = *yaw;
 }
 
-void setRatePidActual(double *roll, double *pitch, double *yaw){
+void setRatePidActual(float *roll, float *pitch, float *yaw){
     rateRollSettings.actual = *roll;
     ratePitchSettings.actual = *pitch;
     rateYawSettings.actual = *yaw;
 }
 
 
-void setAttitudePidActual(double *roll, double *pitch, double *yaw){
+void setAttitudePidActual(float *roll, float *pitch, float *yaw){
     attitudeRollSettings.actual = *roll;
     attitudePitchSettings.actual = *pitch;
     attitudeYawSettings.actual = *yaw;
@@ -174,7 +174,7 @@ void setAttitudePidActual(double *roll, double *pitch, double *yaw){
 // and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
 // also review these thresholds and increments
 // change this to be full PID
-void connectionLostDescend(int *throttle, double *ZAccel){
+void connectionLostDescend(int *throttle, float *ZAccel){
 if(*ZAccel > 1.05){
   *throttle -= 5;
 }

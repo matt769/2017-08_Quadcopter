@@ -28,7 +28,7 @@ void setupMotors() {
   motor4.attach(pinMotor4);
 }
 
-void calculateMotorInput(int *throttle, double *rollOffset, double *pitchOffset, double *yawOffset) {
+void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
   motor1pulse = *throttle + *rollOffset - *pitchOffset + *yawOffset;
   motor2pulse = *throttle - *rollOffset - *pitchOffset - *yawOffset;
   motor3pulse = *throttle + *rollOffset + *pitchOffset - *yawOffset;

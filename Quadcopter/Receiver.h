@@ -156,16 +156,16 @@ void mapThrottle(int *throttle){
   *throttle = map(rcPackage.throttle,0,255,1000,2000);
 }
 
-void mapRcToPidInput(double *roll, double *pitch, double *yaw, bool *mode) {
+void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
   if (!*mode) {
-    *roll = (double)map(rcPackage.roll, 0,255, rateMin, rateMax);
-    *pitch = (double)map(rcPackage.pitch, 0,255, rateMin, rateMax);
-    *yaw = (double)map(rcPackage.yaw, 0,255, rateMin, rateMax);
+    *roll = (float)map(rcPackage.roll, 0,255, rateMin, rateMax);
+    *pitch = (float)map(rcPackage.pitch, 0,255, rateMin, rateMax);
+    *yaw = (float)map(rcPackage.yaw, 0,255, rateMin, rateMax);
   }
   else {
-    *roll = (double)map(rcPackage.roll, 0,255, attitudeMin, attitudeMax);
-    *pitch = (double)map(rcPackage.pitch, 0,255, attitudeMin, attitudeMax);
-    *yaw = (double)map(rcPackage.yaw, 0,255, attitudeMin, attitudeMax);
+    *roll = (float)map(rcPackage.roll, 0,255, attitudeMin, attitudeMax);
+    *pitch = (float)map(rcPackage.pitch, 0,255, attitudeMin, attitudeMax);
+    *yaw = (float)map(rcPackage.yaw, 0,255, attitudeMin, attitudeMax);
   }
 
 }
