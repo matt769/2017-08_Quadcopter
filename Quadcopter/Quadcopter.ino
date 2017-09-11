@@ -29,6 +29,7 @@
 // possible to not update the motor pulse until after the current one (if active) has finished.
 // CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
 // test changing Servo refresh rate
+// strip out most of Servo code, just implement what I need (good learning experience)
 
 
 #include <I2C.h>
@@ -99,8 +100,6 @@ void setup() {
   //  while (rcPackage.throttle < 200);
   //  while (rcPackage.throttle >50);
 
-
-
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, HIGH);
 
@@ -110,6 +109,11 @@ void setup() {
 
 }
 
+
+
+unsigned long functionTimeStart = 0;  // TESTING
+unsigned long functionTimeSum = 0;  // TESTING
+int functionTimeCounter = 0;  // TESTING
 
 
 void loop() {
@@ -155,7 +159,6 @@ void loop() {
     updateBatteryIndicator();  // could go in its own loop
   }
 
-
   // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
   if (auto_level) { // if no communication received, OR user has specified auto-level
     setAutoLevelTargets();
@@ -181,11 +184,13 @@ void loop() {
     }
   }
 
-
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
     rateLoopLast = millis();
+          functionTimeStart = micros();
     readMainSensors();
+          functionTimeSum += micros() - functionTimeStart;
+          functionTimeCounter ++;
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
     pidRateUpdate();
@@ -218,37 +223,44 @@ void loop() {
 
   // DEBUGGONG
   if (millis() - lastPrint > 1000) {
-//    Serial.print(throttle); Serial.print('\t');
-//    Serial.print(valGyX); Serial.print('\n');
-//    printPackage();
-//    Serial.print(motor1pulse); Serial.print('\t');
-//    Serial.print(motor2pulse); Serial.print('\n');
-//    Serial.print(motor3pulse); Serial.print('\t');
-//    Serial.print(motor4pulse); Serial.print('\n');
-//    Serial.print('\n');
-//
-//    Serial.println(maxLoopDuration);
-//    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-//    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-//    Serial.print(attitudeYawSettings.actual); Serial.print('\n');
-//    Serial.print(attitudeRollSettings.target); Serial.print('\t');
-//    Serial.print(attitudePitchSettings.target); Serial.print('\t');
-//    Serial.print(attitudeYawSettings.target); Serial.print('\t');
-//    Serial.print(attitudeRollSettings.output); Serial.print('\t');
-//    Serial.print(attitudePitchSettings.output); Serial.print('\t');
-//    Serial.print(attitudeYawSettings.output); Serial.print('\n');
-//
-//    Serial.print(rateRollSettings.actual); Serial.print('\t');
-//    Serial.print(ratePitchSettings.actual); Serial.print('\t');
-//    Serial.print(rateYawSettings.actual); Serial.print('\t');
-//    Serial.print(rateRollSettings.target); Serial.print('\t');
-//    Serial.print(ratePitchSettings.target); Serial.print('\t');
-//    Serial.print(rateYawSettings.target); Serial.print('\t');
-//    Serial.print(rateRollSettings.output); Serial.print('\t');
-//    Serial.print(ratePitchSettings.output); Serial.print('\t');
-//    Serial.print(rateYawSettings.output); Serial.print('\n');
-//
-//    Serial.print('\n');
+
+    Serial.print(functionTimeSum);
+    Serial.print(functionTimeCounter);
+    Serial.println(functionTimeSum / functionTimeCounter);
+    functionTimeSum = 0;
+    functionTimeCounter = 0;
+    
+    //    Serial.print(throttle); Serial.print('\t');
+    //    Serial.print(valGyX); Serial.print('\n');
+    //    printPackage();
+    //    Serial.print(motor1pulse); Serial.print('\t');
+    //    Serial.print(motor2pulse); Serial.print('\n');
+    //    Serial.print(motor3pulse); Serial.print('\t');
+    //    Serial.print(motor4pulse); Serial.print('\n');
+    //    Serial.print('\n');
+    //
+    //    Serial.println(maxLoopDuration);
+    //    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
+    //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
+    //    Serial.print(attitudeYawSettings.actual); Serial.print('\n');
+    //    Serial.print(attitudeRollSettings.target); Serial.print('\t');
+    //    Serial.print(attitudePitchSettings.target); Serial.print('\t');
+    //    Serial.print(attitudeYawSettings.target); Serial.print('\t');
+    //    Serial.print(attitudeRollSettings.output); Serial.print('\t');
+    //    Serial.print(attitudePitchSettings.output); Serial.print('\t');
+    //    Serial.print(attitudeYawSettings.output); Serial.print('\n');
+    //
+    //    Serial.print(rateRollSettings.actual); Serial.print('\t');
+    //    Serial.print(ratePitchSettings.actual); Serial.print('\t');
+    //    Serial.print(rateYawSettings.actual); Serial.print('\t');
+    //    Serial.print(rateRollSettings.target); Serial.print('\t');
+    //    Serial.print(ratePitchSettings.target); Serial.print('\t');
+    //    Serial.print(rateYawSettings.target); Serial.print('\t');
+    //    Serial.print(rateRollSettings.output); Serial.print('\t');
+    //    Serial.print(ratePitchSettings.output); Serial.print('\t');
+    //    Serial.print(rateYawSettings.output); Serial.print('\n');
+    //
+    //    Serial.print('\n');
     lastPrint = millis();
   }
 
