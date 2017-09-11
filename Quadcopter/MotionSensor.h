@@ -124,7 +124,6 @@ bool readMainSensors() {
   }
   else {
     sensorRead = false;
-//    Serial.println(I2c.available());
     flushI2cBuffer();
   }
   return sensorRead;

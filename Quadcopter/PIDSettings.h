@@ -16,8 +16,8 @@ int pidRateMax = 100;  // MOTOR INPUT
 int pidAttitudeMin = -10;  // DEG/S
 int pidAttitudeMax = 10;  // DEG/S
 
-byte rateLoopFreq = 5;  // 200Hz
-byte attitudeLoopFreq = 50; // 20Hz
+byte rateLoopFreq = 0;  // 200Hz
+byte attitudeLoopFreq = 20; // 20Hz
 
 
 struct pid {
@@ -101,19 +101,19 @@ void setupPid() {
   pidAttitudePitch.SetSampleTime(attitudeLoopFreq);
   pidAttitudeYaw.SetSampleTime(attitudeLoopFreq);
 
-  pidRateRoll.SetTunings(rateRollSettings.kP,rateRollSettings.kI,rateRollSettings.kD);
-  pidRatePitch.SetTunings(ratePitchSettings.kP,ratePitchSettings.kI,ratePitchSettings.kD);
-  pidRateYaw.SetTunings(rateYawSettings.kP,rateYawSettings.kI,rateYawSettings.kD);
-  pidAttitudeRoll.SetTunings(attitudeRollSettings.kP,attitudeRollSettings.kI,attitudeRollSettings.kD);
-  pidAttitudePitch.SetTunings(attitudePitchSettings.kP,attitudePitchSettings.kI,attitudePitchSettings.kD);
-  pidAttitudeYaw.SetTunings(attitudeYawSettings.kP,attitudeYawSettings.kI,attitudeYawSettings.kD);
+  pidRateRoll.SetTunings(rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD);
+  pidRatePitch.SetTunings(ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD);
+  pidRateYaw.SetTunings(rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD);
+  pidAttitudeRoll.SetTunings(attitudeRollSettings.kP, attitudeRollSettings.kI, attitudeRollSettings.kD);
+  pidAttitudePitch.SetTunings(attitudePitchSettings.kP, attitudePitchSettings.kI, attitudePitchSettings.kD);
+  pidAttitudeYaw.SetTunings(attitudeYawSettings.kP, attitudeYawSettings.kI, attitudeYawSettings.kD);
 
-  pidRateRoll.SetOutputLimits(pidRateMin,pidRateMax);
-  pidRatePitch.SetOutputLimits(pidRateMin,pidRateMax);
-  pidRateYaw.SetOutputLimits(pidRateMin,pidRateMax);
-  pidAttitudeRoll.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
-  pidAttitudePitch.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
-  pidAttitudeYaw.SetOutputLimits(pidAttitudeMin,pidAttitudeMax);
+  pidRateRoll.SetOutputLimits(pidRateMin, pidRateMax);
+  pidRatePitch.SetOutputLimits(pidRateMin, pidRateMax);
+  pidRateYaw.SetOutputLimits(pidRateMin, pidRateMax);
+  pidAttitudeRoll.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
+  pidAttitudePitch.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
+  pidAttitudeYaw.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
 
 }
 
@@ -123,12 +123,12 @@ void pidRateUpdate() {
   pidRatePitch.Compute();
   pidRateYaw.Compute();
 
-    // check that PID is returning 1 (not 0, which implies it's not eady for a new loop yet)
+  // check that PID is returning 1 (not 0, which implies it's not eady for a new loop yet)
 
-//  Serial.println(pidRateRoll.Compute());
-//  Serial.println(pidRatePitch.Compute());
-//  Serial.println(pidRateYaw.Compute());
-//  Serial.println("");
+  //  Serial.println(pidRateRoll.Compute());
+  //  Serial.println(pidRatePitch.Compute());
+  //  Serial.println(pidRateYaw.Compute());
+  //  Serial.println("");
 }
 
 void pidAttitudeUpdate() {
@@ -138,10 +138,10 @@ void pidAttitudeUpdate() {
 }
 
 
-void setAutoLevelTargets(){
-    attitudeRollSettings.target = 0;
-    attitudePitchSettings.target = 0;
-    attitudeYawSettings.target = 0;
+void setAutoLevelTargets() {
+  attitudeRollSettings.target = 0;
+  attitudePitchSettings.target = 0;
+  attitudeYawSettings.target = 0;
 }
 
 //void setAttitudePidTargets(float *roll, float *pitch, float *yaw){
@@ -150,23 +150,23 @@ void setAutoLevelTargets(){
 //    attitudeYawSettings.target = *yaw;
 //}
 
-void setRatePidTargets(float *roll, float *pitch, float *yaw){
-    rateRollSettings.target = *roll;
-    ratePitchSettings.target = *pitch;
-    rateYawSettings.target = *yaw;
+void setRatePidTargets(float *roll, float *pitch, float *yaw) {
+  rateRollSettings.target = *roll;
+  ratePitchSettings.target = *pitch;
+  rateYawSettings.target = *yaw;
 }
 
-void setRatePidActual(float *roll, float *pitch, float *yaw){
-    rateRollSettings.actual = *roll;
-    ratePitchSettings.actual = *pitch;
-    rateYawSettings.actual = *yaw;
+void setRatePidActual(float *roll, float *pitch, float *yaw) {
+  rateRollSettings.actual = *roll;
+  ratePitchSettings.actual = *pitch;
+  rateYawSettings.actual = *yaw;
 }
 
 
-void setAttitudePidActual(float *roll, float *pitch, float *yaw){
-    attitudeRollSettings.actual = *roll;
-    attitudePitchSettings.actual = *pitch;
-    attitudeYawSettings.actual = *yaw;
+void setAttitudePidActual(float *roll, float *pitch, float *yaw) {
+  attitudeRollSettings.actual = *roll;
+  attitudePitchSettings.actual = *pitch;
+  attitudeYawSettings.actual = *yaw;
 }
 
 
@@ -174,16 +174,19 @@ void setAttitudePidActual(float *roll, float *pitch, float *yaw){
 // and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
 // also review these thresholds and increments
 // change this to be full PID
-void connectionLostDescend(int *throttle, float *ZAccel){
-if(*ZAccel > 1.05){
-  *throttle -= 5;
-}
-else if (*ZAccel < 0.95) {
-  *throttle += 5;
-}
+void connectionLostDescend(int *throttle, float *ZAccel) {
+  if (*ZAccel > 1.05) {
+    *throttle -= 5;
+  }
+  else if (*ZAccel < 0.95) {
+    *throttle += 5;
+  }
 }
 
 
+void overrideYawTarget(){
+  rateYawSettings.target = 0;
+}
 
 
 

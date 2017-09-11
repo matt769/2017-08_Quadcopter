@@ -34,6 +34,7 @@ void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, f
   motor3pulse = *throttle + *rollOffset + *pitchOffset - *yawOffset;
   motor4pulse = *throttle - *rollOffset + *pitchOffset + *yawOffset;
 }
+
 // alternatively I could just cap throttle by pidRateMax*3
 void capMotorInputNearMaxThrottle() {
   int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));

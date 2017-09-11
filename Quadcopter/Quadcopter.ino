@@ -109,12 +109,7 @@ void setup() {
 
 }
 
-
-
-unsigned long functionTimeStart = 0;  // TESTING
-unsigned long functionTimeSum = 0;  // TESTING
-int functionTimeCounter = 0;  // TESTING
-
+int loopCounter = 0;
 
 void loop() {
 
@@ -187,15 +182,13 @@ void loop() {
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
     rateLoopLast = millis();
-          functionTimeStart = micros();
+//    loopCounter ++;
     readMainSensors();
-          functionTimeSum += micros() - functionTimeStart;
-          functionTimeCounter ++;
     convertGyroReadingsToValues();
-    setRatePidActual(&valGyX, &valGyY, &valGyZ);
     pidRateUpdate();
+    setRatePidActual(&valGyX, &valGyY, &valGyZ);
     calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
-    capMotorInputNearMaxThrottle(); //alternative would be a general cap on throttle
+    capMotorInputNearMaxThrottle();
     capMotorInputNearMinThrottle();
     updateMotors();
     // required for attitude calculations
@@ -210,13 +203,12 @@ void loop() {
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
-
     if (attitude_mode) {
       setAttitudePidActual(&currentAngles.roll, &currentAngles.pitch, &currentAngles.yaw);
       pidAttitudeUpdate();
       // set rate setpoints
       setRatePidTargets(&attitudeRollSettings.output, &attitudePitchSettings.output, &attitudeYawSettings.output);
-      rateYawSettings.target = 0;   // OVERIDE THE YAW BALANCE PID OUTPUT
+      overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
     }
   }
 
@@ -224,12 +216,15 @@ void loop() {
   // DEBUGGONG
   if (millis() - lastPrint > 1000) {
 
-    Serial.print(functionTimeSum);
-    Serial.print(functionTimeCounter);
-    Serial.println(functionTimeSum / functionTimeCounter);
-    functionTimeSum = 0;
-    functionTimeCounter = 0;
-    
+    //    Serial.print(functionTimeSum);Serial.print('\t');
+    //    Serial.print(functionTimeCounter);Serial.print('\t');
+    //    Serial.print((float)functionTimeSum / functionTimeCounter);Serial.print('\n');
+    //    functionTimeSum = 0;
+    //    functionTimeCounter = 0;
+
+//    Serial.println(loopCounter);
+//    loopCounter = 0;
+
     //    Serial.print(throttle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
