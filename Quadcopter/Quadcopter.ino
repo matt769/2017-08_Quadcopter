@@ -127,6 +127,7 @@ void loop() {
   if (millis() - receiverLast > receiverFreq) {
     // we don't need to bother doing any of this stuff if there's no actual input
     if (checkRadioForInput()) {
+      receiverLast = millis();
       // CHECK MODES
       attitude_mode = getMode();
       auto_level = getAutolevel() || !checkHeartbeat();
@@ -146,8 +147,7 @@ void loop() {
         MODE = RATE;
       }
     }
-    receiverLast = millis();
-
+    
     // update battery info
     calculateBatteryVoltage();
     calculateBatteryLevel();
