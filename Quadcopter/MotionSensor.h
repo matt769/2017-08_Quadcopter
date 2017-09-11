@@ -49,19 +49,19 @@ int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
 
 // MEASUREMENT
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // raw measurement values
-float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
-float AcXAve = 0, AcYAve = 0, AcZAve = 0;
-float accelRes = 2.0f / 32768.0f;
-float gyroRes = 250.0f / 32768.0f;
+double valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
+double AcXAve = 0, AcYAve = 0, AcZAve = 0;
+double accelRes = 2.0f / 32768.0f;
+double gyroRes = 250.0f / 32768.0f;
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 bool sensorRead;  // indicates whether valid information was read from the sensor
-float ZAccel;
+double ZAccel;
 
 struct angle {
-  float roll;
-  float pitch;
-  float yaw;
+  double roll;
+  double pitch;
+  double yaw;
 };
 
 struct angle accelAngles;
@@ -72,10 +72,10 @@ struct angle currentAngles;
 
 // PARAMETERS
 const byte DPLF_VALUE = 0;  // set low pass filter 
-const float compFilterAlpha = 0.8; // weight applied to gyro angle estimate
-const float compFilterAlphaComplement = 1- compFilterAlpha;
-const float accelAverageAlpha = 0.2; // weight applied to new accel angle calculation in complementary filter
-const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
+const double compFilterAlpha = 0.8; // weight applied to gyro angle estimate
+const double compFilterAlphaComplement = 1- compFilterAlpha;
+const double accelAverageAlpha = 0.2; // weight applied to new accel angle calculation in complementary filter
+const double accelAverageAlphaComplement = 1 - accelAverageAlpha;
 
 
 void setupMotionSensor() {
@@ -151,7 +151,7 @@ void convertGyroReadingsToValues(){
 //}
 
 void accumulateGyroChange(){
-  float interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
+  double interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
   gyroChangeAngles.roll += valGyX * interval;
   gyroChangeAngles.pitch += valGyY * interval;
   gyroChangeAngles.yaw += valGyZ * interval;
@@ -234,7 +234,7 @@ void calculateVerticalAccel(){
 
 
 
-void outputForProcessing(float a, float b, float c){
+void outputForProcessing(double a, double b, double c){
   Serial.print(a);Serial.print('\t');
   Serial.print(b);Serial.print('\t');
   Serial.print(c);Serial.print('\t');

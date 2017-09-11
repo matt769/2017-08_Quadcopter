@@ -210,7 +210,7 @@ void loop() {
       setAttitudePidActual(&currentAngles.roll, &currentAngles.pitch, &currentAngles.yaw);
       pidAttitudeUpdate();
       // set rate setpoints
-      setRatePidTargets(&attitudeRollSettings.output, &attitudePitchSettings.output, &attitudeYawSettings.output)
+      setRatePidTargets(&attitudeRollSettings.output, &attitudePitchSettings.output, &attitudeYawSettings.output);
       rateYawSettings.target = 0;   // OVERIDE THE YAW BALANCE PID OUTPUT
     }
   }

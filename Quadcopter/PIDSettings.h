@@ -150,20 +150,20 @@ void setAutoLevelTargets(){
 //    attitudeYawSettings.target = *yaw;
 //}
 
-void setRatePidTargets(float *roll, float *pitch, float *yaw){
+void setRatePidTargets(double *roll, double *pitch, double *yaw){
     rateRollSettings.target = *roll;
     ratePitchSettings.target = *pitch;
     rateYawSettings.target = *yaw;
 }
 
-void setRatePidActual(float *roll, float *pitch, float *yaw){
+void setRatePidActual(double *roll, double *pitch, double *yaw){
     rateRollSettings.actual = *roll;
     ratePitchSettings.actual = *pitch;
     rateYawSettings.actual = *yaw;
 }
 
 
-void setAttitudePidActual(float *roll, float *pitch, float *yaw){
+void setAttitudePidActual(double *roll, double *pitch, double *yaw){
     attitudeRollSettings.actual = *roll;
     attitudePitchSettings.actual = *pitch;
     attitudeYawSettings.actual = *yaw;
@@ -174,7 +174,7 @@ void setAttitudePidActual(float *roll, float *pitch, float *yaw){
 // and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
 // also review these thresholds and increments
 // change this to be full PID
-void connectionLostDescend(int *throttle, float *ZAccel){
+void connectionLostDescend(int *throttle, double *ZAccel){
 if(*ZAccel > 1.05){
   *throttle -= 5;
 }
