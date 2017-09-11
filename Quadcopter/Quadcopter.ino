@@ -35,7 +35,7 @@
 #include "Servo.h"
 #include <SPI.h>
 #include <RF24.h>
-#include <PID_v1.h> // try changing timing to micros()?
+#include "PID_v1.h" // try changing timing to micros()?
 
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
