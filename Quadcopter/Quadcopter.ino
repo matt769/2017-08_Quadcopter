@@ -1,5 +1,6 @@
 // change transmitter to 'hold' some control values after pressing button i.e. button press should indicate a toggle
 
+// need to reorganise handling receiver input and various modes
 
 
 // SOFTWARE
@@ -129,7 +130,7 @@ void loop() {
       receiverLast = millis();
       // CHECK MODES
       attitude_mode = getMode();
-      auto_level = getAutolevel() || !rxHeartbeat;
+      auto_level = getAutolevel();
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
         Serial.println("KILL");
@@ -146,6 +147,10 @@ void loop() {
         MODE = RATE;
       }
     }
+    auto_level = auto_level || !rxHeartbeat;
+    if(auto_level) {
+      MODE = BALANCE;
+    }
   }
 
   // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
@@ -155,6 +160,7 @@ void loop() {
     if (!rxHeartbeat) {
       calculateVerticalAccel();
       connectionLostDescend(&throttle, &ZAccel);
+      Serial.print(ZAccel);Serial.print('\n');
     }
   }
 
