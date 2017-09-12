@@ -55,6 +55,7 @@ void updateBatteryIndicator(){
 
 
 void setupBatteryMonitor(){
+  pinMode(pinBatteryMonitor,INPUT);
   pinMode(pinBatteryIndicator,OUTPUT);
   for(byte i = 0; i < 20; i++){
     calculateBatteryVoltage();

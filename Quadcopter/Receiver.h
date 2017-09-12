@@ -14,8 +14,9 @@
 // Acknowledgement byte
 // bit 0; 
 // bit 1: 
-// bit 2: 
-// bit 3; 
+// bit 2:
+// bit 3:
+// bit 4: 
 // bits 5/6/7: battery indicator (0-7)
 
 // check if I even need 2 pipes?
@@ -106,9 +107,14 @@ void setupRadio() {
 
 
 void updateAckStatusForTx(){
+  byte add;
   statusForAck = 0;
-  byte add = batteryLevel << 5;
+  add = batteryLevel << 5;
   statusForAck |= add;
+  // add other bits here, e.g.
+//  add = other << 2;
+//  statusForAck |= add;
+  
 }
 
 

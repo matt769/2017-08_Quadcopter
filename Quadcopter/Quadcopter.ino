@@ -236,8 +236,6 @@ void loop() {
   // DEBUGGING
   if (millis() - lastPrint > 1000) {
 
-
-
     //    Serial.println(statusForAck);
 
 
@@ -246,11 +244,11 @@ void loop() {
     //  Serial.print(batteryVoltage);Serial.print('\t');
     //  Serial.print(batteryLevel);Serial.print('\n');
 
-    Serial.print(rxHeartbeat); Serial.print('\t');
-    Serial.print(auto_level); Serial.print('\t');
-    Serial.print(lastRxReceived); Serial.print('\t');
-    Serial.print(MODE); Serial.print('\t');
-    Serial.print(throttle); Serial.print('\n');
+//    Serial.print(rxHeartbeat); Serial.print('\t');
+//    Serial.print(auto_level); Serial.print('\t');
+//    Serial.print(lastRxReceived); Serial.print('\t');
+//    Serial.print(MODE); Serial.print('\t');
+//    Serial.print(throttle); Serial.print('\n');
 
     //    Serial.print(functionTimeSum);Serial.print('\t');
     //    Serial.print(functionTimeCounter);Serial.print('\t');
@@ -264,11 +262,11 @@ void loop() {
     //    Serial.print(throttle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
     //    printPackage();
-    //    Serial.print(motor1pulse); Serial.print('\t');
-    //    Serial.print(motor2pulse); Serial.print('\n');
-    //    Serial.print(motor3pulse); Serial.print('\t');
-    //    Serial.print(motor4pulse); Serial.print('\n');
-    //    Serial.print('\n');
+//        Serial.print(motor1pulse); Serial.print('\t');
+//        Serial.print(motor2pulse); Serial.print('\n');
+//        Serial.print(motor3pulse); Serial.print('\t');
+//        Serial.print(motor4pulse); Serial.print('\n');
+//        Serial.print('\n');
     //
     //    Serial.println(maxLoopDuration);
     //    Serial.print(F("Outer loop: ")); Serial.print('\t');

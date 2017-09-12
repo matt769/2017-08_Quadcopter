@@ -106,7 +106,6 @@ void setupMotionSensor() {
 
 bool readMainSensors() {
   //
-
   I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
   // read the most significant bit register into the variable then shift to the left
   // and binary add the least significant

@@ -11,17 +11,17 @@
 
 // Review how PID deals with being turned on and off
 
-int pidRateMin = -100;  // MOTOR INPUT
-int pidRateMax = 100;  // MOTOR INPUT
+int pidRateMin = -100;  // MOTOR INPUT (PULSE LENGTH)
+int pidRateMax = 100;  // MOTOR INPUT (PULSE LENGTH)
 int pidAttitudeMin = -10;  // DEG/S
 int pidAttitudeMax = 10;  // DEG/S
 
-byte rateLoopFreq = 0;  // 200Hz
+byte rateLoopFreq = 4;  // works out at about 200Hz
 byte attitudeLoopFreq = 20; // 20Hz
 
 
 struct pid {
-  float actual;  // these all need to be float since that's what the PID onstructor requires (although could change just for thi?)
+  float actual;
   float output;
   float target;
   float kP;
