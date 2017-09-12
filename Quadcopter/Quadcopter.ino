@@ -34,12 +34,13 @@
 #include <RF24.h>
 #include "PID_v1.h" // try changing timing to micros()?
 
+#include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "PIDSettings.h"
 #include "Receiver.h"
 #include "Motors.h"
-#include "BatteryMonitor.h"
+
 
 
 int throttle;  // distinct from the user input because I may need to modify
@@ -209,15 +210,16 @@ void loop() {
     calculateBatteryVoltage();
     calculateBatteryLevel();
     updateBatteryIndicator();
+  Serial.print(dividerReading);Serial.print('\t');
+  Serial.print(dividerVoltage);Serial.print('\t');
+  Serial.print(batteryVoltage);Serial.print('\t');
+  Serial.print(batteryLevel);Serial.print('\n');
   }
 
   // DEBUGGING
   if (millis() - lastPrint > 1000) {
 
-//  Serial.print(dividerReading);Serial.print('\t');
-//  Serial.print(dividerVoltage);Serial.print('\t');
-//  Serial.print(batteryVoltage);Serial.print('\t');
-//  Serial.print(batteryLevel);Serial.print('\n');
+
 
     Serial.println(statusForAck);
 

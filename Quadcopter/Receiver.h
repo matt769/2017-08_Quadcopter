@@ -105,9 +105,14 @@ void setupRadio() {
 }
 
 
+void updateAckStatusForTx(){
+  statusForAck = 0;
+  byte add = batteryLevel << 5;
+  statusForAck |= add;
+}
+
 
 bool checkRadioForInput() {
-//  Serial.print("0");
   if ( radio.available()) {
     while (radio.available()) {
       radio.read( &rcPackage, sizeof(rcPackage) );
@@ -121,6 +126,7 @@ bool checkRadioForInput() {
     }
     lastRxReceived = millis();
     radio.flush_rx(); // probably remove
+    updateAckStatusForTx(); // for next time
     return true;
   }
   return false;
@@ -172,10 +178,9 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
 
 
 
-void updateAckStatusForTx(byte bitPosition, byte bitValue){
-  bitValue = bitValue << bitPosition;
-  statusForAck |= bitValue;
-}
+
+
+
 
 
 

@@ -47,7 +47,7 @@ byte calculateBatteryLevel(){
 // update the data being sent back to the transmitter, and if battery low then turn on the low battery LED 
 // make it blink instead?
 void updateBatteryIndicator(){
-  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
+//  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
   if(batteryLevel<2){
     digitalWrite(pinBatteryIndicator,HIGH);
   }
