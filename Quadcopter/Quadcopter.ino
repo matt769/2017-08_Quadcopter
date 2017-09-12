@@ -114,13 +114,12 @@ int loopCounter = 0;
 void loop() {
 
   //   FOR TESTING
-  if (millis() - timeOn > offTimer) {
-    setMotorsLow();
-    //    Serial.println("Stopping");
-    while (1) {
-
-    }
-  }
+//  if (millis() - timeOn > offTimer) {
+//    setMotorsLow();
+//    //    Serial.println("Stopping");
+//    while (1) {
+//    }
+//  }
 
 
   // CHECK FOR USER INPUT
@@ -154,7 +153,11 @@ void loop() {
     updateBatteryIndicator();  // could go in its own loop
   }
 
-   
+
+
+
+
+
 
   // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
   if (auto_level) { // if no communication received, OR user has specified auto-level
@@ -216,6 +219,13 @@ void loop() {
 
   // DEBUGGONG
   if (millis() - lastPrint > 1000) {
+
+//  Serial.print(dividerReading);Serial.print('\t');
+//  Serial.print(dividerVoltage);Serial.print('\t');
+//  Serial.print(batteryVoltage);Serial.print('\t');
+//  Serial.print(batteryLevel);Serial.print('\n');
+
+    Serial.println(statusForAck);
 
 //    Serial.print(rxHeartbeat);Serial.print('\t');
 //    Serial.print(auto_level);Serial.print('\t');

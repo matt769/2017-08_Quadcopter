@@ -113,7 +113,7 @@ bool checkRadioForInput() {
       radio.read( &rcPackage, sizeof(rcPackage) );
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
-    statusForAck = highByte(millis());  // PLACEHOLDER
+//    statusForAck = highByte(millis());  // PLACEHOLDER
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
     if(rcPackage.checksum != calculateCheckSum()){
       radio.flush_rx();

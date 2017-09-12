@@ -1,3 +1,6 @@
+// occasionally the reading seems to get 'stuck' on 1023, so far I'm not sure why
+
+
 // use a 1k and 3.3k resistor divider. Take after 3.3 and before 1.
 // (is there any min current needs for ADC?)
 // 16.8 (max 4S battery voltage) should give 3.907V from the divider
@@ -13,20 +16,32 @@
 
 byte pinBatteryMonitor = A0;
 byte pinBatteryIndicator = 5;
-const float scale = 5.0 / 1024;
-int batteryReading;
-float voltage;
-byte batteryLevel = 0;
+const float SCALE = 5.0 / 1024;
+int dividerReading;
+float dividerVoltage, batteryVoltage;
+int batteryLevel = 0;
+const float batteryFilterAlpha = 0.5;
+
+const float BATTERY_MAX_VOLTAGE = 4 * 4.2;
+const float DIVIDER_TO_BATTERY = BATTERY_MAX_VOLTAGE / 5;
+const float BATTERY_MIN_VOLTAGE = 4 * 3.1;
+
 
 // calculate the actual voltage
 void calculateBatteryVoltage(){
-  batteryReading = analogRead(pinBatteryMonitor);
-  voltage = voltage*0.5 + (batteryReading * scale) *0.5;  // filter a little
+  dividerReading = analogRead(pinBatteryMonitor);
+  dividerVoltage = dividerVoltage *(1-batteryFilterAlpha) + (dividerReading * SCALE) * batteryFilterAlpha;  // filter a little
+  batteryVoltage = dividerVoltage * DIVIDER_TO_BATTERY;
 }
 
-// convert voltage to a scale of 0 -7 (i.e. can be stored in 3 bits)
+// convert voltage to a scale of 0 to 7 (i.e. can be stored in 3 bits)
+// and only map the range I care about
+// if it's below that range, set to zero (else might look like a large positive if stored in byte)
 byte calculateBatteryLevel(){
-  batteryLevel = map((int)(voltage * 10.0), 31,39,0,7);
+  batteryLevel = map((batteryVoltage*10), 0,50,0,7);
+  if(batteryLevel < 0){
+    batteryLevel = 0;
+  }
 }
 
 // update the data being sent back to the transmitter, and if battery low then turn on the low battery LED 
@@ -45,6 +60,7 @@ void setupBatteryMonitor(){
     calculateBatteryVoltage();
     calculateBatteryLevel();
   }
+  updateBatteryIndicator();
 }
 
 
