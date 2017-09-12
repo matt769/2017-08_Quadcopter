@@ -29,10 +29,10 @@ void setupMotors() {
 }
 
 void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
-  motor1pulse = *throttle + *rollOffset - *pitchOffset + *yawOffset;
-  motor2pulse = *throttle - *rollOffset - *pitchOffset - *yawOffset;
-  motor3pulse = *throttle + *rollOffset + *pitchOffset - *yawOffset;
-  motor4pulse = *throttle - *rollOffset + *pitchOffset + *yawOffset;
+  motor1pulse = *throttle + (int)*rollOffset - (int)*pitchOffset + (int)*yawOffset;
+  motor2pulse = *throttle - (int)*rollOffset - (int)*pitchOffset - (int)*yawOffset;
+  motor3pulse = *throttle + (int)*rollOffset + (int)*pitchOffset - (int)*yawOffset;
+  motor4pulse = *throttle - (int)*rollOffset + (int)*pitchOffset + (int)*yawOffset;
 }
 
 // alternatively I could just cap throttle by pidRateMax*3
