@@ -1,9 +1,5 @@
-
-// output gyro/accel readings that can be used by processing
-// chek with motors running
-
-//hope that motion sensor response is fast enought that I don't need to use JR DMP code
-
+// move battery to separate loop
+// when to update acknowledgement bit?
 
 
 // SOFTWARE
@@ -63,10 +59,12 @@ static byte countKillCommand = 0;
 unsigned long rateLoopLast = 0;
 //attitudeLoopFreq defined in PID.h
 unsigned long attitudeLoopLast = 0;
-byte receiverFreq = 50;  // although this can also be controlled on the transmitter side
+const byte receiverFreq = 50;  // although this can also be controlled on the transmitter side
 unsigned long receiverLast = 0;
+unsigned long batteryLoopLast = 0;
+const int batteryFreq = 1000;
 
-byte pinStatusLed = 4;
+const byte pinStatusLed = 4;
 
 const int MIN_THROTTLE = 1100;  // CHECK THIS
 //const int MAX_THROTTLE = 1800;  // CHECK THIS
@@ -146,18 +144,7 @@ void loop() {
         MODE = RATE;
       }
     }
-
-    // update battery info
-    calculateBatteryVoltage();
-    calculateBatteryLevel();
-    updateBatteryIndicator();  // could go in its own loop
   }
-
-
-
-
-
-
 
   // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
   if (auto_level) { // if no communication received, OR user has specified auto-level
@@ -216,8 +203,15 @@ void loop() {
     }
   }
 
+  if (millis() - batteryLoopLast > batteryFreq) {
+    batteryLoopLast = millis();
+    // update battery info
+    calculateBatteryVoltage();
+    calculateBatteryLevel();
+    updateBatteryIndicator();
+  }
 
-  // DEBUGGONG
+  // DEBUGGING
   if (millis() - lastPrint > 1000) {
 
 //  Serial.print(dividerReading);Serial.print('\t');
