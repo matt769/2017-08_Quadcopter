@@ -134,7 +134,7 @@ bool checkRadioForInput() {
 
 bool checkHeartbeat(){
   if(millis()-lastRxReceived > heartbeatTimeout){
-    Serial.println(F("Lost connection"));
+//    Serial.println(F("Lost connection"));
     rxHeartbeat = false;
   }
   else {

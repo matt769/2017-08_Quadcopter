@@ -38,7 +38,7 @@ void calculateBatteryVoltage(){
 // and only map the range I care about
 // if it's below that range, set to zero (else might look like a large positive if stored in byte)
 byte calculateBatteryLevel(){
-  batteryLevel = map((batteryVoltage*10), 0,50,0,7);
+  batteryLevel = map(batteryVoltage*10, BATTERY_MIN_VOLTAGE*10,BATTERY_MAX_VOLTAGE*10,0,7);
   if(batteryLevel < 0){
     batteryLevel = 0;
   }

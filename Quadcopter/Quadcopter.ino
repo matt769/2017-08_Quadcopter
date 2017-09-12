@@ -1,5 +1,5 @@
-// move battery to separate loop
-// when to update acknowledgement bit?
+// change transmitter to 'hold' some control values after pressing button i.e. button press should indicate a toggle
+
 
 
 // SOFTWARE
@@ -95,10 +95,10 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection
-      while (!checkRadioForInput());
-      while (rcPackage.throttle < 200) checkRadioForInput();
-      while (rcPackage.throttle >50) checkRadioForInput();
- 
+  while (!checkRadioForInput());
+  while (rcPackage.throttle < 200) checkRadioForInput();
+  while (rcPackage.throttle > 50) checkRadioForInput();
+
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, HIGH);
 
@@ -113,22 +113,23 @@ int loopCounter = 0;
 void loop() {
 
   //   FOR TESTING
-//  if (millis() - timeOn > offTimer) {
-//    setMotorsLow();
-//    //    Serial.println("Stopping");
-//    while (1) {
-//    }
-//  }
+  //  if (millis() - timeOn > offTimer) {
+  //    setMotorsLow();
+  //    //    Serial.println("Stopping");
+  //    while (1) {
+  //    }
+  //  }
 
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
     // we don't need to bother doing any of this stuff if there's no actual input
+    checkHeartbeat();  // must be done outside if(radio.available) loop
     if (checkRadioForInput()) {
       receiverLast = millis();
       // CHECK MODES
       attitude_mode = getMode();
-      auto_level = getAutolevel() || !checkHeartbeat();
+      auto_level = getAutolevel() || !rxHeartbeat;
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
         Serial.println("KILL");
@@ -161,12 +162,12 @@ void loop() {
   if (MODE != PREV_MODE) {
     if (MODE == BALANCE) {
       pidAttitudeModeOn();
-//      Serial.println(F("Entering attitude mode"));
+      //      Serial.println(F("Entering attitude mode"));
       PREV_MODE = BALANCE;
     }
     else {
       pidAttitudeModeOff();
-//      Serial.println(F("Leaving attitude mode"));
+      //      Serial.println(F("Leaving attitude mode"));
       PREV_MODE = RATE;
     }
   }
@@ -210,10 +211,7 @@ void loop() {
     calculateBatteryVoltage();
     calculateBatteryLevel();
     updateBatteryIndicator();
-  Serial.print(dividerReading);Serial.print('\t');
-  Serial.print(dividerVoltage);Serial.print('\t');
-  Serial.print(batteryVoltage);Serial.print('\t');
-  Serial.print(batteryLevel);Serial.print('\n');
+    //
   }
 
   // DEBUGGING
@@ -221,13 +219,19 @@ void loop() {
 
 
 
-    Serial.println(statusForAck);
+//    Serial.println(statusForAck);
 
-//    Serial.print(rxHeartbeat);Serial.print('\t');
-//    Serial.print(auto_level);Serial.print('\t');
-//    Serial.print(lastRxReceived);Serial.print('\t');
-//    
-//    Serial.print(throttle);Serial.print('\n');
+
+    //  Serial.print(dividerReading);Serial.print('\t');
+    //  Serial.print(dividerVoltage);Serial.print('\t');
+    //  Serial.print(batteryVoltage);Serial.print('\t');
+    //  Serial.print(batteryLevel);Serial.print('\n');
+
+        Serial.print(rxHeartbeat);Serial.print('\t');
+        Serial.print(auto_level);Serial.print('\t');
+        Serial.print(lastRxReceived);Serial.print('\t');
+        Serial.print(MODE);Serial.print('\t');
+        Serial.print(throttle);Serial.print('\n');
 
     //    Serial.print(functionTimeSum);Serial.print('\t');
     //    Serial.print(functionTimeCounter);Serial.print('\t');
@@ -258,16 +262,16 @@ void loop() {
     //        Serial.print(attitudeRollSettings.output); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.output); Serial.print('\t');
     //        Serial.print(attitudeYawSettings.output); Serial.print('\n');
-//        Serial.print(F("Inner loop: ")); Serial.print('\t');
-//            Serial.print(rateRollSettings.actual); Serial.print('\t');
-//            Serial.print(ratePitchSettings.actual); Serial.print('\t');
-//            Serial.print(rateYawSettings.actual); Serial.print('\t');
-//            Serial.print(rateRollSettings.target); Serial.print('\t');
-//            Serial.print(ratePitchSettings.target); Serial.print('\t');
-//            Serial.print(rateYawSettings.target); Serial.print('\t');
-//            Serial.print(rateRollSettings.output); Serial.print('\t');
-//            Serial.print(ratePitchSettings.output); Serial.print('\t');
-//            Serial.print(rateYawSettings.output); Serial.print('\n');
+    //        Serial.print(F("Inner loop: ")); Serial.print('\t');
+    //            Serial.print(rateRollSettings.actual); Serial.print('\t');
+    //            Serial.print(ratePitchSettings.actual); Serial.print('\t');
+    //            Serial.print(rateYawSettings.actual); Serial.print('\t');
+    //            Serial.print(rateRollSettings.target); Serial.print('\t');
+    //            Serial.print(ratePitchSettings.target); Serial.print('\t');
+    //            Serial.print(rateYawSettings.target); Serial.print('\t');
+    //            Serial.print(rateRollSettings.output); Serial.print('\t');
+    //            Serial.print(ratePitchSettings.output); Serial.print('\t');
+    //            Serial.print(rateYawSettings.output); Serial.print('\n');
     //    //
     //        Serial.print('\n');
     lastPrint = millis();
