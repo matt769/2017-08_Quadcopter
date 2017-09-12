@@ -12,7 +12,7 @@
 // add capacitor?
 
 byte pinBatteryMonitor = A0;
-byte pinBatteryIndicator = 7;
+byte pinBatteryIndicator = 5;
 const float scale = 5.0 / 1024;
 int batteryReading;
 float voltage;
