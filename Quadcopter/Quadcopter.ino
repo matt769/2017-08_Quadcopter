@@ -2,6 +2,10 @@
 
 // need to reorganise handling receiver input and various modes
 
+// need to control how frequently connectionLostDescend() runs
+
+// pput autolevel stuff in the attitude loop?
+
 
 // SOFTWARE
 // starting values for PID
@@ -148,21 +152,12 @@ void loop() {
       }
     }
     auto_level = auto_level || !rxHeartbeat;
-    if(auto_level) {
+    if (auto_level) {
       MODE = BALANCE;
     }
   }
 
-  // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
-  if (auto_level) { // if no communication received, OR user has specified auto-level
-    setAutoLevelTargets();
-    // If connection lost then also change throttle so that QC is descending slowly
-    if (!rxHeartbeat) {
-      calculateVerticalAccel();
-      connectionLostDescend(&throttle, &ZAccel);
-      Serial.print(ZAccel);Serial.print('\n');
-    }
-  }
+
 
   // HANDLE STATE CHANGES
   if (MODE != PREV_MODE) {
@@ -195,13 +190,24 @@ void loop() {
     accumulateAccelReadings();
   }
 
-  // RUN ATTITUDE LOOP
-  // Note that the attitude PID itself will not run unless QC is in ATTITUDE mode
+  // RUN ATTITUDE CALCULATIONS
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
     attitudeLoopLast = millis();
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
+
+    // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
+    if (auto_level) { // if no communication received, OR user has specified auto-level
+      setAutoLevelTargets();
+      // If connection lost then also change throttle so that QC is descending slowly
+      if (!rxHeartbeat) {
+        calculateVerticalAccel();
+        connectionLostDescend(&throttle, &ZAccel);
+      }
+    }
+
+    // The attitude PID itself will not run unless QC is in ATTITUDE mode
     if (attitude_mode) {
       setAttitudePidActual(&currentAngles.roll, &currentAngles.pitch, &currentAngles.yaw);
       pidAttitudeUpdate();
@@ -211,6 +217,10 @@ void loop() {
     }
   }
 
+
+
+
+  // CHECK BATTERY
   if (millis() - batteryLoopLast > batteryFreq) {
     batteryLoopLast = millis();
     // update battery info
@@ -220,12 +230,15 @@ void loop() {
     //
   }
 
+
+
+
   // DEBUGGING
   if (millis() - lastPrint > 1000) {
 
 
 
-//    Serial.println(statusForAck);
+    //    Serial.println(statusForAck);
 
 
     //  Serial.print(dividerReading);Serial.print('\t');
@@ -233,11 +246,11 @@ void loop() {
     //  Serial.print(batteryVoltage);Serial.print('\t');
     //  Serial.print(batteryLevel);Serial.print('\n');
 
-        Serial.print(rxHeartbeat);Serial.print('\t');
-        Serial.print(auto_level);Serial.print('\t');
-        Serial.print(lastRxReceived);Serial.print('\t');
-        Serial.print(MODE);Serial.print('\t');
-        Serial.print(throttle);Serial.print('\n');
+    Serial.print(rxHeartbeat); Serial.print('\t');
+    Serial.print(auto_level); Serial.print('\t');
+    Serial.print(lastRxReceived); Serial.print('\t');
+    Serial.print(MODE); Serial.print('\t');
+    Serial.print(throttle); Serial.print('\n');
 
     //    Serial.print(functionTimeSum);Serial.print('\t');
     //    Serial.print(functionTimeCounter);Serial.print('\t');

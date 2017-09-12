@@ -174,12 +174,18 @@ void setAttitudePidActual(float *roll, float *pitch, float *yaw) {
 // and if we regain user input and there's a difference, perhaps should try and move more slowly towards it
 // also review these thresholds and increments
 // change this to be full PID
+//void connectionLostDescend(int *throttle, float *ZAccel) {
+//  if (*ZAccel > 1.05) {
+//    *throttle -= 5;
+//  }
+//  else if (*ZAccel < 0.95) {
+//    *throttle += 5;
+//  }
+//}
+
 void connectionLostDescend(int *throttle, float *ZAccel) {
-  if (*ZAccel > 1.05) {
-    *throttle -= 5;
-  }
-  else if (*ZAccel < 0.95) {
-    *throttle += 5;
+  if (*ZAccel < 1.05) {    // ZAccel > 1 implies downwards movement, reduce throttle until I get it
+    *throttle -= 1;
   }
 }
 

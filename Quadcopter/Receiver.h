@@ -51,7 +51,7 @@ float attitudeMax = 20;  // DEGREES
 
 bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
-unsigned long heartbeatTimeout = 1000;
+unsigned long heartbeatTimeout = 500;
 
 
 
