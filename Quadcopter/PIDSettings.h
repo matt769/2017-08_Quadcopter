@@ -11,13 +11,13 @@
 
 // Review how PID deals with being turned on and off
 
-int pidRateMin = -100;  // MOTOR INPUT (PULSE LENGTH)
-int pidRateMax = 100;  // MOTOR INPUT (PULSE LENGTH)
-int pidAttitudeMin = -10;  // DEG/S
-int pidAttitudeMax = 10;  // DEG/S
+const int pidRateMin = -100;  // MOTOR INPUT (PULSE LENGTH)
+const int pidRateMax = 100;  // MOTOR INPUT (PULSE LENGTH)
+const int pidAttitudeMin = -10;  // DEG/S
+const int pidAttitudeMax = 10;  // DEG/S
 
-byte rateLoopFreq = 4;  // works out at about 200Hz
-byte attitudeLoopFreq = 20; // 20Hz
+const byte rateLoopFreq = 4;  // works out at about 200Hz
+const byte attitudeLoopFreq = 20; // 20Hz
 
 
 struct pid {

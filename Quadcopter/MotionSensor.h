@@ -39,20 +39,20 @@ const byte GYRO_ZOUT_H = 71;   // [15:8]
 const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
-// Do I need to handle the offsets myself? (if not using DMP?)
-int16_t GyXOffset = -419; 
-int16_t GyYOffset = 328;
-int16_t GyZOffset = 206;
-int16_t AccelXOffset = 705;   // REQUIRES DERIVING FOR NEW MPU
-int16_t AccelYOffset = -118;   // REQUIRES DERIVING FOR NEW MPU
-int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
+const int16_t GyXOffset = -419; 
+const int16_t GyYOffset = 328;
+const int16_t GyZOffset = 206;
+const int16_t AccelXOffset = 705;   // REQUIRES DERIVING FOR NEW MPU
+const int16_t AccelYOffset = -118;   // REQUIRES DERIVING FOR NEW MPU
+const int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
+const float accelRes = 2.0f / 32768.0f;
+const float gyroRes = 250.0f / 32768.0f;
 
 // MEASUREMENT
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // raw measurement values
 float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
 float AcXAve = 0, AcYAve = 0, AcZAve = 0;
-float accelRes = 2.0f / 32768.0f;
-float gyroRes = 250.0f / 32768.0f;
+
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 bool sensorRead;  // indicates whether valid information was read from the sensor

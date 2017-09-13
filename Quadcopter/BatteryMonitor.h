@@ -14,23 +14,26 @@
 // is there any change of initial high voltage?
 // add capacitor?
 
-byte pinBatteryMonitor = A0;
-byte pinBatteryIndicator = 5;
+const byte PIN_BATTERY_MONITOR = A0;
+const byte PIN_BATTERY_INDICATOR = 5;
 const float SCALE = 5.0 / 1024;
-int dividerReading;
-float dividerVoltage, batteryVoltage;
-int batteryLevel = 0;
-const float batteryFilterAlpha = 0.5;
-
+const float BATTERY_FILTER_ALPHA = 0.5;
 const float BATTERY_MAX_VOLTAGE = 4 * 4.2;
 const float DIVIDER_TO_BATTERY = BATTERY_MAX_VOLTAGE / 5;
 const float BATTERY_MIN_VOLTAGE = 4 * 3.1;
 
+int dividerReading;
+float dividerVoltage, batteryVoltage;
+int batteryLevel = 0;
+
+
+
+
 
 // calculate the actual voltage
 void calculateBatteryVoltage(){
-  dividerReading = analogRead(pinBatteryMonitor);
-  dividerVoltage = dividerVoltage *(1-batteryFilterAlpha) + (dividerReading * SCALE) * batteryFilterAlpha;  // filter a little
+  dividerReading = analogRead(PIN_BATTERY_MONITOR);
+  dividerVoltage = dividerVoltage *(1-BATTERY_FILTER_ALPHA) + (dividerReading * SCALE) * BATTERY_FILTER_ALPHA;  // filter a little
   batteryVoltage = dividerVoltage * DIVIDER_TO_BATTERY;
 }
 
@@ -49,14 +52,14 @@ byte calculateBatteryLevel(){
 void updateBatteryIndicator(){
 //  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
   if(batteryLevel<2){
-    digitalWrite(pinBatteryIndicator,HIGH);
+    digitalWrite(PIN_BATTERY_INDICATOR,HIGH);
   }
 }
 
 
 void setupBatteryMonitor(){
-  pinMode(pinBatteryMonitor,INPUT);
-  pinMode(pinBatteryIndicator,OUTPUT);
+  pinMode(PIN_BATTERY_MONITOR,INPUT);
+  pinMode(PIN_BATTERY_INDICATOR,OUTPUT);
   for(byte i = 0; i < 20; i++){
     calculateBatteryVoltage();
     calculateBatteryLevel();

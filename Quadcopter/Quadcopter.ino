@@ -80,7 +80,7 @@ const int MIN_THROTTLE = 1100;  // CHECK THIS
 unsigned long lastPrint = 0;  // for debug only
 
 // for testing
-unsigned long offTimer = 15000;
+const unsigned long offTimer = 15000;
 unsigned long timeOn;
 
 
