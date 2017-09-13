@@ -128,10 +128,10 @@ void loop() {
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
-    // we don't need to bother doing any of this stuff if there's no actual input
+    receiverLast = millis();
     checkHeartbeat();  // must be done outside if(radio.available) loop
+    // we don't need to bother doing the rest of this stuff if there's no actual input
     if (checkRadioForInput()) {
-      receiverLast = millis();
       // CHECK MODES
       attitude_mode = getMode();
       auto_level = getAutolevel();
