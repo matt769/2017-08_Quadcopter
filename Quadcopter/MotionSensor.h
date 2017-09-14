@@ -48,6 +48,8 @@ const int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
 const float accelRes = 2.0f / 32768.0f;
 const float gyroRes = 250.0f / 32768.0f;
 
+const float MICROS_TO_SECONDS = 0.000001;
+
 // MEASUREMENT
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;   // raw measurement values
 float valAcX,valAcY,valAcZ,valTmp,valGyX,valGyY,valGyZ; // converted to real units
@@ -149,7 +151,7 @@ void convertGyroReadingsToValues(){
 //}
 
 void accumulateGyroChange(){
-  float interval = (thisReadingTime - lastReadingTime) * 0.000001;  // convert to seconds (from micros)
+  float interval = (thisReadingTime - lastReadingTime) * MICROS_TO_SECONDS;  // convert to seconds (from micros)
   gyroChangeAngles.roll += valGyX * interval;
   gyroChangeAngles.pitch += valGyY * interval;
   gyroChangeAngles.yaw += valGyZ * interval;
