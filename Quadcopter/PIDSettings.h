@@ -16,8 +16,8 @@ const int pidRateMax = 100;  // MOTOR INPUT (PULSE LENGTH)
 const int pidAttitudeMin = -10;  // DEG/S
 const int pidAttitudeMax = 10;  // DEG/S
 
-const byte rateLoopFreq = 4;  // works out at about 200Hz
-const byte attitudeLoopFreq = 20; // 20Hz
+const byte rateLoopFreq = 1;  // works out at about 493Hz
+const byte attitudeLoopFreq = 20; // works out at about 46Hz
 
 
 struct pid {

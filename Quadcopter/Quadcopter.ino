@@ -113,7 +113,10 @@ void setup() {
 
 }
 
-int loopCounter = 0;
+int loopCounterRx = 0;
+int loopCounterRate = 0;
+int loopCounterAttitude = 0;
+
 
 void loop() {
 
@@ -129,6 +132,7 @@ void loop() {
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
     receiverLast = millis();
+//    loopCounterRx++;
     checkHeartbeat();  // must be done outside if(radio.available) loop
     // we don't need to bother doing the rest of this stuff if there's no actual input
     if (checkRadioForInput()) {
@@ -176,7 +180,7 @@ void loop() {
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
     rateLoopLast = millis();
-    //    loopCounter ++;
+//    loopCounterRate++;
     readMainSensors();
     convertGyroReadingsToValues();
     pidRateUpdate();
@@ -193,6 +197,7 @@ void loop() {
   // RUN ATTITUDE CALCULATIONS
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
     attitudeLoopLast = millis();
+//    loopCounterAttitude++;
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
@@ -256,7 +261,9 @@ void loop() {
     //    functionTimeSum = 0;
     //    functionTimeCounter = 0;
 
-    //    Serial.println(loopCounter);
+    //    Serial.println(loopCounterRx);Serial.print('\t');
+    //    Serial.println(loopCounterRate);Serial.print('\t');
+    //    Serial.println(loopCounterAttitude);Serial.print('\n');
     //    loopCounter = 0;
 
     //    Serial.print(throttle); Serial.print('\t');
