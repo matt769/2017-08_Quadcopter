@@ -29,7 +29,6 @@ RF24 radio(7,8); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
 const byte OK = 1;
 const byte GENERAL_ERROR = 2;
-const byte BATTERY_LOW = 3;
 
 // Bits 5,6,7 show battery level (that gives 8 segments)
 
@@ -111,6 +110,7 @@ void updateAckStatusForTx(){
   statusForAck = 0;
   add = batteryLevel << 5;
   statusForAck |= add;
+  statusForAck |= OK; // obviously need to change if not ok
   // add other bits here, e.g.
 //  add = other << 2;
 //  statusForAck |= add;

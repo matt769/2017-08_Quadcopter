@@ -222,9 +222,6 @@ void loop() {
     }
   }
 
-
-
-
   // CHECK BATTERY
   if (millis() - batteryLoopLast > batteryFreq) {
     batteryLoopLast = millis();
@@ -235,19 +232,14 @@ void loop() {
     //
   }
 
-
-
-
   // DEBUGGING
-  if (millis() - lastPrint > 1000) {
+  if (millis() - lastPrint > 100) {
 
-    //    Serial.println(statusForAck);
-
-
-    //  Serial.print(dividerReading);Serial.print('\t');
-    //  Serial.print(dividerVoltage);Serial.print('\t');
-    //  Serial.print(batteryVoltage);Serial.print('\t');
-    //  Serial.print(batteryLevel);Serial.print('\n');
+//        Serial.println(statusForAck);
+//      Serial.print(dividerReading);Serial.print('\t');
+//      Serial.print(dividerVoltage);Serial.print('\t');
+//      Serial.print(batteryVoltage);Serial.print('\t');
+//      Serial.print(batteryLevel);Serial.print('\n');
 
 //    Serial.print(rxHeartbeat); Serial.print('\t');
 //    Serial.print(auto_level); Serial.print('\t');
@@ -268,7 +260,7 @@ void loop() {
 
     //    Serial.print(throttle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
-    //    printPackage();
+//        printPackage();
 //        Serial.print(motor1pulse); Serial.print('\t');
 //        Serial.print(motor2pulse); Serial.print('\n');
 //        Serial.print(motor3pulse); Serial.print('\t');
@@ -277,9 +269,9 @@ void loop() {
     //
     //    Serial.println(maxLoopDuration);
     //    Serial.print(F("Outer loop: ")); Serial.print('\t');
-    //        Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-    //        Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-    //        Serial.print(attitudeYawSettings.actual); Serial.print('\t');
+//            Serial.print(attitudeRollSettings.actual); Serial.print('\t');
+//            Serial.print(attitudePitchSettings.actual); Serial.print('\t');
+//            Serial.print(attitudeYawSettings.actual); Serial.print('\t');
     //        Serial.print(attitudeRollSettings.target); Serial.print('\t');
     //        Serial.print(attitudePitchSettings.target); Serial.print('\t');
     //        Serial.print(attitudeYawSettings.target); Serial.print('\t');
@@ -287,17 +279,20 @@ void loop() {
     //        Serial.print(attitudePitchSettings.output); Serial.print('\t');
     //        Serial.print(attitudeYawSettings.output); Serial.print('\n');
     //        Serial.print(F("Inner loop: ")); Serial.print('\t');
-    //            Serial.print(rateRollSettings.actual); Serial.print('\t');
-    //            Serial.print(ratePitchSettings.actual); Serial.print('\t');
-    //            Serial.print(rateYawSettings.actual); Serial.print('\t');
+//                Serial.print(rateRollSettings.actual); Serial.print('\t');
+//                Serial.print(ratePitchSettings.actual); Serial.print('\t');
+//                Serial.print(rateYawSettings.actual); Serial.print('\t');
     //            Serial.print(rateRollSettings.target); Serial.print('\t');
     //            Serial.print(ratePitchSettings.target); Serial.print('\t');
     //            Serial.print(rateYawSettings.target); Serial.print('\t');
     //            Serial.print(rateRollSettings.output); Serial.print('\t');
     //            Serial.print(ratePitchSettings.output); Serial.print('\t');
     //            Serial.print(rateYawSettings.output); Serial.print('\n');
+//                Serial.print(currentAngles.roll); Serial.print('\t');
+//            Serial.print(currentAngles.pitch); Serial.print('\t');
+//            Serial.print(currentAngles.yaw); Serial.print('\t');
     //    //
-    //        Serial.print('\n');
+//            Serial.print('\n');
     lastPrint = millis();
   }
 
