@@ -44,8 +44,8 @@ struct dataStruct{
 
 
 
-float rateMin = -100;  // DEGREES/SECOND
-float rateMax = 100;  // DEGREES/SECOND
+float rateMin = -70;  // DEGREES/SECOND
+float rateMax = 70;  // DEGREES/SECOND
 float attitudeMin = -20;  // DEGREES
 float attitudeMax = 20;  // DEGREES
 
@@ -170,14 +170,14 @@ void mapThrottle(int *throttle){
 
 void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
   if (!*mode) {
-    *roll = (float)map(rcPackage.roll, 0,255, rateMin, rateMax);
-    *pitch = (float)map(rcPackage.pitch, 0,255, rateMin, rateMax);
-    *yaw = (float)map(rcPackage.yaw, 0,255, rateMin, rateMax);
+    *roll = (float)map(rcPackage.roll+1, 0,255, rateMin, rateMax);
+    *pitch = (float)map(rcPackage.pitch+1, 0,255, rateMin, rateMax);
+    *yaw = (float)map(rcPackage.yaw+1, 0,255, rateMin, rateMax);
   }
   else {
-    *roll = (float)map(rcPackage.roll, 0,255, attitudeMin, attitudeMax);
-    *pitch = (float)map(rcPackage.pitch, 0,255, attitudeMin, attitudeMax);
-    *yaw = (float)map(rcPackage.yaw, 0,255, attitudeMin, attitudeMax);
+    *roll = (float)map(rcPackage.roll+1, 0,255, attitudeMin, attitudeMax);
+    *pitch = (float)map(rcPackage.pitch+1, 0,255, attitudeMin, attitudeMax);
+    *yaw = (float)map(rcPackage.yaw+1, 0,255, attitudeMin, attitudeMax);
   }
 
 }
