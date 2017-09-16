@@ -183,16 +183,8 @@ void loop() {
     //    loopCounterRate++;
     readMainSensors();
     convertGyroReadingsToValues();
-    pidRateUpdate();
-//    if(abs(rateRollSettings.output) > 100){
-//      Serial.print(rateRollSettings.output);Serial.print('\t');Serial.print('\t');Serial.print('\n');
-//    }
-    if(abs(ratePitchSettings.output) > 100){
-      Serial.print('\t');Serial.print(ratePitchSettings.output);Serial.print('\t');Serial.print('\n');
-    }    
-    
-
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
+    pidRateUpdate();
     calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
     capMotorInputNearMaxThrottle();
     capMotorInputNearMinThrottle();
