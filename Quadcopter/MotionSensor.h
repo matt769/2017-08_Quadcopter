@@ -73,8 +73,8 @@ struct angle currentAngles;
 
 
 // PARAMETERS
-const byte DPLF_VALUE = 0;  // set low pass filter 
-const float compFilterAlpha = 0.8; // weight applied to gyro angle estimate
+const byte DPLF_VALUE = 1;  // set low pass filter 
+const float compFilterAlpha = 0.9; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1- compFilterAlpha;
 const float accelAverageAlpha = 0.2; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
@@ -143,18 +143,17 @@ void convertGyroReadingsToValues(){
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
 
-//void convertGyroReadingsToValues(){
-//
-//  valGyX = (valGyX * 0.7) + (GyX - GyXOffset) * gyroRes * 0.3;
-//  valGyY = (valGyY * 0.7) + (GyY - GyYOffset) * gyroRes * 0.3;
-//  valGyZ = (valGyZ * 0.7) + (GyZ - GyZOffset) * gyroRes * 0.3;
-//}
 
 void accumulateGyroChange(){
   float interval = (thisReadingTime - lastReadingTime) * MICROS_TO_SECONDS;  // convert to seconds (from micros)
   gyroChangeAngles.roll += valGyX * interval;
   gyroChangeAngles.pitch += valGyY * interval;
   gyroChangeAngles.yaw += valGyZ * interval;
+  // Note faster alternative to this
+  // use the reading value (valGy?) and do not convert to seconds
+  // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds (can be a single factor)
+
+  
 }
 
 void accumulateAccelReadings(){
@@ -234,15 +233,19 @@ void calculateVerticalAccel(){
 
 
 
-void outputForProcessing(float a, float b, float c){
+void outputForProcessingFloat(float a, float b, float c){
   Serial.print(a);Serial.print('\t');
   Serial.print(b);Serial.print('\t');
   Serial.print(c);Serial.print('\t');
   Serial.print('\n');
-
-  
 }
 
+void outputForProcessingInt(int a, int b, int c){
+  Serial.print(a);Serial.print('\t');
+  Serial.print(b);Serial.print('\t');
+  Serial.print(c);Serial.print('\t');
+  Serial.print('\n');
+}
 
 
 

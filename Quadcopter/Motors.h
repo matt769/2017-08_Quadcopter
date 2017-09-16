@@ -50,6 +50,7 @@ void capMotorInputNearMaxThrottle() {
 
 void capMotorInputNearMinThrottle(){
   //at the very least, stop pulse going below 1000
+  // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
   if(motor1pulse<ZERO_THROTTLE) motor1pulse = ZERO_THROTTLE;
   if(motor2pulse<ZERO_THROTTLE) motor2pulse = ZERO_THROTTLE;
   if(motor3pulse<ZERO_THROTTLE) motor3pulse = ZERO_THROTTLE;

@@ -11,8 +11,8 @@
 
 // Review how PID deals with being turned on and off
 
-const int pidRateMin = -100;  // MOTOR INPUT (PULSE LENGTH)
-const int pidRateMax = 100;  // MOTOR INPUT (PULSE LENGTH)
+const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
+const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidAttitudeMin = -10;  // DEG/S
 const int pidAttitudeMax = 10;  // DEG/S
 
