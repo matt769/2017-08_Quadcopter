@@ -34,7 +34,6 @@
 
 
 #include <I2C.h>
-#include "Servo.h"
 #include <SPI.h>
 #include <RF24.h>
 #include "PID_v1.h" // try changing timing to micros()?
