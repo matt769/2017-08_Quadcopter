@@ -5,10 +5,10 @@ Servo motor2; // front right (CCW)
 Servo motor3; // back left (CCW)
 Servo motor4; // back right (CW)
 
-const byte pinMotor1 = 31; // UPDATE
-const byte pinMotor2 = 33; // UPDATE
-const byte pinMotor3 = 35; // UPDATE
-const byte pinMotor4 = 37; // UPDATE
+const byte pinMotor1 = 3; // UPDATE
+const byte pinMotor2 = 6; // UPDATE
+const byte pinMotor3 = 4; // UPDATE
+const byte pinMotor4 = 5; // UPDATE
 
 int motor1pulse;
 int motor2pulse;

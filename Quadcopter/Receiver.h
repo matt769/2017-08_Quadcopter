@@ -24,7 +24,7 @@
 
 const byte addresses[][6] = {"1Node", "2Node"};
 const bool radioNumber = 1; // receiver should be 1 (or anything not 0)
-RF24 radio(7,8); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
+RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
 const byte OK = 1;

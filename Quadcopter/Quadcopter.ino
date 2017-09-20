@@ -103,6 +103,7 @@ void setup() {
   while (!checkRadioForInput());
   while (rcPackage.throttle < 200) checkRadioForInput();
   while (rcPackage.throttle > 50) checkRadioForInput();
+//  Serial.println(F("SAFETY REMOVED"));
 
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, HIGH);
@@ -233,7 +234,7 @@ void loop() {
   }
 
   // DEBUGGING
-  if (millis() - lastPrint >1000) {
+  if (millis() - lastPrint >20) {
 //
 //    Serial.print(AcX); Serial.print('\t');
 //    Serial.print(AcY); Serial.print('\t');
@@ -285,13 +286,13 @@ void loop() {
 //    Serial.print('\n');
 //    Serial.print(F("Inner loop: ")); Serial.print('\t');
 //    Serial.print(rateRollSettings.actual); Serial.print('\t');
-    Serial.print(ratePitchSettings.actual); Serial.print('\t');
+//    Serial.print(ratePitchSettings.actual); Serial.print('\t');
 //    Serial.print(rateYawSettings.actual); Serial.print('\t');
 //    Serial.print(rateRollSettings.target); Serial.print('\t');
-    Serial.print(ratePitchSettings.target); Serial.print('\t');
+//    Serial.print(ratePitchSettings.target); Serial.print('\t');
 //    Serial.print(rateYawSettings.target); Serial.print('\t');
 //    Serial.print(rateRollSettings.output); Serial.print('\t');
-    Serial.print(ratePitchSettings.output); Serial.print('\t');
+//    Serial.print(ratePitchSettings.output); Serial.print('\t');
 //    Serial.print(rateYawSettings.output); Serial.print('\n');
 //    Serial.print(currentAngles.roll); Serial.print('\t');
 //    Serial.print(currentAngles.pitch); Serial.print('\t');
@@ -300,7 +301,7 @@ void loop() {
 //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
 //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
 
-    Serial.print('\n');
+//    Serial.print('\n');
 
     lastPrint = millis();
   }
