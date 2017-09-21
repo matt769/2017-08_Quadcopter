@@ -1,15 +1,8 @@
-
 // PID controller by Brett Beauregard, code can be found here
 // https://github.com/br3ttb/Arduino-PID-Library/
 
-// will need to turn off before QC has taken off
-
 // NOTE THAT PID SETTINGS ARE DEFINED IN THE SETUP FUNCTION
 // alternatively initialise as shown here: https://arduino.stackexchange.com/questions/14763/assigning-value-inside-structure-array-outside-setup-and-loop-functions
-
-// NEED TO REVIEW THE LIMITS
-
-// Review how PID deals with being turned on and off
 
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)

@@ -1,37 +1,7 @@
-// change transmitter to 'hold' some control values after pressing button i.e. button press should indicate a toggle
-
-// need to reorganise handling receiver input and various modes
-
-// need to control how frequently connectionLostDescend() runs
-
-// pput autolevel stuff in the attitude loop?
-
-
-// SOFTWARE
-// starting values for PID
+// PID
 // in YMFC example (which is overall very similar)
-// for roll and pitch, P = 1.4, I = 0.05, D = 15
+// for roll and pitch, P = 1.4, I = 0.05, D = 15  // P seems really low!
 // for yaw, P = 4.0, I = 0.02, D = 0
-// P seems really low!
-// and max PID output is 400 - this seems really high!
-
-
-// GENERAL
-// CONNECT ESC signal grounds! may help with the stutter
-// add voltage divider and battery monitor to breadboard
-// Balance propellors!
-// CHeck for capacitors connected to power system
-// buy safety goggles
-// make frame to hold/test it
-// after main framework done, test timings and speed up (ONLY IF REQUIRED)
-
-// LATER
-// change 'mode' to just be attitude on/off rather than rate/attiture, because rate will always happen in the background
-// possible to not update the motor pulse until after the current one (if active) has finished.
-// CHECK TIMINGS ON ATMEGA chip, not Arduino Mega (as it is currently on)
-// test changing Servo refresh rate
-// strip out most of Servo code, just implement what I need (good learning experience)
-
 
 #include <I2C.h>
 #include <SPI.h>
@@ -44,7 +14,6 @@
 #include "PIDSettings.h"
 #include "Receiver.h"
 #include "Motors.h"
-
 
 
 int throttle;  // distinct from the user input because I may need to modify
