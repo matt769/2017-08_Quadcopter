@@ -18,6 +18,7 @@ int motor3pulse;
 int motor4pulse;
 
 const int ZERO_THROTTLE = 1000;
+const int THROTTLE_LIMIT = 1500;
 
 
 // ****************************************************************************************
@@ -92,7 +93,7 @@ void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, f
 // alternatively I could just cap throttle by pidRateMax*3
 void capMotorInputNearMaxThrottle() {
   int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
-  int adj = maxMotorValue - 2000;
+  int adj = maxMotorValue - THROTTLE_LIMIT;
   if (adj > 0) {
     motor1pulse -= adj;
     motor2pulse -= adj;
