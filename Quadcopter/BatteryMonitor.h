@@ -51,8 +51,8 @@ byte calculateBatteryLevel(){
 // make it blink instead?
 void updateBatteryIndicator(){
 //  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
-  if(batteryLevel<2){
-    digitalWrite(PIN_BATTERY_INDICATOR,HIGH);
+  if(batteryLevel<=0){
+//    digitalWrite(PIN_BATTERY_INDICATOR,HIGH);
   }
 }
 

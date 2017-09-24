@@ -38,7 +38,7 @@ unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
 const int batteryFreq = 1000;
 
-const byte pinStatusLed = 4;
+const byte pinStatusLed = 8;
 
 const int MIN_THROTTLE = 1100;  // CHECK THIS
 //const int MAX_THROTTLE = 1800;  // CHECK THIS
@@ -57,6 +57,7 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(pinStatusLed, OUTPUT);
+  digitalWrite(pinStatusLed, HIGH);
 
   setupBatteryMonitor();
   setupI2C();
@@ -68,13 +69,13 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection and specific user input (stick up, stick down)
-  while (!checkRadioForInput());
-  while (rcPackage.throttle < 200) checkRadioForInput();
-  while (rcPackage.throttle > 50) checkRadioForInput();
-//  Serial.println(F("SAFETY REMOVED"));
+//  while (!checkRadioForInput());
+//  while (rcPackage.throttle < 200) checkRadioForInput();
+//  while (rcPackage.throttle > 50) checkRadioForInput();
+  Serial.println(F("SAFETY REMOVED"));
 
   Serial.println(F("Setup complete"));
-  digitalWrite(pinStatusLed, HIGH);
+  digitalWrite(pinStatusLed, LOW);
 
   pidRateModeOn();
 
@@ -202,7 +203,7 @@ void loop() {
   }
 
   // DEBUGGING
-  if (millis() - lastPrint >20) {
+  if (millis() - lastPrint >1000) {
 //
 //    Serial.print(AcX); Serial.print('\t');
 //    Serial.print(AcY); Serial.print('\t');
