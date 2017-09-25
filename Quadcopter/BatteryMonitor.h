@@ -16,45 +16,23 @@
 
 const byte PIN_BATTERY_MONITOR = A0;
 const byte PIN_BATTERY_INDICATOR = 8;
-const float SCALE = 5.0 / 1024;
-const float BATTERY_FILTER_ALPHA = 0.2;
-const float BATTERY_MAX_VOLTAGE = 4 * 4.2;
-const float DIVIDER_TO_BATTERY = BATTERY_MAX_VOLTAGE / 5;
-const float BATTERY_MIN_VOLTAGE = 4 * 3.1;
-
-int dividerReading;
-float dividerVoltage, batteryVoltage;
+//const float SCALE = 5.0 / 1024;
+//const float BATTERY_FILTER_ALPHA = 0.2;
+//const float BATTERY_MAX_VOLTAGE = 4 * 4.2;
+//const float DIVIDER_TO_BATTERY = BATTERY_MAX_VOLTAGE / 5;
+//const float BATTERY_MIN_VOLTAGE = 4 * 3.1;
+int dividerReading = 0;
+//float dividerVoltage, batteryVoltage;
 int batteryLevel = 0;
 
 
-
-
-
-// calculate the actual voltage
-void calculateBatteryVoltage(){
-  dividerReading = analogRead(PIN_BATTERY_MONITOR);
-  dividerVoltage = dividerVoltage *(1-BATTERY_FILTER_ALPHA) + (dividerReading * SCALE) * BATTERY_FILTER_ALPHA;  // filter a little
-  batteryVoltage = dividerVoltage * DIVIDER_TO_BATTERY;
-
-//  Serial.println(batteryVoltage);
-}
-
-// convert voltage to a scale of 0 to 7 (i.e. can be stored in 3 bits)
-// and only map the range I care about
-// if it's below that range, set to zero (else might look like a large positive if stored in byte)
-byte calculateBatteryLevel(){
-  batteryLevel = map(batteryVoltage*10, BATTERY_MIN_VOLTAGE*10,BATTERY_MAX_VOLTAGE*10,0,7);
-  if(batteryLevel < 0){
+void calculateBatterySimple(){
+  dividerReading = 0.8 *dividerReading + 0.2 * analogRead(PIN_BATTERY_MONITOR);
+  if (dividerReading < 700){
     batteryLevel = 0;
   }
-}
-
-// update the data being sent back to the transmitter, and if battery low then turn on the low battery LED 
-// make it blink instead?
-void updateBatteryIndicator(){
-//  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
-  if(batteryLevel<=0){
-//    digitalWrite(PIN_BATTERY_INDICATOR,HIGH);
+  else {
+    batteryLevel = 7;
   }
 }
 
@@ -62,12 +40,52 @@ void updateBatteryIndicator(){
 void setupBatteryMonitor(){
   pinMode(PIN_BATTERY_MONITOR,INPUT);
   pinMode(PIN_BATTERY_INDICATOR,OUTPUT);
-  for(byte i = 0; i < 20; i++){
-    calculateBatteryVoltage();
-    calculateBatteryLevel();
+  for(byte i = 0; i < 30; i++){
+    calculateBatterySimple();
   }
-  updateBatteryIndicator();
 }
+
+
+
+
+//// calculate the actual voltage
+//void calculateBatteryVoltage(){
+//  dividerReading = analogRead(PIN_BATTERY_MONITOR);
+//  dividerVoltage = dividerVoltage *(1-BATTERY_FILTER_ALPHA) + (dividerReading * SCALE) * BATTERY_FILTER_ALPHA;  // filter a little
+//  batteryVoltage = dividerVoltage * DIVIDER_TO_BATTERY;
+//
+////  Serial.println(batteryVoltage);
+//}
+
+// convert voltage to a scale of 0 to 7 (i.e. can be stored in 3 bits)
+// and only map the range I care about
+// if it's below that range, set to zero (else might look like a large positive if stored in byte)
+//byte calculateBatteryLevel(){
+//  batteryLevel = map(batteryVoltage*10, BATTERY_MIN_VOLTAGE*10,BATTERY_MAX_VOLTAGE*10,0,7);
+//  if(batteryLevel < 0){
+//    batteryLevel = 0;
+//  }
+//}
+
+// update the data being sent back to the transmitter, and if battery low then turn on the low battery LED 
+// make it blink instead?
+//void updateBatteryIndicator(){
+////  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status
+//  if(batteryLevel<=0){
+////    digitalWrite(PIN_BATTERY_INDICATOR,HIGH);
+//  }
+//}
+
+
+//void setupBatteryMonitor(){
+//  pinMode(PIN_BATTERY_MONITOR,INPUT);
+//  pinMode(PIN_BATTERY_INDICATOR,OUTPUT);
+//  for(byte i = 0; i < 20; i++){
+//    calculateBatteryVoltage();
+//    calculateBatteryLevel();
+//  }
+//  updateBatteryIndicator();
+//}
 
 
 

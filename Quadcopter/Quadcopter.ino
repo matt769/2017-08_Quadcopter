@@ -200,9 +200,10 @@ void loop() {
   if (millis() - batteryLoopLast > batteryFreq) {
     batteryLoopLast = millis();
     // update battery info
-    calculateBatteryVoltage();
-    calculateBatteryLevel();
-    updateBatteryIndicator();
+    calculateBatterySimple();
+//    calculateBatteryVoltage();
+//    calculateBatteryLevel();
+//    updateBatteryIndicator();
     //
   }
 
@@ -215,9 +216,9 @@ void loop() {
 //
     Serial.println(statusForAck);
     Serial.print(dividerReading); Serial.print('\t');
-    Serial.print(dividerVoltage); Serial.print('\t');
-    Serial.print(batteryVoltage); Serial.print('\t');
-    Serial.print(batteryLevel); Serial.print('\n');
+//    Serial.print(dividerVoltage); Serial.print('\t');
+//    Serial.print(batteryVoltage); Serial.print('\t');
+//    Serial.print(batteryLevel); Serial.print('\n');
 //
 //    Serial.print(rxHeartbeat); Serial.print('\t');
 //    Serial.print(auto_level); Serial.print('\t');
