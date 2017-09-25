@@ -13,10 +13,10 @@ const int THROTTLE_LIMIT = 1500;
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
-#include "PIDSettings.h"
+
 #include "Receiver.h"
 #include "Motors.h"
-
+#include "PIDSettings.h"
 
 int throttle;  // distinct from the user input because I may need to modify
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
