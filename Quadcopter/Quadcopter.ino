@@ -71,10 +71,10 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection and specific user input (stick up, stick down)
-  while (!checkRadioForInput());
-  while (rcPackage.throttle < 200) checkRadioForInput();
-  while (rcPackage.throttle > 50) checkRadioForInput();
-//  Serial.println(F("SAFETY REMOVED"));
+//  while (!checkRadioForInput());
+//  while (rcPackage.throttle < 200) checkRadioForInput();
+//  while (rcPackage.throttle > 50) checkRadioForInput();
+  Serial.println(F("SAFETY REMOVED"));
 
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
@@ -89,6 +89,7 @@ void setup() {
 //int loopCounterRate = 0;  // DEBUGGING
 //int loopCounterAttitude = 0;  // DEBUGGING
 
+unsigned long lastPrint = 0;
 
 void loop() {
 
@@ -206,17 +207,17 @@ void loop() {
   }
 
   // DEBUGGING
-//  if (millis() - lastPrint >1000) {
+  if (millis() - lastPrint >1000) {
 //
 //    Serial.print(AcX); Serial.print('\t');
 //    Serial.print(AcY); Serial.print('\t');
 //    Serial.print(AcZ); Serial.print('\n');
 //
-//    Serial.println(statusForAck);
-//    Serial.print(dividerReading); Serial.print('\t');
-//    Serial.print(dividerVoltage); Serial.print('\t');
-//    Serial.print(batteryVoltage); Serial.print('\t');
-//    Serial.print(batteryLevel); Serial.print('\n');
+    Serial.println(statusForAck);
+    Serial.print(dividerReading); Serial.print('\t');
+    Serial.print(dividerVoltage); Serial.print('\t');
+    Serial.print(batteryVoltage); Serial.print('\t');
+    Serial.print(batteryLevel); Serial.print('\n');
 //
 //    Serial.print(rxHeartbeat); Serial.print('\t');
 //    Serial.print(auto_level); Serial.print('\t');
@@ -273,10 +274,10 @@ void loop() {
 //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
 //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
 
-//    Serial.print('\n');
+    Serial.print('\n');
 
-//    lastPrint = millis();
-//  }
+    lastPrint = millis();
+  }
 
 
 } // loop

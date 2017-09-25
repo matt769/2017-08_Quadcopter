@@ -17,7 +17,7 @@
 const byte PIN_BATTERY_MONITOR = A0;
 const byte PIN_BATTERY_INDICATOR = 8;
 const float SCALE = 5.0 / 1024;
-const float BATTERY_FILTER_ALPHA = 0.5;
+const float BATTERY_FILTER_ALPHA = 0.2;
 const float BATTERY_MAX_VOLTAGE = 4 * 4.2;
 const float DIVIDER_TO_BATTERY = BATTERY_MAX_VOLTAGE / 5;
 const float BATTERY_MIN_VOLTAGE = 4 * 3.1;

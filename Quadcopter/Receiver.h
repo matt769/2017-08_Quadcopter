@@ -114,6 +114,7 @@ void updateAckStatusForTx(){
   // add other bits here, e.g.
 //  add = other << 2;
 //  statusForAck |= add;
+//  Serial.print('\t');Serial.println(statusForAck);
   
 }
 
@@ -130,6 +131,7 @@ bool checkRadioForInput() {
       radio.flush_rx();
       return false;
     }
+//    Serial.println(statusForAck);
     lastRxReceived = millis();
     radio.flush_rx(); // probably remove
     updateAckStatusForTx(); // for next time

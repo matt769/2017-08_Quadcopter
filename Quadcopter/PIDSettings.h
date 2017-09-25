@@ -69,10 +69,10 @@ void setupPid() {
 
   rateRollSettings.kP = 1.1;
   rateRollSettings.kI = 0;
-  rateRollSettings.kD = 5;
+  rateRollSettings.kD = 0.0001;
   ratePitchSettings.kP = 1.1;
   ratePitchSettings.kI = 0;
-  ratePitchSettings.kD = 5;
+  ratePitchSettings.kD = 0.0001;
   rateYawSettings.kP = 1;
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
