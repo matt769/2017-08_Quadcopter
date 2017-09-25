@@ -18,7 +18,7 @@ int motor3pulse;
 int motor4pulse;
 
 const int ZERO_THROTTLE = 1000;
-const int THROTTLE_LIMIT = 1500;
+
 
 
 // ****************************************************************************************

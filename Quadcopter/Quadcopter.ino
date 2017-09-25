@@ -8,6 +8,8 @@
 #include <RF24.h>
 #include "PID_v1.h" // try changing timing to micros()?
 
+const int THROTTLE_LIMIT = 1500;
+
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
@@ -41,7 +43,7 @@ const int batteryFreq = 1000;
 const byte pinStatusLed = 8;
 
 const int MIN_THROTTLE = 1100;  // CHECK THIS
-//const int MAX_THROTTLE = 1800;  // CHECK THIS
+
 
 
 // DEBUG
@@ -69,10 +71,10 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection and specific user input (stick up, stick down)
-//  while (!checkRadioForInput());
-//  while (rcPackage.throttle < 200) checkRadioForInput();
-//  while (rcPackage.throttle > 50) checkRadioForInput();
-  Serial.println(F("SAFETY REMOVED"));
+  while (!checkRadioForInput());
+  while (rcPackage.throttle < 200) checkRadioForInput();
+  while (rcPackage.throttle > 50) checkRadioForInput();
+//  Serial.println(F("SAFETY REMOVED"));
 
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
@@ -112,6 +114,7 @@ void loop() {
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
         Serial.println("KILL");
+        digitalWrite(pinStatusLed, HIGH);
         while (1);  //
       }
       // MAP CONTROL VALUES
