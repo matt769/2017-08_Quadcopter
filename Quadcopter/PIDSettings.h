@@ -67,10 +67,10 @@ void setupPid() {
   pidRateModeOff();
   pidAttitudeModeOff();
 
-  rateRollSettings.kP = 1;
+  rateRollSettings.kP = 1.1;
   rateRollSettings.kI = 0;
   rateRollSettings.kD = 0;
-  ratePitchSettings.kP = 1;
+  ratePitchSettings.kP = 1.1;
   ratePitchSettings.kI = 0;
   ratePitchSettings.kD = 0;
   rateYawSettings.kP = 1;

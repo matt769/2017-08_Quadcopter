@@ -35,6 +35,8 @@ void calculateBatteryVoltage(){
   dividerReading = analogRead(PIN_BATTERY_MONITOR);
   dividerVoltage = dividerVoltage *(1-BATTERY_FILTER_ALPHA) + (dividerReading * SCALE) * BATTERY_FILTER_ALPHA;  // filter a little
   batteryVoltage = dividerVoltage * DIVIDER_TO_BATTERY;
+
+//  Serial.println(batteryVoltage);
 }
 
 // convert voltage to a scale of 0 to 7 (i.e. can be stored in 3 bits)

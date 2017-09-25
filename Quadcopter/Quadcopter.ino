@@ -81,13 +81,13 @@ void setup() {
 
   pidRateModeOn();
 
-  timeOn = millis();  // DEBUGGING
+//  timeOn = millis();  // DEBUGGING
 
 }
 
-int loopCounterRx = 0;
-int loopCounterRate = 0;
-int loopCounterAttitude = 0;
+//int loopCounterRx = 0;  // DEBUGGING
+//int loopCounterRate = 0;  // DEBUGGING
+//int loopCounterAttitude = 0;  // DEBUGGING
 
 
 void loop() {
@@ -206,7 +206,7 @@ void loop() {
   }
 
   // DEBUGGING
-  if (millis() - lastPrint >1000) {
+//  if (millis() - lastPrint >1000) {
 //
 //    Serial.print(AcX); Serial.print('\t');
 //    Serial.print(AcY); Serial.print('\t');
@@ -275,8 +275,8 @@ void loop() {
 
 //    Serial.print('\n');
 
-    lastPrint = millis();
-  }
+//    lastPrint = millis();
+//  }
 
 
 } // loop
