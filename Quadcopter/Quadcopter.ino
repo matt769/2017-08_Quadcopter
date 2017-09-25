@@ -47,11 +47,11 @@ const int MIN_THROTTLE = 1100;  // CHECK THIS
 
 
 // DEBUG
-unsigned long lastPrint = 0;  // for debug only
+//unsigned long lastPrint = 0;  // for debug only
 
 // for testing
-const unsigned long offTimer = 15000;
-unsigned long timeOn;
+//const unsigned long offTimer = 15000;
+//unsigned long timeOn;
 
 
 
@@ -113,7 +113,7 @@ void loop() {
       auto_level = getAutolevel();
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
-        Serial.println("KILL");
+//        Serial.println("KILL");
         digitalWrite(pinStatusLed, HIGH);
         while (1);  //
       }
