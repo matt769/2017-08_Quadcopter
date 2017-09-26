@@ -10,7 +10,7 @@ const int pidAttitudeMin = -10;  // DEG/S
 const int pidAttitudeMax = 10;  // DEG/S
 
 const byte rateLoopFreq = 1;  // works out at about 493Hz
-const byte attitudeLoopFreq = 20; // works out at about 46Hz
+const byte attitudeLoopFreq = 10; // 20 works out at about 46Hz
 
 
 struct pid {
@@ -69,10 +69,10 @@ void setupPid() {
 
   rateRollSettings.kP = 1.1;
   rateRollSettings.kI = 0;
-  rateRollSettings.kD = 0.0001;
+  rateRollSettings.kD = 0.0005;
   ratePitchSettings.kP = 1.1;
   ratePitchSettings.kI = 0;
-  ratePitchSettings.kD = 0.0001;
+  ratePitchSettings.kD = 0.0005;
   rateYawSettings.kP = 1;
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;

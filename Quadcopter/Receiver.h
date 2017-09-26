@@ -44,8 +44,8 @@ struct dataStruct{
 
 
 
-const float rateMin = -70;  // DEGREES/SECOND
-const float rateMax = 70;  // DEGREES/SECOND
+const float rateMin = -120;  // DEGREES/SECOND
+const float rateMax = 120;  // DEGREES/SECOND
 const float attitudeMin = -20;  // DEGREES
 const float attitudeMax = 20;  // DEGREES
 

@@ -127,10 +127,10 @@ void setupMotors() {
   pinMode(pinMotor2,OUTPUT);
   pinMode(pinMotor3,OUTPUT);
   pinMode(pinMotor4,OUTPUT);
-  escTicks[1] = 800;  // set starting pulse to 0.4micros (out of ESC range)
-  escTicks[2] = 800;
-  escTicks[3] = 800;
-  escTicks[4] = 800;
+  escTicks[1] = 500;  // set starting pulse to 0.4micros (out of ESC range)
+  escTicks[2] = 500;
+  escTicks[3] = 500;
+  escTicks[4] = 500;
   setupPulseTimer(); 
 }
 

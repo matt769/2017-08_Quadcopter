@@ -74,7 +74,7 @@ struct angle currentAngles;
 
 // PARAMETERS
 const byte DPLF_VALUE = 1;  // set low pass filter 
-const float compFilterAlpha = 0.9; // weight applied to gyro angle estimate
+const float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1- compFilterAlpha;
 const float accelAverageAlpha = 0.2; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1 - accelAverageAlpha;

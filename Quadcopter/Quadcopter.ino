@@ -72,10 +72,10 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection and specific user input (stick up, stick down)
-//  while (!checkRadioForInput());
-//  while (rcPackage.throttle < 200) checkRadioForInput();
-//  while (rcPackage.throttle > 50) checkRadioForInput();
-  Serial.println(F("SAFETY REMOVED"));
+  while (!checkRadioForInput());
+  while (rcPackage.throttle < 200) checkRadioForInput();
+  while (rcPackage.throttle > 50) checkRadioForInput();
+//  Serial.println(F("SAFETY REMOVED"));
 
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
@@ -210,7 +210,7 @@ void loop() {
   }
 
   // DEBUGGING
-//  if (millis() - lastPrint >1000) {
+//  if (millis() - lastPrint >50) {
 //
 //    Serial.print(AcX); Serial.print('\t');
 //    Serial.print(AcY); Serial.print('\t');
@@ -250,9 +250,9 @@ void loop() {
 //
 //    Serial.println(maxLoopDuration);
 //    Serial.print(F("Outer loop: ")); Serial.print('\t');
-//    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-//    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
-//    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
+            //    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
+            //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
+            //    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
 //    Serial.print(attitudeRollSettings.target); Serial.print('\t');
 //    Serial.print(attitudePitchSettings.target); Serial.print('\t');
 //    Serial.print(attitudeYawSettings.target); Serial.print('\t');
@@ -276,9 +276,9 @@ void loop() {
 //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
 //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
 //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
-
+//
 //    Serial.print('\n');
-
+//
 //    lastPrint = millis();
 //  }
 
