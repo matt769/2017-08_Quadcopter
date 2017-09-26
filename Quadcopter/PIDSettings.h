@@ -143,6 +143,7 @@ void setAutoLevelTargets() {
 //    attitudeYawSettings.target = *yaw;
 //}
 
+// will either be set directly by (mapped) receiver input, or output from the attitude PID
 void setRatePidTargets(float *roll, float *pitch, float *yaw) {
   rateRollSettings.target = *roll;
   ratePitchSettings.target = *pitch;

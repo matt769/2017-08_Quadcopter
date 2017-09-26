@@ -40,6 +40,8 @@ void calculateBatterySimple(){
 void setupBatteryMonitor(){
   pinMode(PIN_BATTERY_MONITOR,INPUT);
   pinMode(PIN_BATTERY_INDICATOR,OUTPUT);
+  ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear prescaler bits
+  ADCSRA |= bit (ADPS2);  // set ADC prescaler to 16 (from default 128)
   for(byte i = 0; i < 30; i++){
     calculateBatterySimple();
   }
