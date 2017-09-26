@@ -28,7 +28,7 @@ int batteryLevel = 0;
 
 void calculateBatterySimple(){
   dividerReading = 0.8 *dividerReading + 0.2 * analogRead(PIN_BATTERY_MONITOR);
-  if (dividerReading < 700){
+  if (dividerReading < 660){
     batteryLevel = 0;
   }
   else {

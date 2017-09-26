@@ -158,4 +158,10 @@ void setMotorsCustom(int input) {
   escTicks[4] = input << 1;
 }
 
+void killMotors() { // REQUIRES TESTING
+  cli();
+  digitalWrite(8, HIGH);
+  while(1);
+  
+}
 
