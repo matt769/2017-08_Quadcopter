@@ -10,6 +10,7 @@
 
 const int THROTTLE_LIMIT = 1500;
 
+#include "Parameters.h"   // currently all commented out
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"

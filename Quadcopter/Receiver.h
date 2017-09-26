@@ -44,10 +44,10 @@ struct dataStruct{
 
 
 
-float rateMin = -70;  // DEGREES/SECOND
-float rateMax = 70;  // DEGREES/SECOND
-float attitudeMin = -20;  // DEGREES
-float attitudeMax = 20;  // DEGREES
+const float rateMin = -70;  // DEGREES/SECOND
+const float rateMax = 70;  // DEGREES/SECOND
+const float attitudeMin = -20;  // DEGREES
+const float attitudeMax = 20;  // DEGREES
 
 bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
