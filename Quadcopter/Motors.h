@@ -84,10 +84,10 @@ ISR(TIMER1_COMPA_vect){
 // ****************************************************************************************
 
 void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
-  motor1pulse = *throttle + (int)*rollOffset - (int)*pitchOffset + (int)*yawOffset;
-  motor2pulse = *throttle - (int)*rollOffset - (int)*pitchOffset - (int)*yawOffset;
-  motor3pulse = *throttle + (int)*rollOffset + (int)*pitchOffset - (int)*yawOffset;
-  motor4pulse = *throttle - (int)*rollOffset + (int)*pitchOffset + (int)*yawOffset;
+  motor1pulse = *throttle + (int)*rollOffset + (int)*pitchOffset + (int)*yawOffset;
+  motor2pulse = *throttle - (int)*rollOffset + (int)*pitchOffset - (int)*yawOffset;
+  motor3pulse = *throttle + (int)*rollOffset - (int)*pitchOffset - (int)*yawOffset;
+  motor4pulse = *throttle - (int)*rollOffset - (int)*pitchOffset + (int)*yawOffset;
 }
 
 // alternatively I could just cap throttle by pidRateMax*3

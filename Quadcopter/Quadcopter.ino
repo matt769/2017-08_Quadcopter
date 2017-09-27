@@ -94,14 +94,6 @@ unsigned long lastPrint = 0;
 
 void loop() {
 
-  //   FOR TESTING
-  //  if (millis() - timeOn > offTimer) {
-  //    setMotorsLow();
-  //    //    Serial.println("Stopping");
-  //    while (1) {
-  //    }
-  //  }
-
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {

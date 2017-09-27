@@ -139,7 +139,7 @@ byte getInteruptStatus(byte address){
 void convertGyroReadingsToValues(){
 
   valGyX = (GyX - GyXOffset) * gyroRes;
-  valGyY = (GyY - GyYOffset) * gyroRes;
+  valGyY = (- GyY + GyYOffset) * gyroRes;
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
 
