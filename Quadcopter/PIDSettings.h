@@ -12,6 +12,10 @@ const int pidAttitudeMax = 100;  // DEG/S
 const byte rateLoopFreq = 1;  // works out at about 493Hz
 const byte attitudeLoopFreq = 10; // 20 works out at about 46Hz
 
+const byte ratePIDFreq = 10;  // 10ms <=> 100Hz // ideally tie the values together
+const byte attitudePIDFreq = 20;
+
+
 
 struct pid {
   float actual;
@@ -69,10 +73,10 @@ void setupPid() {
 
   rateRollSettings.kP = 1.1;
   rateRollSettings.kI = 0;
-  rateRollSettings.kD = 0.0005;
+  rateRollSettings.kD = 0.0025;
   ratePitchSettings.kP = 1.1;
   ratePitchSettings.kI = 0;
-  ratePitchSettings.kD = 0.0005;
+  ratePitchSettings.kD = 0.0025;
   rateYawSettings.kP = 1;
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
@@ -87,9 +91,9 @@ void setupPid() {
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;
 
-  pidRateRoll.SetSampleTime(rateLoopFreq);
-  pidRatePitch.SetSampleTime(rateLoopFreq);
-  pidRateYaw.SetSampleTime(rateLoopFreq);
+  pidRateRoll.SetSampleTime(ratePIDFreq);
+  pidRatePitch.SetSampleTime(ratePIDFreq);
+  pidRateYaw.SetSampleTime(ratePIDFreq);
   pidAttitudeRoll.SetSampleTime(attitudeLoopFreq);
   pidAttitudePitch.SetSampleTime(attitudeLoopFreq);
   pidAttitudeYaw.SetSampleTime(attitudeLoopFreq);
@@ -110,24 +114,38 @@ void setupPid() {
 
 }
 
-
-void pidRateUpdate() {
-  pidRateRoll.Compute();
-  pidRatePitch.Compute();
-  pidRateYaw.Compute();
-
-  // check that PID is returning 1 (not 0, which implies it's not eady for a new loop yet)
-
-  //  Serial.println(pidRateRoll.Compute());
-  //  Serial.println(pidRatePitch.Compute());
-  //  Serial.println(pidRateYaw.Compute());
-  //  Serial.println("");
+// return true if PIDs are run
+bool pidRateUpdate() {
+  static unsigned long thisTime;
+  static unsigned long lastTime;
+  static unsigned long interval;
+  thisTime = millis();
+  interval = thisTime - lastTime;
+  if(interval >= ratePIDFreq){
+    lastTime = thisTime;
+    pidRateRoll.Compute();
+    pidRatePitch.Compute();
+    pidRateYaw.Compute();
+    return true;
+  }
+  return false;
 }
 
-void pidAttitudeUpdate() {
+// return true if PIDs are run
+bool pidAttitudeUpdate() {
+  static unsigned long thisTime;
+  static unsigned long lastTime;
+  static unsigned long interval;
+  thisTime = millis();
+  interval = thisTime - lastTime;
+  if(interval >= attitudePIDFreq){
+    lastTime = thisTime;
   pidAttitudeRoll.Compute();
   pidAttitudePitch.Compute();
   pidAttitudeYaw.Compute();
+    return true;
+  }
+  return false;
 }
 
 
