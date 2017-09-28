@@ -6,8 +6,8 @@
 
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
-const int pidAttitudeMin = -50;  // DEG/S
-const int pidAttitudeMax = 50;  // DEG/S
+const int pidAttitudeMin = -100;  // DEG/S
+const int pidAttitudeMax = 100;  // DEG/S
 
 const byte rateLoopFreq = 1;  // works out at about 493Hz
 const byte attitudeLoopFreq = 10; // 20 works out at about 46Hz
@@ -83,7 +83,7 @@ void setupPid() {
   attitudePitchSettings.kP = 1;
   attitudePitchSettings.kI = 0;
   attitudePitchSettings.kD = 0;
-  attitudeYawSettings.kP = 1;
+  attitudeYawSettings.kP = 0.1;
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;
 
