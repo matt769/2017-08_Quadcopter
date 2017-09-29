@@ -207,7 +207,7 @@ void loop() {
   }
 
   // DEBUGGING
-  //  if (millis() - lastPrint >50) {
+//    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -239,11 +239,11 @@ void loop() {
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
   //    printPackage();
-  //    Serial.print(motor1pulse); Serial.print('\t');
-  //    Serial.print(motor2pulse); Serial.print('\n');
-  //    Serial.print(motor3pulse); Serial.print('\t');
-  //    Serial.print(motor4pulse); Serial.print('\n');
-  //    Serial.print('\n');
+//      Serial.print(motor1pulse); Serial.print('\t');
+//      Serial.print(motor2pulse); Serial.print('\n');
+//      Serial.print(motor3pulse); Serial.print('\t');
+//      Serial.print(motor4pulse); Serial.print('\n');
+//      Serial.print('\n');
   //
   //    Serial.println(maxLoopDuration);
   //    Serial.print(F("Outer loop: ")); Serial.print('\t');
@@ -276,8 +276,8 @@ void loop() {
   //
   //    Serial.print('\n');
   //
-  //    lastPrint = millis();
-  //  }
+//      lastPrint = millis();
+//    }
 
 
 } // loop
