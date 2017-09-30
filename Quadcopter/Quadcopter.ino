@@ -21,7 +21,7 @@ const int THROTTLE_LIMIT = 1500;
 
 int throttle;  // distinct from the user input because I may need to modify
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
-bool auto_level = false;  // ADD SOMETHING TO CHANGE THIS WHEN NO INPUT
+bool auto_level = false;
 
 byte RATE = 0;
 byte BALANCE = 1;
@@ -149,7 +149,7 @@ void loop() {
   if (millis() - rateLoopLast > rateLoopFreq) {
     rateLoopLast = millis();
     //    loopCounterRate++;
-    readMainSensors();
+    readGyrosAccels();
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
     // if PID has updated the outputs then recalculate the required motor pulses

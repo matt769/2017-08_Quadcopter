@@ -106,7 +106,7 @@ void setupMotionSensor() {
 }
 
 
-bool readMainSensors() {
+bool readGyrosAccels() {
   //
   I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
   // read the most significant bit register into the variable then shift to the left
@@ -195,9 +195,9 @@ void calcAnglesAccel(){
 // QC must be sationary when this runs
 void initialiseCurrentAngles(){
   // take a certain number of readings
-  readMainSensors();  // just to get timing variables filled
+  readGyrosAccels();  // just to get timing variables filled
   for(int i=0;i<200;i++){
-    readMainSensors();
+    readGyrosAccels();
     accumulateAccelReadings();
     delay(5);
 //    Serial.println(AcXAve);Serial.print('\t');
@@ -229,6 +229,16 @@ void mixAngles(){
 void calculateVerticalAccel(){
   ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
+
+
+void calibrateGyro(){
+  
+}
+
+
+
+
+
 
 
 
