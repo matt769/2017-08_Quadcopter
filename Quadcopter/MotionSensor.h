@@ -39,9 +39,9 @@ const byte GYRO_ZOUT_H = 71;   // [15:8]
 const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
-const int16_t GyXOffset = -419; 
-const int16_t GyYOffset = 328;
-const int16_t GyZOffset = 206;
+int16_t GyXOffset = -419; 
+int16_t GyYOffset = 328;
+int16_t GyZOffset = 206;
 const int16_t AccelXOffset = 705;   // REQUIRES DERIVING FOR NEW MPU
 const int16_t AccelYOffset = -118;   // REQUIRES DERIVING FOR NEW MPU
 const int16_t AccelZOffset = 1874;   // REQUIRES DERIVING FOR NEW MPU
@@ -231,7 +231,19 @@ void calculateVerticalAccel(){
 }
 
 
-void calibrateGyro(){
+void calibrateGyro(int repetitions){
+  long GyXSum = 0,GyYSum = 0,GyZSum = 0;
+  // throw away first 100 readings
+  for (int i = repetitions + 100; i<repetitions + 100;i++){
+    readGyrosAccels();
+    GyXSum += AcX;
+    GyYSum += AcY;
+    GyZSum += AcZ;
+    delay(2);
+  }
+  GyXOffset = GyXSum / repetitions;
+  GyYOffset = GyYSum / repetitions;
+  GyZOffset = GyZSum / repetitions;
   
 }
 
