@@ -24,25 +24,36 @@ const byte PIN_BATTERY_INDICATOR = 8;
 int dividerReading = 0;
 //float dividerVoltage, batteryVoltage;
 int batteryLevel = 0;
+const int dividerMinReading = 660;  // minimum that the battery should ever get to
+const int dividerRange = (1024 - dividerMinReading) / 8;
 
 
-void calculateBatterySimple(){
-  dividerReading = 0.8 *dividerReading + 0.2 * analogRead(PIN_BATTERY_MONITOR);
-  if (dividerReading < 660){
-    batteryLevel = 0;
-  }
-  else {
-    batteryLevel = 7;
-  }
+void calculateBatterySimple() {
+  dividerReading = 0.5 * dividerReading + 0.5 * analogRead(PIN_BATTERY_MONITOR);
+  batteryLevel = (dividerReading -  dividerMinReading / dividerRange) - 1;  // to give a number between 0 and 7
+  if(batteryLevel<0) batteryLevel = 0;  // just in case
 }
 
+//void calculateBatterySimple(){
+//  dividerReading = 0.5 *dividerReading + 0.5 * analogRead(PIN_BATTERY_MONITOR);
+//  if (dividerReading < 660){
+//    batteryLevel = 0;
+//  }
+//  else {
+//    batteryLevel = 7;
+//  }
+//}
 
-void setupBatteryMonitor(){
-  pinMode(PIN_BATTERY_MONITOR,INPUT);
-  pinMode(PIN_BATTERY_INDICATOR,OUTPUT);
+
+
+
+
+void setupBatteryMonitor() {
+  pinMode(PIN_BATTERY_MONITOR, INPUT);
+  pinMode(PIN_BATTERY_INDICATOR, OUTPUT);
   ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear prescaler bits
   ADCSRA |= bit (ADPS2);  // set ADC prescaler to 16 (from default 128)
-  for(byte i = 0; i < 30; i++){
+  for (byte i = 0; i < 30; i++) {
     calculateBatterySimple();
   }
 }
@@ -69,7 +80,7 @@ void setupBatteryMonitor(){
 //  }
 //}
 
-// update the data being sent back to the transmitter, and if battery low then turn on the low battery LED 
+// update the data being sent back to the transmitter, and if battery low then turn on the low battery LED
 // make it blink instead?
 //void updateBatteryIndicator(){
 ////  updateAckStatusForTx(5, batteryLevel);  // battery level will be shown in bits 5/6/7 in status

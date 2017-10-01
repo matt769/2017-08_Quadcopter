@@ -12,7 +12,7 @@ const int pidAttitudeMax = 100;  // DEG/S
 const byte rateLoopFreq = 1;  // works out at about 493Hz
 const byte attitudeLoopFreq = 10; // 20 works out at about 46Hz
 
-const byte ratePIDFreq = 10;  // 10ms <=> 100Hz // ideally tie the values together
+const byte ratePIDFreq = 10;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together
 const byte attitudePIDFreq = 20;
 
 
@@ -71,10 +71,10 @@ void setupPid() {
   pidRateModeOff();
   pidAttitudeModeOff();
 
-  rateRollSettings.kP = 1.1;
+  rateRollSettings.kP = 1.2;
   rateRollSettings.kI = 0;
   rateRollSettings.kD = 0.0025;
-  ratePitchSettings.kP = 1.1;
+  ratePitchSettings.kP = 1.2;
   ratePitchSettings.kI = 0;
   ratePitchSettings.kD = 0.0025;
   rateYawSettings.kP = 1;
@@ -83,10 +83,10 @@ void setupPid() {
 
   attitudeRollSettings.kP = 1;
   attitudeRollSettings.kI = 0;
-  attitudeRollSettings.kD = 0;
+  attitudeRollSettings.kD = 0.01;
   attitudePitchSettings.kP = 1;
   attitudePitchSettings.kI = 0;
-  attitudePitchSettings.kD = 0;
+  attitudePitchSettings.kD = 0.01;
   attitudeYawSettings.kP = 0.1;
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;
