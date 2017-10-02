@@ -81,12 +81,12 @@ void setupPid() {
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
 
-  attitudeRollSettings.kP = 1;
+  attitudeRollSettings.kP = 0;
   attitudeRollSettings.kI = 0;
-  attitudeRollSettings.kD = 0.01;
-  attitudePitchSettings.kP = 1;
+  attitudeRollSettings.kD = 0.00;
+  attitudePitchSettings.kP = 6.0;
   attitudePitchSettings.kI = 0;
-  attitudePitchSettings.kD = 0.01;
+  attitudePitchSettings.kD = 0.0;
   attitudeYawSettings.kP = 0.1;
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;
