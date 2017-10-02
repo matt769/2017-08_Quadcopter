@@ -67,7 +67,7 @@ void setup() {
   setupMotionSensor();
   setupRadio();
   setupPid();
-  setupMotors();
+
 
   initialiseCurrentAngles();
 
@@ -76,6 +76,8 @@ void setup() {
   while (rcPackage.throttle < 200) checkRadioForInput();
   while (rcPackage.throttle > 50) checkRadioForInput();
   //  Serial.println(F("SAFETY REMOVED"));
+
+  setupMotors();
 
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
