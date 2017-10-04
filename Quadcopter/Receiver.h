@@ -82,7 +82,7 @@ void printPackage(){
 void setupRadio() {
   // RADIO
   radio.begin();
-  radio.setPALevel(RF24_PA_LOW);  // MIN, LOW, HIGH, MAX
+  radio.setPALevel(RF24_PA_HIGH);  // MIN, LOW, HIGH, MAX
   radio.enableAckPayload();
   radio.enableDynamicPayloads();
 // RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps // slower is more reliable and gives longer range

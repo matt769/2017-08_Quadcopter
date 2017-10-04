@@ -72,9 +72,20 @@ void setup() {
   initialiseCurrentAngles();
 
   // wait for radio connection and specific user input (stick up, stick down)
-  while (!checkRadioForInput());
-  while (rcPackage.throttle < 200) checkRadioForInput();
-  while (rcPackage.throttle > 50) checkRadioForInput();
+  while (!checkRadioForInput()){
+//    Serial.println(1);
+//    printPackage();
+  }
+  while (rcPackage.throttle < 200) {
+    checkRadioForInput();
+//    Serial.println(2);
+//    printPackage();
+  }
+  while (rcPackage.throttle > 50) {
+    checkRadioForInput();
+//    Serial.println(3);
+//    printPackage();
+  }
   //  Serial.println(F("SAFETY REMOVED"));
 
   setupMotors();
@@ -221,11 +232,11 @@ void loop() {
   //    Serial.print(batteryVoltage); Serial.print('\t');
   //    Serial.print(batteryLevel); Serial.print('\n');
   //
-  //    Serial.print(rxHeartbeat); Serial.print('\t');
-  //    Serial.print(auto_level); Serial.print('\t');
-  //    Serial.print(lastRxReceived); Serial.print('\t');
-  //    Serial.print(MODE); Serial.print('\t');
-  //    Serial.print(throttle); Serial.print('\n');
+      Serial.print(rxHeartbeat); Serial.print('\t');
+      Serial.print(auto_level); Serial.print('\t');
+      Serial.print(lastRxReceived); Serial.print('\t');
+      Serial.print(MODE); Serial.print('\t');
+      Serial.print(throttle); Serial.print('\n');
   //
   //    Serial.print(functionTimeSum); Serial.print('\t');
   //    Serial.print(functionTimeCounter); Serial.print('\t');
@@ -240,7 +251,7 @@ void loop() {
   //
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
-      printPackage();
+//      printPackage();
 //      Serial.print(motor1pulse); Serial.print('\t');
 //      Serial.print(motor2pulse); Serial.print('\n');
 //      Serial.print(motor3pulse); Serial.print('\t');
