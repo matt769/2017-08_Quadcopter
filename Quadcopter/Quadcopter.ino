@@ -209,7 +209,7 @@ void loop() {
   }
 
   // DEBUGGING
-//    if (millis() - lastPrint >50) {
+    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -240,7 +240,7 @@ void loop() {
   //
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
-  //    printPackage();
+      printPackage();
 //      Serial.print(motor1pulse); Serial.print('\t');
 //      Serial.print(motor2pulse); Serial.print('\n');
 //      Serial.print(motor3pulse); Serial.print('\t');
@@ -253,7 +253,7 @@ void loop() {
   //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
   //    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
   //    Serial.print(attitudeRollSettings.target); Serial.print('\t');
-  //    Serial.print(attitudePitchSettings.target); Serial.print('\t');
+//      Serial.print(attitudePitchSettings.target); Serial.print('\t');
   //    Serial.print(attitudeYawSettings.target); Serial.print('\t');
   //    Serial.print(attitudeRollSettings.output); Serial.print('\t');
   //    Serial.print(attitudePitchSettings.output); Serial.print('\t');
@@ -276,10 +276,10 @@ void loop() {
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-  //    Serial.print('\n');
-  //
-//      lastPrint = millis();
-//    }
+      Serial.print('\n');
+  
+      lastPrint = millis();
+    }
 
 
 } // loop

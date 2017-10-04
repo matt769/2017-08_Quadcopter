@@ -39,6 +39,7 @@ struct dataStruct{
   int pitch;    // number 0 to 1000
   int yaw;     // number 0 to 1000
   byte control; // for some control bits
+  byte alive; //this will increment every time the data is sent
   byte checksum;
 } rcPackage;
 
@@ -62,6 +63,7 @@ byte calculateCheckSum(){
   sum += rcPackage.roll;
   sum += rcPackage.yaw;
   sum += rcPackage.control;
+  sum += rcPackage.alive;
   sum = 1 - sum;
   return sum;
 }
@@ -72,6 +74,7 @@ void printPackage(){
   Serial.print(rcPackage.pitch);Serial.print('\t');
   Serial.print(rcPackage.yaw);Serial.print('\t');
   Serial.print(rcPackage.control);Serial.print('\t');
+  Serial.print(rcPackage.alive);Serial.print('\t');
   Serial.print(rcPackage.checksum);Serial.print('\t');
   Serial.print("CHKSUM_DIFF: ");Serial.println(rcPackage.checksum - calculateCheckSum());
 }

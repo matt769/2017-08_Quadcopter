@@ -233,12 +233,16 @@ void calculateVerticalAccel(){
 
 void calibrateGyro(int repetitions){
   long GyXSum = 0,GyYSum = 0,GyZSum = 0;
+  int i = 0;
   // throw away first 100 readings
-  for (int i = repetitions + 100; i<repetitions + 100;i++){
+  for (i = 0; i<100;i++){
     readGyrosAccels();
-    GyXSum += AcX;
-    GyYSum += AcY;
-    GyZSum += AcZ;
+  }
+  for (i = 0; i<repetitions + 100;i++){
+    readGyrosAccels();
+    GyXSum += GyX;
+    GyYSum += GyY;
+    GyZSum += GyZ;
     delay(2);
   }
   GyXOffset = GyXSum / repetitions;
