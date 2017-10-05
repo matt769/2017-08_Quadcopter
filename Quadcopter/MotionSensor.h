@@ -139,7 +139,7 @@ byte getInteruptStatus(byte address){
 void convertGyroReadingsToValues(){
 
   valGyX = (GyX - GyXOffset) * gyroRes;
-  valGyY = (- GyY + GyYOffset) * gyroRes;
+  valGyY = (GyY - GyYOffset) * gyroRes;
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
 
@@ -161,7 +161,7 @@ void accumulateAccelReadings(){
   // actually, don't need to convert to values at all because we only need relative values
   // use a cyclic buffer ot just sum and low pass filter as we go?
 
-  AcX = AcX - AccelXOffset;
+  AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
   
@@ -222,7 +222,7 @@ void resetGyroChange(){
 
 void mixAngles(){
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
-  currentAngles.pitch = ((currentAngles.pitch - gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
+  currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
   currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
 }
 

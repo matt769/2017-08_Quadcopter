@@ -232,11 +232,11 @@ void loop() {
   //    Serial.print(batteryVoltage); Serial.print('\t');
   //    Serial.print(batteryLevel); Serial.print('\n');
   //
-      Serial.print(rxHeartbeat); Serial.print('\t');
-      Serial.print(auto_level); Serial.print('\t');
-      Serial.print(lastRxReceived); Serial.print('\t');
-      Serial.print(MODE); Serial.print('\t');
-      Serial.print(throttle); Serial.print('\n');
+//      Serial.print(rxHeartbeat); Serial.print('\t');
+//      Serial.print(auto_level); Serial.print('\t');
+//      Serial.print(lastRxReceived); Serial.print('\t');
+//      Serial.print(MODE); Serial.print('\t');
+//      Serial.print(throttle); Serial.print('\n');
   //
   //    Serial.print(functionTimeSum); Serial.print('\t');
   //    Serial.print(functionTimeCounter); Serial.print('\t');

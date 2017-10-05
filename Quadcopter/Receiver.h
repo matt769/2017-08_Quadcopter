@@ -176,12 +176,12 @@ void mapThrottle(int *throttle){
 void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
   if (!*mode) {
     *roll = (float)map(rcPackage.roll+1, 0,255, rateMin, rateMax);
-    *pitch = (float)map(rcPackage.pitch+1, 0,255, rateMax, rateMin);
+    *pitch = (float)map(rcPackage.pitch+1, 0,255, rateMin, rateMax);
     *yaw = (float)map(rcPackage.yaw+1, 0,255, rateMin, rateMax);
   }
   else {
     *roll = (float)map(rcPackage.roll+1, 0,255, attitudeMin, attitudeMax);
-    *pitch = (float)map(rcPackage.pitch+1, 0,255, attitudeMax, attitudeMin);
+    *pitch = (float)map(rcPackage.pitch+1, 0,255, attitudeMin, attitudeMax);
     *yaw = (float)map(rcPackage.yaw+1, 0,255, attitudeMin, attitudeMax);
   }
 
