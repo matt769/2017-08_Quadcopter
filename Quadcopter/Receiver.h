@@ -157,12 +157,12 @@ bool checkHeartbeat(){
 
 
 
-//bool checkRadioForInputPLACEHOLDER() {
+//bool checkRadioForInput() {
 //  // ADD PLACEHOLDER VALUES
-//  rcPackage.throttle = 200;
-//  rcPackage.roll = 500;
-//  rcPackage.pitch = 500;
-//  rcPackage.yaw = 500;
+//  rcPackage.throttle = 127;
+//  rcPackage.roll = 127;
+//  rcPackage.pitch = 127;
+//  rcPackage.yaw = 127;
 //  rcPackage.control = B00000000;
 //  rxHeartbeat = true;
 //  lastRxReceived = millis();
