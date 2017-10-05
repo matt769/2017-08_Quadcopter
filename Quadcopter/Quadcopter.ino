@@ -73,18 +73,12 @@ void setup() {
 
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()){
-//    Serial.println(1);
-//    printPackage();
   }
   while (rcPackage.throttle < 200) {
     checkRadioForInput();
-//    Serial.println(2);
-//    printPackage();
   }
   while (rcPackage.throttle > 50) {
     checkRadioForInput();
-//    Serial.println(3);
-//    printPackage();
   }
   //  Serial.println(F("SAFETY REMOVED"));
 
@@ -220,7 +214,7 @@ void loop() {
   }
 
   // DEBUGGING
-    if (millis() - lastPrint >50) {
+//    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -253,7 +247,7 @@ void loop() {
   //    Serial.print(valGyX); Serial.print('\n');
 //      printPackage();
 //      Serial.print(motor1pulse); Serial.print('\t');
-//      Serial.print(motor2pulse); Serial.print('\n');
+//      Serial.print(motor2pulse); Serial.print('\t');
 //      Serial.print(motor3pulse); Serial.print('\t');
 //      Serial.print(motor4pulse); Serial.print('\n');
 //      Serial.print('\n');
@@ -287,10 +281,10 @@ void loop() {
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-      Serial.print('\n');
+//      Serial.print('\n');
   
-      lastPrint = millis();
-    }
+//      lastPrint = millis();
+//    }
 
 
 } // loop
