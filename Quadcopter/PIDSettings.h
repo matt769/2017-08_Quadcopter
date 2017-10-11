@@ -9,8 +9,8 @@ const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidAttitudeMin = -100;  // DEG/S
 const int pidAttitudeMax = 100;  // DEG/S
 
-const byte rateLoopFreq = 1;  // works out at about 493Hz
-const byte attitudeLoopFreq = 10; // 20 works out at about 46Hz
+const byte rateLoopFreq = 2;  // 500Hz
+const byte attitudeLoopFreq = 10; // 100Hz
 
 const byte ratePIDFreq = 10;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together
 const byte attitudePIDFreq = 20;
@@ -120,9 +120,10 @@ bool pidRateUpdate() {
   static unsigned long lastTime;
   static unsigned long interval;
   thisTime = millis();
-  interval = thisTime - lastTime;
+  interval = thisTime - lastTime; // saving value of interval in case I want to send to PID calculation
   if(interval >= ratePIDFreq){
-    lastTime = thisTime;
+//    lastTime = thisTime;
+    lastTime += ratePIDFreq;
     pidRateRoll.Compute();
     pidRatePitch.Compute();
     pidRateYaw.Compute();
@@ -139,7 +140,8 @@ bool pidAttitudeUpdate() {
   thisTime = millis();
   interval = thisTime - lastTime;
   if(interval >= attitudePIDFreq){
-    lastTime = thisTime;
+//    lastTime = thisTime;
+    lastTime += attitudePIDFreq;
   pidAttitudeRoll.Compute();
   pidAttitudePitch.Compute();
   pidAttitudeYaw.Compute();

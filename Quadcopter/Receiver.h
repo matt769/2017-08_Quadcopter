@@ -163,7 +163,7 @@ bool checkHeartbeat(){
 //  rcPackage.roll = 127;
 //  rcPackage.pitch = 127;
 //  rcPackage.yaw = 127;
-//  rcPackage.control = B00000000;
+//  rcPackage.control = B00000000;  // B00000100; attitude mode
 //  rxHeartbeat = true;
 //  lastRxReceived = millis();
 //  return true;

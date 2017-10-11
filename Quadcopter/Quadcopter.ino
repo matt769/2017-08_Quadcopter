@@ -104,7 +104,7 @@ void loop() {
 
   // CHECK FOR USER INPUT
   if (millis() - receiverLast > receiverFreq) {
-    receiverLast = millis();
+    receiverLast += receiverFreq;
     //    loopCounterRx++;
     checkHeartbeat();  // must be done outside if(radio.available) loop
     // we don't need to bother doing the rest of this stuff if there's no actual input
@@ -154,7 +154,7 @@ void loop() {
 
   // RUN RATE LOOP
   if (millis() - rateLoopLast > rateLoopFreq) {
-    rateLoopLast = millis();
+    rateLoopLast += rateLoopFreq;
     //    loopCounterRate++;
     readGyrosAccels();
     convertGyroReadingsToValues();
@@ -173,7 +173,7 @@ void loop() {
 
   // RUN ATTITUDE CALCULATIONS
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
-    attitudeLoopLast = millis();
+    attitudeLoopLast += attitudeLoopFreq;
     //    loopCounterAttitude++;
     calcAnglesAccel();
     mixAngles();
@@ -204,7 +204,7 @@ void loop() {
 
   // CHECK BATTERY  ////////////////////////////////////////
   if (millis() - batteryLoopLast > batteryFreq) {
-    batteryLoopLast = millis();
+    batteryLoopLast += batteryFreq;
     // update battery info
     calculateBatterySimple();
     //    calculateBatteryVoltage();
@@ -214,7 +214,7 @@ void loop() {
   }
 
   // DEBUGGING
-//    if (millis() - lastPrint >50) {
+//    if (millis() - lastPrint >1000) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
