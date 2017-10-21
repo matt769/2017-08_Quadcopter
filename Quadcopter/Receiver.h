@@ -12,9 +12,9 @@
 // bit 7; 1 = TURN OFF MOTORS - reset required for re-enable
 
 // Acknowledgement byte
-// bit 0; 
-// bit 1: 
-// bit 2:
+// bit 0: non-zero (for Tx to distinguish from no acknowledgement - not sure if required)
+// bit 1: 1 = OK
+// bit 2: 1 = some error
 // bit 3:
 // bit 4: 
 // bits 5/6/7: battery indicator (0-7)
@@ -100,27 +100,17 @@ void setupRadio() {
     radio.openWritingPipe(addresses[0]);
     radio.openReadingPipe(1,addresses[1]);
   }
-
-
- 
   radio.startListening();
 //  Serial.println(radio.isChipConnected());
 }
 
-
 void updateAckStatusForTx(){
-  byte add;
   statusForAck = 0;
-  add = batteryLevel << 5;
-  statusForAck |= add;
-  statusForAck |= OK; // obviously need to change if not ok
-  // add other bits here, e.g.
-//  add = other << 2;
-//  statusForAck |= add;
+  statusForAck |= batteryLevel << 5;
+  statusForAck |= OK << 1; // obviously need to change if not ok
+  statusForAck |= 1; // set low bit to 1 always
 //  Serial.print('\t');Serial.println(statusForAck);
-  
 }
-
 
 bool checkRadioForInput() {
   if ( radio.available()) {
@@ -154,9 +144,6 @@ bool checkHeartbeat(){
   return rxHeartbeat;
 }
 
-
-
-
 //bool checkRadioForInput() {
 //  // ADD PLACEHOLDER VALUES
 //  rcPackage.throttle = 127;
@@ -166,6 +153,7 @@ bool checkHeartbeat(){
 //  rcPackage.control = B00000000;  // B00000100; attitude mode
 //  rxHeartbeat = true;
 //  lastRxReceived = millis();
+//  updateAckStatusForTx(); // for next time
 //  return true;
 //}
 
@@ -184,35 +172,22 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
     *pitch = (float)map(rcPackage.pitch+1, 0,255, attitudeMin, attitudeMax);
     *yaw = (float)map(rcPackage.yaw+1, 0,255, attitudeMin, attitudeMax);
   }
-
 }
-
-
-
-
-
-
-
 
 
 // could combine all of these into a single function?
-
 bool getSomething() {
   return bitRead(rcPackage.control, 0);
 }
-
 bool getSomethingElse() {
   return bitRead(rcPackage.control, 1);
 }
-
 bool getMode() {
   return bitRead(rcPackage.control, 2);
 }
-
 bool getAutolevel() {
   return bitRead(rcPackage.control, 3);
 }
-
 bool getKill() {
   return bitRead(rcPackage.control, 7);
 }

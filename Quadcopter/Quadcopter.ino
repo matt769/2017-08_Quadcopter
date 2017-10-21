@@ -80,7 +80,7 @@ void setup() {
   while (rcPackage.throttle > 50) {
     checkRadioForInput();
   }
-  //  Serial.println(F("SAFETY REMOVED"));
+//    Serial.println(F("SAFETY REMOVED"));
 
   setupMotors();
 
@@ -205,26 +205,22 @@ void loop() {
   // CHECK BATTERY  ////////////////////////////////////////
   if (millis() - batteryLoopLast > batteryFreq) {
     batteryLoopLast += batteryFreq;
-    // update battery info
-    calculateBatterySimple();
-    //    calculateBatteryVoltage();
-    //    calculateBatteryLevel();
-    //    updateBatteryIndicator();
-    //
+    calculateBatteryLevel();
   }
 
   // DEBUGGING
-    if (millis() - lastPrint >1000) {
+//    if (millis() - lastPrint >1000) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
   //    Serial.print(AcZ); Serial.print('\n');
   //
-  //    Serial.println(statusForAck);
+//      Serial.println(statusForAck);
   //    Serial.print(dividerReading); Serial.print('\t');
   //    Serial.print(dividerVoltage); Serial.print('\t');
   //    Serial.print(batteryVoltage); Serial.print('\t');
-  //    Serial.print(batteryLevel); Serial.print('\n');
+//      Serial.print(batteryLevel); 
+//      Serial.print('\n');
   //
 //      Serial.print(rxHeartbeat); Serial.print('\t');
 //      Serial.print(auto_level); Serial.print('\t');
@@ -281,10 +277,9 @@ void loop() {
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-      Serial.print('\n');
-  
-      lastPrint = millis();
-    }
+//      Serial.print('\n');
+//      lastPrint = millis();
+//    }
 
 
 } // loop
