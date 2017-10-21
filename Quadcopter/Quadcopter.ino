@@ -214,7 +214,7 @@ void loop() {
   }
 
   // DEBUGGING
-//    if (millis() - lastPrint >1000) {
+    if (millis() - lastPrint >1000) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -281,10 +281,10 @@ void loop() {
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-//      Serial.print('\n');
+      Serial.print('\n');
   
-//      lastPrint = millis();
-//    }
+      lastPrint = millis();
+    }
 
 
 } // loop
