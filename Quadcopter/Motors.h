@@ -18,6 +18,7 @@ int motor3pulse;
 int motor4pulse;
 
 const int ZERO_THROTTLE = 1000;
+const int THROTTLE_MIN_SPIN = 1100;
 
 
 
@@ -101,6 +102,15 @@ void capMotorInputNearMaxThrottle() {
     motor4pulse -= adj;
   }
 }
+
+void capMotorInputNearMinThrottle2(){
+  // don't sent pulses to the motors until the point at which they will spin smoothly
+  if(motor1pulse<THROTTLE_MIN_SPIN) motor1pulse = ZERO_THROTTLE;
+  if(motor2pulse<THROTTLE_MIN_SPIN) motor2pulse = ZERO_THROTTLE;
+  if(motor3pulse<THROTTLE_MIN_SPIN) motor3pulse = ZERO_THROTTLE;
+  if(motor4pulse<THROTTLE_MIN_SPIN) motor4pulse = ZERO_THROTTLE;
+}
+
 
 void capMotorInputNearMinThrottle(){
   //at the very least, stop pulse going below 1000

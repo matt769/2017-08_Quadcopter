@@ -2,8 +2,8 @@
 // change mapping depending on mode?
 
 // Control byte
-// bit 0; 1 = Stick 1 button pressed
-// bit 1: 1 = Stick 2 button pressed
+// bit 0;
+// bit 1:
 // bit 2: 1 = Attitude mode, 0 = rate mode
 // bit 3: 1 = auto-level on, 0 = auto-level off
 // bit 4: 

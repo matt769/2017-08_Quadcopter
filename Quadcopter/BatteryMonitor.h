@@ -9,11 +9,11 @@
 // the battery level variable is used automatically when building the acknowledgement payload
 
 const byte pinBatteryMonitor = A0;
-const float batteryFilterAlpha = 0.5;
+const float batteryFilterAlpha = 0.2;
 int dividerReading = 0;
 byte batteryLevel = 0;
-const int dividerMaxReading = 250; // corresponds to full charge, 16.8V
-const int dividerMinReading = 100;  // minimum that the battery should ever get to
+const int dividerMaxReading = 804; // 804 corresponds to full charge, 16.8V
+const int dividerMinReading = 593;  // 593 minimum that the battery should ever get to
 const int dividerRange = dividerMaxReading - dividerMinReading;
 
 void calculateBatteryLevel() {
