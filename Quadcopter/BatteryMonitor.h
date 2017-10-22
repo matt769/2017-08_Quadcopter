@@ -11,7 +11,7 @@
 const byte pinBatteryMonitor = A0;
 const float batteryFilterAlpha = 0.2;
 int dividerReading = 0;
-byte batteryLevel = 0;
+int batteryLevel = 0;
 const int dividerMaxReading = 804; // 804 corresponds to full charge, 16.8V
 const int dividerMinReading = 593;  // 593 minimum that the battery should ever get to
 const int dividerRange = dividerMaxReading - dividerMinReading;
@@ -20,7 +20,7 @@ void calculateBatteryLevel() {
   int tmp = analogRead(pinBatteryMonitor);
   dividerReading = (1-batteryFilterAlpha) * dividerReading + batteryFilterAlpha * tmp;
   float batteryLevelFloat = ((float)(dividerReading - dividerMinReading) / (dividerRange)) * 8;
-  batteryLevel = (byte)batteryLevelFloat;
+  batteryLevel = (int)batteryLevelFloat;
   batteryLevel = constrain(batteryLevel,0,7);
 }
 

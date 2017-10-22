@@ -9,6 +9,7 @@
 #include "PID_v1.h" // try changing timing to micros()?
 
 const int THROTTLE_LIMIT = 1500;
+int throttle;  // distinct from the user input because I may need to modify
 
 #include "Parameters.h"   // currently all commented out
 #include "BatteryMonitor.h"
@@ -19,7 +20,7 @@ const int THROTTLE_LIMIT = 1500;
 #include "Motors.h"
 #include "PIDSettings.h"
 
-int throttle;  // distinct from the user input because I may need to modify
+
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
 bool auto_level = false;
 
@@ -219,7 +220,7 @@ void loop() {
   //    Serial.print(dividerReading); Serial.print('\t');
   //    Serial.print(dividerVoltage); Serial.print('\t');
   //    Serial.print(batteryVoltage); Serial.print('\t');
-//      Serial.print(batteryLevel); 
+      Serial.print(batteryLevel); 
 //      Serial.print('\n');
   //
 //      Serial.print(rxHeartbeat); Serial.print('\t');
@@ -242,11 +243,11 @@ void loop() {
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
 //      printPackage();
-      Serial.print(motor1pulse); Serial.print('\t');
-      Serial.print(motor2pulse); Serial.print('\n');
-      Serial.print(motor3pulse); Serial.print('\t');
-      Serial.print(motor4pulse); Serial.print('\n');
-      Serial.print('\n');
+//      Serial.print(motor1pulse); Serial.print('\t');
+//      Serial.print(motor2pulse); Serial.print('\n');
+//      Serial.print(motor3pulse); Serial.print('\t');
+//      Serial.print(motor4pulse); Serial.print('\n');
+//      Serial.print('\n');
   //
   //    Serial.println(maxLoopDuration);
   //    Serial.print(F("Outer loop: ")); Serial.print('\t');
