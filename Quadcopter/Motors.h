@@ -18,7 +18,7 @@ int motor3pulse;
 int motor4pulse;
 
 const int ZERO_THROTTLE = 1000;
-const int THROTTLE_MIN_SPIN = 1100;
+const int THROTTLE_MIN_SPIN = 1125;
 
 
 
@@ -133,17 +133,17 @@ void capMotorInputNearMinThrottle2() {
 void capMotorInputNearMinThrottle() {
   //at the very least, stop pulse going below 1000
   // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
-  if (throttle < 1050) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements
+  if (throttle < THROTTLE_MIN_SPIN) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements
     motor1pulse = ZERO_THROTTLE;
     motor2pulse = ZERO_THROTTLE;
     motor3pulse = ZERO_THROTTLE;
     motor4pulse = ZERO_THROTTLE;
   }
   else {
-    if (motor1pulse < ZERO_THROTTLE) motor1pulse = ZERO_THROTTLE;
-    if (motor2pulse < ZERO_THROTTLE) motor2pulse = ZERO_THROTTLE;
-    if (motor3pulse < ZERO_THROTTLE) motor3pulse = ZERO_THROTTLE;
-    if (motor4pulse < ZERO_THROTTLE) motor4pulse = ZERO_THROTTLE;
+    if (motor1pulse < THROTTLE_MIN_SPIN) motor1pulse = THROTTLE_MIN_SPIN;
+    if (motor2pulse < THROTTLE_MIN_SPIN) motor2pulse = THROTTLE_MIN_SPIN;
+    if (motor3pulse < THROTTLE_MIN_SPIN) motor3pulse = THROTTLE_MIN_SPIN;
+    if (motor4pulse < THROTTLE_MIN_SPIN) motor4pulse = THROTTLE_MIN_SPIN;
   }
 }
 
