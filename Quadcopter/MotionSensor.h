@@ -74,7 +74,7 @@ struct angle currentAngles;
 
 // PARAMETERS
 const byte DPLF_VALUE = 1;  // set low pass filter 
-const float compFilterAlpha = 0.95; // weight applied to gyro angle estimate
+const float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1- compFilterAlpha;
 const float accelAverageAlpha = 0.05; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
@@ -119,9 +119,9 @@ bool readGyrosAccels() {
   GyX=I2c.receive()<<8|I2c.receive();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
   GyY=I2c.receive()<<8|I2c.receive();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   GyZ=I2c.receive()<<8|I2c.receive();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
-  sensorRead = true;
   lastReadingTime = thisReadingTime;
   thisReadingTime = micros();
+  sensorRead = true;
   }
   else {
     sensorRead = false;
@@ -134,15 +134,11 @@ byte getInteruptStatus(byte address){
   return readRegister(address,INT_STATUS);
 }
 
-
-
 void convertGyroReadingsToValues(){
-
   valGyX = (GyX - GyXOffset) * gyroRes;
   valGyY = (GyY - GyYOffset) * gyroRes;
   valGyZ = (GyZ - GyZOffset) * gyroRes;
 }
-
 
 void accumulateGyroChange(){
   float interval = (thisReadingTime - lastReadingTime) * MICROS_TO_SECONDS;  // convert to seconds (from micros)
@@ -151,37 +147,29 @@ void accumulateGyroChange(){
   gyroChangeAngles.yaw += valGyZ * interval;
   // Note faster alternative to this
   // use the reading value (valGy?) and do not convert to seconds
-  // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds (can be a single factor)
-
-  
+  // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds
 }
 
 void accumulateAccelReadings(){
   // can filter on the accel readings without having to convert to values until we need to calculate an actual angle
   // actually, don't need to convert to values at all because we only need relative values
   // use a cyclic buffer ot just sum and low pass filter as we go?
-
   AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
-  
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
   AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
-
 //  Serial.println(AcXAve);Serial.print('\t');
 //  Serial.println(AcYAve);Serial.print('\t');
 //  Serial.println(AcZAve);Serial.print('\n');
 }
 
-
-// consider splitting to work into parts to fit in when more time available (is that required)
-// I think that each atan operation will take about 600us
+// each atan operation will take about 600us
 void calcAnglesAccel(){
-  // this will not work well for Z
   accelAngles.roll = atan2(AcYAve,AcZAve) * RAD_TO_DEG;
   accelAngles.pitch = atan2(AcXAve,AcZAve) * RAD_TO_DEG;
-  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
+//  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 //  Serial.print("**********");Serial.print('\n');
 //  Serial.print(accelAngles.roll);Serial.print('\t');
 //  Serial.print(accelAngles.pitch);Serial.print('\t');
@@ -210,7 +198,8 @@ void initialiseCurrentAngles(){
   calcAnglesAccel();
   currentAngles.roll = accelAngles.roll;
   currentAngles.pitch = accelAngles.pitch;
-  currentAngles.yaw = accelAngles.yaw;
+//  currentAngles.yaw = accelAngles.yaw;
+  currentAngles.yaw = 0;
 }
 
 void resetGyroChange(){
@@ -223,13 +212,13 @@ void resetGyroChange(){
 void mixAngles(){
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
   currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
+//  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
+  currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;
 }
 
 void calculateVerticalAccel(){
   ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
-
 
 void calibrateGyro(int repetitions){
   long GyXSum = 0,GyYSum = 0,GyZSum = 0;
@@ -237,8 +226,9 @@ void calibrateGyro(int repetitions){
   // throw away first 100 readings
   for (i = 0; i<100;i++){
     readGyrosAccels();
+    delay(2);
   }
-  for (i = 0; i<repetitions + 100;i++){
+  for (i = 0; i<repetitions;i++){
     readGyrosAccels();
     GyXSum += GyX;
     GyYSum += GyY;
@@ -250,37 +240,4 @@ void calibrateGyro(int repetitions){
   GyZOffset = GyZSum / repetitions;
   
 }
-
-
-
-
-
-
-
-
-
-void outputForProcessingFloat(float a, float b, float c){
-  Serial.print(a);Serial.print('\t');
-  Serial.print(b);Serial.print('\t');
-  Serial.print(c);Serial.print('\t');
-  Serial.print('\n');
-}
-
-void outputForProcessingInt(int a, int b, int c){
-  Serial.print(a);Serial.print('\t');
-  Serial.print(b);Serial.print('\t');
-  Serial.print(c);Serial.print('\t');
-  Serial.print('\n');
-}
-
-
-
-
-
-
-
-
-
-
-
 

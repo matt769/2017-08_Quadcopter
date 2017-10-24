@@ -210,7 +210,7 @@ void loop() {
   }
 
   // DEBUGGING
-//    if (millis() - lastPrint >1000) {
+//    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -271,8 +271,8 @@ void loop() {
   //    Serial.print(rateRollSettings.output); Serial.print('\t');
   //    Serial.print(ratePitchSettings.output); Serial.print('\t');
 //      Serial.print(rateYawSettings.output); Serial.print('\n');
-  //    Serial.print(currentAngles.roll); Serial.print('\t');
-  //    Serial.print(currentAngles.pitch); Serial.print('\t');
+//      Serial.print(currentAngles.roll); Serial.print('\t');
+//      Serial.print(currentAngles.pitch); Serial.print('\t');
   //    Serial.print(currentAngles.yaw); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
