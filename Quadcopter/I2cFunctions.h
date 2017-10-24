@@ -1,5 +1,4 @@
 // some of these functions aren't technically related to I2C, but that's what I'm using them for here
-
 // review timeout
 
 boolean i2cTimeout;
@@ -9,7 +8,6 @@ void setupI2C(){
   I2c.timeOut(50);
   I2c.setSpeed(1);  // fast (400Hz)
 }
-
 
 // stardard write plus records if there was a timeout
 void writeRegister(byte address, byte sensorRegister, byte data) {
@@ -21,7 +19,6 @@ byte readRegister(byte address, byte sensorRegister) {
  i2cTimeout = I2c.read(address, sensorRegister, 1);
  return I2c.receive();
 } 
-
 
 byte modifyBits(byte originalByte, byte startingReplacementBit, byte noReplacementBits, byte replacementValue){
   byte clearMask;
@@ -63,6 +60,3 @@ void flushI2cBuffer(){
     I2c.receive();
   }
 }
-
-
-

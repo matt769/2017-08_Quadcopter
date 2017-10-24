@@ -81,10 +81,8 @@ const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
 
 
 void setupMotionSensor() {
-
   // ADD setting gyro range
   // ADD setting accel range
- 
   writeBitsNew(MPU_ADDRESS,PWR_MGMT_1,7,1,1);  // resets the device
   delay(50);  // delay desirable after reset
   writeRegister(MPU_ADDRESS,PWR_MGMT_1,0);  // wake up the MPU-6050
@@ -92,8 +90,6 @@ void setupMotionSensor() {
 //  writeBitsNew(MPU_ADDRESS,INT_ENABLE,0,1,1); // Enable Data Ready interupt
   writeBitsNew(MPU_ADDRESS,CONFIG,0,3,DPLF_VALUE); // set low pass filter
   writeBitsNew(MPU_ADDRESS,PWR_MGMT_1,0,3,1); // sets clock source to X axis gyro (as recommended in user guide)
-
-
   byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS,WHO_AM_I);
   if(MPU_ADDRESS_CHECK==MPU_ADDRESS){
     Serial.println(F("MPU-6050 available"));
@@ -104,7 +100,6 @@ void setupMotionSensor() {
     while(1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
   }
 }
-
 
 bool readGyrosAccels() {
   //
@@ -130,10 +125,6 @@ bool readGyrosAccels() {
   return sensorRead;
 } 
 
-byte getInteruptStatus(byte address){
-  return readRegister(address,INT_STATUS);
-}
-
 void convertGyroReadingsToValues(){
   valGyX = (GyX - GyXOffset) * gyroRes;
   valGyY = (GyY - GyYOffset) * gyroRes;
@@ -151,9 +142,7 @@ void accumulateGyroChange(){
 }
 
 void accumulateAccelReadings(){
-  // can filter on the accel readings without having to convert to values until we need to calculate an actual angle
-  // actually, don't need to convert to values at all because we only need relative values
-  // use a cyclic buffer ot just sum and low pass filter as we go?
+  // don't need to convert to values at all because we only need relative values
   AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
@@ -207,7 +196,6 @@ void resetGyroChange(){
   gyroChangeAngles.pitch = 0;
   gyroChangeAngles.yaw = 0;
 }
-
 
 void mixAngles(){
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);

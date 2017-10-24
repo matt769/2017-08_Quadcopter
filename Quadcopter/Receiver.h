@@ -1,6 +1,3 @@
-// ADD CONDITION ON MODE TO mapToPidInput()
-// change mapping depending on mode?
-
 // Control byte
 // bit 0;
 // bit 1:
@@ -19,9 +16,6 @@
 // bit 4: 
 // bits 5/6/7: battery indicator (0-7)
 
-// check if I even need 2 pipes?
-
-
 const byte addresses[][6] = {"1Node", "2Node"};
 const bool radioNumber = 1; // receiver should be 1 (or anything not 0)
 RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
@@ -29,9 +23,7 @@ RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
 const byte OK = 1;
 const byte GENERAL_ERROR = 2;
-
 // Bits 5,6,7 show battery level (that gives 8 segments)
-
 
 struct dataStruct{
   int throttle; // number 0 to 1000
@@ -42,8 +34,6 @@ struct dataStruct{
   byte alive; //this will increment every time the data is sent
   byte checksum;
 } rcPackage;
-
-
 
 const float rateMin = -120;  // DEGREES/SECOND
 const float rateMax = 120;  // DEGREES/SECOND

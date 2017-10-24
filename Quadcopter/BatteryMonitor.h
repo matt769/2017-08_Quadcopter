@@ -32,4 +32,3 @@ void setupBatteryMonitor() {
     calculateBatteryLevel();
   }
 }
-
