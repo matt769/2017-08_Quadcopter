@@ -35,10 +35,10 @@ struct pid attitudeYawSettings;
 
 PID pidRateRoll(&rateRollSettings.actual, &rateRollSettings.output, &rateRollSettings.target, rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD, DIRECT);
 PID pidRatePitch(&ratePitchSettings.actual, &ratePitchSettings.output, &ratePitchSettings.target, ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD, DIRECT);
-PID pidRateYaw(&rateYawSettings.actual, &rateYawSettings.output, &rateYawSettings.target, rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD, DIRECT);
+PID pidRateYaw(&rateYawSettings.actual, &rateYawSettings.output, &rateYawSettings.target, rateYawSettings.kP, rateYawSettings.kI, rateYawSettings.kD, REVERSE);
 PID pidAttitudeRoll(&attitudeRollSettings.actual, &attitudeRollSettings.output, &attitudeRollSettings.target, attitudeRollSettings.kP, attitudeRollSettings.kI, attitudeRollSettings.kD, DIRECT);
 PID pidAttitudePitch(&attitudePitchSettings.actual, &attitudePitchSettings.output, &attitudePitchSettings.target, attitudePitchSettings.kP, attitudePitchSettings.kI, attitudePitchSettings.kD, DIRECT);
-PID pidAttitudeYaw(&attitudeYawSettings.actual, &attitudeYawSettings.output, &attitudeYawSettings.target, attitudeYawSettings.kP, attitudeYawSettings.kI, attitudeYawSettings.kD, DIRECT);
+PID pidAttitudeYaw(&attitudeYawSettings.actual, &attitudeYawSettings.output, &attitudeYawSettings.target, attitudeYawSettings.kP, attitudeYawSettings.kI, attitudeYawSettings.kD, REVERSE);
 
 
 
@@ -81,12 +81,12 @@ void setupPid() {
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
 
-  attitudeRollSettings.kP = 0;
+  attitudeRollSettings.kP = 5.0;
   attitudeRollSettings.kI = 0;
-  attitudeRollSettings.kD = 0.00;
-  attitudePitchSettings.kP = 6.0;
+  attitudeRollSettings.kD = 0.001;
+  attitudePitchSettings.kP = 5.0;
   attitudePitchSettings.kI = 0;
-  attitudePitchSettings.kD = 0.01;
+  attitudePitchSettings.kD = 0.001;
   attitudeYawSettings.kP = 0;
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;

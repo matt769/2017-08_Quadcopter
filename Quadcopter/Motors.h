@@ -39,11 +39,10 @@ static void setupPulseTimer() {
 
 static void endPulseTimer() {
   cli();
-  TIMSK1 =  0 ; // enable the output compare interrupt
+  TIMSK1 =  0 ; // disable the output compare interrupt
   TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
   sei();
 }
-
 
 static inline void generate_esc_pulses() {
   //  counter++;

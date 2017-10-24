@@ -264,13 +264,13 @@ void loop() {
   //    Serial.print(F("Inner loop: ")); Serial.print('\t');
   //    Serial.print(rateRollSettings.actual); Serial.print('\t');
   //    Serial.print(ratePitchSettings.actual); Serial.print('\t');
-  //    Serial.print(rateYawSettings.actual); Serial.print('\t');
+//      Serial.print(rateYawSettings.actual); Serial.print('\t');
   //    Serial.print(rateRollSettings.target); Serial.print('\t');
   //    Serial.print(ratePitchSettings.target); Serial.print('\t');
-  //    Serial.print(rateYawSettings.target); Serial.print('\t');
+//      Serial.print(rateYawSettings.target); Serial.print('\t');
   //    Serial.print(rateRollSettings.output); Serial.print('\t');
   //    Serial.print(ratePitchSettings.output); Serial.print('\t');
-  //    Serial.print(rateYawSettings.output); Serial.print('\n');
+//      Serial.print(rateYawSettings.output); Serial.print('\n');
   //    Serial.print(currentAngles.roll); Serial.print('\t');
   //    Serial.print(currentAngles.pitch); Serial.print('\t');
   //    Serial.print(currentAngles.yaw); Serial.print('\t');
