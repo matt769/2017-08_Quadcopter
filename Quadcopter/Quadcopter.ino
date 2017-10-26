@@ -151,6 +151,7 @@ void loop() {
     // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings();
+ 
   }
 
 // ****************************************************************************************
@@ -195,11 +196,11 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-//    if (millis() - lastPrint >50) {
+    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
-  //    Serial.print(AcZ); Serial.print('\n');
+//      Serial.print(AcZ); Serial.print('\n');
   //
 //      Serial.println(statusForAck);
   //    Serial.print(dividerReading); Serial.print('\t');
@@ -247,8 +248,8 @@ void loop() {
   //    Serial.print(attitudeYawSettings.output); Serial.print('\n');
   //    Serial.print('\n');
   //    Serial.print(F("Inner loop: ")); Serial.print('\t');
-  //    Serial.print(rateRollSettings.actual); Serial.print('\t');
-  //    Serial.print(ratePitchSettings.actual); Serial.print('\t');
+//      Serial.print(rateRollSettings.actual); Serial.print('\t');
+//      Serial.print(ratePitchSettings.actual); Serial.print('\t');
 //      Serial.print(rateYawSettings.actual); Serial.print('\t');
   //    Serial.print(rateRollSettings.target); Serial.print('\t');
   //    Serial.print(ratePitchSettings.target); Serial.print('\t');
@@ -256,16 +257,16 @@ void loop() {
   //    Serial.print(rateRollSettings.output); Serial.print('\t');
   //    Serial.print(ratePitchSettings.output); Serial.print('\t');
 //      Serial.print(rateYawSettings.output); Serial.print('\n');
-//      Serial.print(currentAngles.roll); Serial.print('\t');
-//      Serial.print(currentAngles.pitch); Serial.print('\t');
+      Serial.print(currentAngles.roll); Serial.print('\t');
+      Serial.print(currentAngles.pitch); Serial.print('\t');
   //    Serial.print(currentAngles.yaw); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-//      Serial.print('\n');
-//      lastPrint = millis();
-//    }
+      Serial.print('\n');
+      lastPrint = millis();
+    }
 
 
 } // END LOOP
