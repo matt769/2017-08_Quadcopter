@@ -45,7 +45,6 @@ static void endPulseTimer() {
 }
 
 static inline void generate_esc_pulses() {
-  //  counter++;
   if (escIndex == 0) {
     TCNT1 = 0; // index set to 0 to indicate that refresh interval completed so reset the timer
   }
@@ -66,7 +65,7 @@ static inline void generate_esc_pulses() {
 
   escIndex++;    // increment to the next esc
   if (escIndex < 5) { // still in range of our 4 escs
-    OCR1A = TCNT1 + escTicks[escIndex];
+    OCR1A = TCNT1 + escTicks[escIndex]; // set the compare register to the pulse length for the next ESC plus the current time
     if (escIndex == 1) {
       PORTD |= B00001000;
     }
@@ -84,8 +83,8 @@ static inline void generate_esc_pulses() {
     // finished all channels so wait for the refresh period to expire before starting over
     // if there's any chance we could have gone over this value already then would need to check if so
     // but here the max time the pulses will take is 4*2000 micros (plus some small overhead)
-    // and if our refresh interval is 20000 micros then we have at least ~12000 micros of spare time
-    // if I want to reduce refresh interval below 10000micros (10ms<=>100Hz) then add this check back in
+    // and if our refresh interval is 10000 micros then we have approx ~2000 micros of spare time
+    // if I want to reduce refresh interval below 10000micros (10ms<=>100Hz) then may need to do this check
     OCR1A = REFRESH_INTERVAL_TICKS;
     escIndex = 0; // reset back to beginning
   }
@@ -108,7 +107,6 @@ void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, f
   motor4pulse = *throttle - (int) * rollOffset + (int) * pitchOffset - (int) * yawOffset;
 }
 
-// alternatively I could just cap throttle by pidRateMax*3
 void capMotorInputNearMaxThrottle() {
   int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
   int adj = maxMotorValue - THROTTLE_LIMIT;
@@ -119,15 +117,6 @@ void capMotorInputNearMaxThrottle() {
     motor4pulse -= adj;
   }
 }
-
-void capMotorInputNearMinThrottle2() {
-  // don't sent pulses to the motors until the point at which they will spin smoothly
-  if (motor1pulse < THROTTLE_MIN_SPIN) motor1pulse = ZERO_THROTTLE;
-  if (motor2pulse < THROTTLE_MIN_SPIN) motor2pulse = ZERO_THROTTLE;
-  if (motor3pulse < THROTTLE_MIN_SPIN) motor3pulse = ZERO_THROTTLE;
-  if (motor4pulse < THROTTLE_MIN_SPIN) motor4pulse = ZERO_THROTTLE;
-}
-
 
 void capMotorInputNearMinThrottle() {
   //at the very least, stop pulse going below 1000
@@ -191,12 +180,5 @@ void setMotorsCustom(int input) {
   escTicks[2] = input << 1;
   escTicks[3] = input << 1;
   escTicks[4] = input << 1;
-}
-
-void killMotors() { // REQUIRES TESTING
-  cli();
-  digitalWrite(8, HIGH);
-  while (1);
-
 }
 

@@ -1,7 +1,7 @@
 /*
 // PARAMETERS
 const int THROTTLE_LIMIT = 1500;
-const int MIN_THROTTLE = 1100;  // think not currently used
+
 const byte receiverFreq = 50;
 const int batteryFreq = 1000;
 

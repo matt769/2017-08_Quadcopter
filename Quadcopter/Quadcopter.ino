@@ -8,18 +8,18 @@
 #include <RF24.h>
 #include "PID_v1.h" // try changing timing to micros()?
 
+// These variables need to be available for the additional tabs to use
 const int THROTTLE_LIMIT = 1500;
-int throttle;  // distinct from the user input because I may need to modify
+int throttle;  // distinct from the user input because it may be modified
+bool error = false; // will be used in acknowledgement byte to indicate some error
 
 #include "Parameters.h"   // currently all commented out
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
-
 #include "Receiver.h"
 #include "Motors.h"
 #include "PIDSettings.h"
-
 
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
 bool auto_level = false;
@@ -30,7 +30,6 @@ byte MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
 byte PREV_MODE = RATE;
 
 bool KILL = 0;
-static byte countKillCommand = 0;
 
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
 //rateLoopFreq defined in PID.h
@@ -41,37 +40,26 @@ const byte receiverFreq = 50;  // although this can also be controlled on the tr
 unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
 const int batteryFreq = 1000;
-
 const byte pinStatusLed = 8;
 
-const int MIN_THROTTLE = 1100;  // CHECK THIS
-
-
-
-// DEBUG
-//unsigned long lastPrint = 0;  // for debug only
-
-// for testing
-//const unsigned long offTimer = 15000;
-//unsigned long timeOn;
-
-
+unsigned long lastPrint = 0;  // FOR DEBUGGING
+//int loopCounterRx = 0;  // DEBUGGING
+//int loopCounterRate = 0;  // DEBUGGING
+//int loopCounterAttitude = 0;  // DEBUGGING
 
 void setup() {
   Serial.begin(115200);
-
   pinMode(pinStatusLed, OUTPUT);
   digitalWrite(pinStatusLed, HIGH);
-
   setupBatteryMonitor();
   setupI2C();
   setupMotionSensor();
   setupRadio();
   setupPid();
 
-
   initialiseCurrentAngles();
 
+  // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()){
   }
@@ -81,29 +69,19 @@ void setup() {
   while (rcPackage.throttle > 50) {
     checkRadioForInput();
   }
-//    Serial.println(F("SAFETY REMOVED"));
-
+  // END ARMING
   setupMotors();
-
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
-
   pidRateModeOn();
+} // END SETUP
 
-  //  timeOn = millis();  // DEBUGGING
-
-}
-
-//int loopCounterRx = 0;  // DEBUGGING
-//int loopCounterRate = 0;  // DEBUGGING
-//int loopCounterAttitude = 0;  // DEBUGGING
-
-unsigned long lastPrint = 0;
 
 void loop() {
 
-
-  // CHECK FOR USER INPUT
+// ****************************************************************************************
+// CHECK FOR USER INPUT
+// ****************************************************************************************
   if (millis() - receiverLast > receiverFreq) {
     receiverLast += receiverFreq;
     //    loopCounterRx++;
@@ -114,7 +92,6 @@ void loop() {
       attitude_mode = getMode();
       auto_level = getAutolevel();
       if (getKill() && (throttle < 1050)) {
-        //        killMotors(); // TEST THIS
         setMotorsLow();
         digitalWrite(pinStatusLed, HIGH);
         while (1);
@@ -138,8 +115,9 @@ void loop() {
   }
 
 
-
-  // HANDLE STATE CHANGES
+// ****************************************************************************************
+// HANDLE STATE CHANGES
+// ****************************************************************************************
   if (MODE != PREV_MODE) {
     if (MODE == BALANCE) {
       pidAttitudeModeOn();
@@ -153,7 +131,10 @@ void loop() {
     }
   }
 
-  // RUN RATE LOOP
+// ****************************************************************************************
+// RUN RATE LOOP
+// includes sensor read
+// ****************************************************************************************
   if (millis() - rateLoopLast > rateLoopFreq) {
     rateLoopLast += rateLoopFreq;
     //    loopCounterRate++;
@@ -172,14 +153,15 @@ void loop() {
     accumulateAccelReadings();
   }
 
-  // RUN ATTITUDE CALCULATIONS
+// ****************************************************************************************
+// RUN ATTITUDE CALCULATIONS
+// ****************************************************************************************
   if (millis() - attitudeLoopLast > attitudeLoopFreq) {
     attitudeLoopLast += attitudeLoopFreq;
     //    loopCounterAttitude++;
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
-
     // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
     if (auto_level) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
@@ -189,7 +171,6 @@ void loop() {
         connectionLostDescend(&throttle, &ZAccel);
       }
     }
-
     // The attitude PID itself will not run unless QC is in ATTITUDE mode
     if (attitude_mode) {
       setAttitudePidActual(&currentAngles.roll, &currentAngles.pitch, &currentAngles.yaw);
@@ -199,17 +180,21 @@ void loop() {
         setRatePidTargets(&attitudeRollSettings.output, &attitudePitchSettings.output, &attitudeYawSettings.output);
         overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
       }
-
     }
   }
 
-  // CHECK BATTERY  ////////////////////////////////////////
+// ****************************************************************************************
+// CHECK BATTERY
+// ****************************************************************************************
   if (millis() - batteryLoopLast > batteryFreq) {
     batteryLoopLast += batteryFreq;
     calculateBatteryLevel();
   }
 
-  // DEBUGGING
+// ****************************************************************************************
+// DEBUGGING
+// ****************************************************************************************
+
 //    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
@@ -283,4 +268,4 @@ void loop() {
 //    }
 
 
-} // loop
+} // END LOOP
