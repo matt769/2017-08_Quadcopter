@@ -6,13 +6,14 @@
 #include <I2C.h>
 #include <SPI.h>
 #include <RF24.h>
-#include "PID_v1.h" // try changing timing to micros()?
+
 
 // These variables need to be available for the additional tabs to use
 const int THROTTLE_LIMIT = 1500;
 int throttle;  // distinct from the user input because it may be modified
 bool error = false; // will be used in acknowledgement byte to indicate some error
 
+#include "PID.h"
 #include "Parameters.h"   // currently all commented out
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
