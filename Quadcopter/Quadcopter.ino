@@ -3,9 +3,9 @@
 // for roll and pitch, P = 1.4, I = 0.05, D = 15  // P seems really low!
 // for yaw, P = 4.0, I = 0.02, D = 0
 
-#include <I2C.h>
-#include <SPI.h>
-#include <RF24.h>
+#include <I2C.h>  // http://dsscircuits.com/articles/86-articles/66-arduino-i2c-master-library
+#include <SPI.h>  // standard Arduino DPI library
+#include <RF24.h> // https://github.com/nRF24/RF24
 
 
 // These variables need to be available for the additional tabs to use
@@ -197,7 +197,7 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-    if (millis() - lastPrint >50) {
+//    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -258,16 +258,16 @@ void loop() {
   //    Serial.print(rateRollSettings.output); Serial.print('\t');
   //    Serial.print(ratePitchSettings.output); Serial.print('\t');
 //      Serial.print(rateYawSettings.output); Serial.print('\n');
-      Serial.print(currentAngles.roll); Serial.print('\t');
-      Serial.print(currentAngles.pitch); Serial.print('\t');
+//      Serial.print(currentAngles.roll); Serial.print('\t');
+//      Serial.print(currentAngles.pitch); Serial.print('\t');
   //    Serial.print(currentAngles.yaw); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-      Serial.print('\n');
-      lastPrint = millis();
-    }
+//      Serial.print('\n');
+//      lastPrint = millis();
+//    }
 
 
 } // END LOOP

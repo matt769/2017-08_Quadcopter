@@ -1,4 +1,6 @@
-// actually the ESCs really
+// ****************************************************************************************
+// Interupt routine originally based on the standard Servo library
+// ****************************************************************************************
 
 #include <avr/interrupt.h>
 #include <Arduino.h>
