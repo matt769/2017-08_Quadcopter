@@ -1,12 +1,3 @@
-// Start without using interupts or DMP
-
-// ADD setting gyro range
-// ADD setting accel range
-
-// change to defines
-// calibrate accel offsets
-
-
 // X = ROLL
 // Y = PITCH
 // Z = YAW
@@ -16,8 +7,8 @@ const byte WHO_AM_I = 117;
 const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
 const byte PWR_MGMT_1 = 107;   // Power management
 const byte CONFIG = 26;
-const byte FS_SEL = 27; //  Gyro config
-const byte AFS_SEL = 28; //  Accelerometer config
+const byte GYRO_CONFIG = 27; //  Gyro config
+const byte ACCEL_CONFIG = 28; //  Accelerometer config
 const byte INT_PIN_CFG = 55; // Interupt pin config
 const byte INT_ENABLE = 56; // Interupt enable
 const byte INT_STATUS = 58; // Interupt status
@@ -42,10 +33,10 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 int16_t GyXOffset = -419;
 int16_t GyYOffset = 328;
 int16_t GyZOffset = 206;
-const int16_t AccelXOffset = 794;   // REQUIRES DERIVING FOR NEW MPU
-const int16_t AccelYOffset = 107;   // REQUIRES DERIVING FOR NEW MPU
-const int16_t AccelZOffset = 2036;   // default is 18420, expectng 16384 (1g)
-const float accelRes = 2.0f / 32768.0f;
+const int16_t AccelXOffset = 199;   // default range, offset is 794
+const int16_t AccelYOffset = 27;   // default range, offset is 107
+const int16_t AccelZOffset = 508;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
+const float accelRes = 8.0f / 32768.0f;
 const float gyroRes = 250.0f / 32768.0f;
 
 const float MICROS_TO_SECONDS = 0.000001;
@@ -74,7 +65,9 @@ struct angle currentAngles;
 
 // PARAMETERS
 const byte DPLF_VALUE = 0;  // set low pass filter
-const float compFilterAlpha = 0.98; // weight applied to gyro angle estimate
+const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
+const byte AFS_SEL = 2;  // accel full scale range +/-8g
+const float compFilterAlpha = 0.99; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1 - compFilterAlpha;
 const float accelAverageAlpha = 0.05; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
@@ -158,14 +151,6 @@ void calcAnglesAccel() {
   accelAngles.roll = atan2(AcYAve, AcZAve) * RAD_TO_DEG;
   accelAngles.pitch = atan2(AcXAve, AcZAve) * RAD_TO_DEG;
   //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
-  //  Serial.print("**********");Serial.print('\n');
-  //  Serial.print(accelAngles.roll);Serial.print('\t');
-  //  Serial.print(accelAngles.pitch);Serial.print('\t');
-  //  Serial.print(accelAngles.yaw);Serial.print('\t');
-  //  Serial.print(currentAngles.roll);Serial.print('\t');
-  //  Serial.print(currentAngles.pitch);Serial.print('\t');
-  //  Serial.print(currentAngles.yaw);Serial.print('\n');
-  //  Serial.print("**********");Serial.print('\n');
 }
 
 // QC must be sationary when this runs
@@ -176,13 +161,7 @@ void initialiseCurrentAngles() {
     readGyrosAccels();
     accumulateAccelReadings();
     delay(5);
-    //    Serial.println(AcXAve);Serial.print('\t');
-    //  Serial.println(AcYAve);Serial.print('\t');
-    //  Serial.println(AcZAve);Serial.print('\n');
   }
-  //    Serial.print(AcXAve);Serial.print('\t');
-  //  Serial.print(AcYAve);Serial.print('\t');
-  //  Serial.print(AcZAve);Serial.print('\n');
   calcAnglesAccel();
   currentAngles.roll = accelAngles.roll;
   currentAngles.pitch = accelAngles.pitch;
@@ -197,10 +176,15 @@ void resetGyroChange() {
 }
 
 void mixAngles() {
+  // calc gyro ony angle just for testing
+  gyroAngles.roll += gyroChangeAngles.roll;
+  gyroAngles.pitch += gyroChangeAngles.pitch;
+  gyroAngles.yaw += gyroChangeAngles.yaw;  
+  
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
   currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  //  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * 0.5) + (accelAngles.yaw * 0.5);
-  currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;
+//  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;   // add wrap around
 }
 
 void calculateVerticalAccel() {

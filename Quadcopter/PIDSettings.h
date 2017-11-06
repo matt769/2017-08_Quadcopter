@@ -170,15 +170,17 @@ void setAttitudePidActual(float *roll, float *pitch, float *yaw) {
 }
 
 void connectionLostDescend(int *throttle, float *ZAccel) {
-  if (*ZAccel < 1.05) {    // ZAccel > 1 implies downwards movement, reduce throttle until I get it
+//  Serial.println(*throttle);
+  if (*ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
     *throttle -= 1;
-    if (*throttle < 1050) {
-      setMotorsLow();
-      digitalWrite(8, HIGH);
-      while (1);
-    }
+  }
+  if (*throttle < 1050) {
+    setMotorsLow();
+    digitalWrite(8, HIGH);
+    while (1);
   }
 }
+
 
 void overrideYawTarget() {
   rateYawSettings.target = 0;
