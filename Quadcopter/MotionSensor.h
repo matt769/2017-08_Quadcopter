@@ -58,7 +58,7 @@ struct angle {
 };
 
 struct angle accelAngles;
-//struct angle gyroAngles;
+struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 

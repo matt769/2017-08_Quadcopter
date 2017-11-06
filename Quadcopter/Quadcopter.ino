@@ -197,11 +197,13 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-//    if (millis() - lastPrint >50) {
+    if (millis() - lastPrint >50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
-//      Serial.print(AcZ); Serial.print('\n');
+//      Serial.print(AcZ);
+//      Serial.print('\n');
+        Serial.print(AcZAve);
   //
 //      Serial.println(statusForAck);
   //    Serial.print(dividerReading); Serial.print('\t');
@@ -265,9 +267,9 @@ void loop() {
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
-//      Serial.print('\n');
-//      lastPrint = millis();
-//    }
+      Serial.print('\n');
+      lastPrint = millis();
+    }
 
 
 } // END LOOP
