@@ -33,12 +33,25 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 int16_t GyXOffset = -419;
 int16_t GyYOffset = 328;
 int16_t GyZOffset = 206;
-const int16_t AccelXOffset = 199;   // default range, offset is 794
-const int16_t AccelYOffset = 27;   // default range, offset is 107
-const int16_t AccelZOffset = 508;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
-const float accelRes = 8.0f / 32768.0f;
 const float gyroRes = 250.0f / 32768.0f;
 
+//const int16_t AccelXOffset = 794;   // default range, offset is 794
+//const int16_t AccelYOffset = 107;   // default range, offset is 107
+//const int16_t AccelZOffset = 2036;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
+//const float accelRes = 2.0f / 32768.0f;
+
+//const int16_t AccelXOffset = 397;   // default range, offset is 794
+//const int16_t AccelYOffset = 54;   // default range, offset is 107
+//const int16_t AccelZOffset = 1018;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
+//const float accelRes = 4.0f / 32768.0f;
+
+const int16_t AccelXOffset = 199;   // default range, offset is 794
+const int16_t AccelYOffset = 27;   // default range, offset is 107
+const int16_t AccelZOffset = 509;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
+const float accelRes = 8.0f / 32768.0f;
+
+
+ 
 const float MICROS_TO_SECONDS = 0.000001;
 
 // MEASUREMENT
