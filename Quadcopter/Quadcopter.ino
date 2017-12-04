@@ -1,7 +1,3 @@
-// PID
-// in YMFC example (which is overall very similar)
-// for roll and pitch, P = 1.4, I = 0.05, D = 15  // P seems really low!
-// for yaw, P = 4.0, I = 0.02, D = 0
 
 #include <I2C.h>  // http://dsscircuits.com/articles/86-articles/66-arduino-i2c-master-library
 #include <SPI.h>  // standard Arduino DPI library
@@ -83,7 +79,7 @@ void loop() {
 // ****************************************************************************************
 // CHECK FOR USER INPUT
 // ****************************************************************************************
-  if (millis() - receiverLast > receiverFreq) {
+  if (millis() - receiverLast >= receiverFreq) {
     receiverLast += receiverFreq;
     //    loopCounterRx++;
     checkHeartbeat();  // must be done outside if(radio.available) loop
@@ -136,7 +132,7 @@ void loop() {
 // RUN RATE LOOP
 // includes sensor read
 // ****************************************************************************************
-  if (millis() - rateLoopLast > rateLoopFreq) {
+  if (millis() - rateLoopLast >= rateLoopFreq) {
     rateLoopLast += rateLoopFreq;
     //    loopCounterRate++;
     readGyrosAccels();
@@ -158,7 +154,7 @@ void loop() {
 // ****************************************************************************************
 // RUN ATTITUDE CALCULATIONS
 // ****************************************************************************************
-  if (millis() - attitudeLoopLast > attitudeLoopFreq) {
+  if (millis() - attitudeLoopLast >= attitudeLoopFreq) {
     attitudeLoopLast += attitudeLoopFreq;
     //    loopCounterAttitude++;
     calcAnglesAccel();
@@ -188,7 +184,7 @@ void loop() {
 // ****************************************************************************************
 // CHECK BATTERY
 // ****************************************************************************************
-  if (millis() - batteryLoopLast > batteryFreq) {
+  if (millis() - batteryLoopLast >= batteryFreq) {
     batteryLoopLast += batteryFreq;
     calculateBatteryLevel();
   }
@@ -197,7 +193,7 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-//    if (millis() - lastPrint >50) {
+//    if (millis() - lastPrint >= 50) {
   //
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -241,7 +237,7 @@ void loop() {
   //    Serial.println(maxLoopDuration);
   //    Serial.print(F("Outer loop: ")); Serial.print('\t');
   //    Serial.print(attitudeRollSettings.actual); Serial.print('\t');
-  //    Serial.print(attitudePitchSettings.actual); Serial.print('\t');
+//      Serial.print(attitudePitchSettings.actual); Serial.print('\t');
   //    Serial.print(attitudeYawSettings.actual); Serial.print('\t');
   //    Serial.print(attitudeRollSettings.target); Serial.print('\t');
 //      Serial.print(attitudePitchSettings.target); Serial.print('\t');

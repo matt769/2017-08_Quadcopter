@@ -77,13 +77,13 @@ struct angle currentAngles;
 
 
 // PARAMETERS
-const byte DPLF_VALUE = 0;  // set low pass filter
+const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
 const float compFilterAlpha = 0.99; // weight applied to gyro angle estimate
-const float compFilterAlphaComplement = 1 - compFilterAlpha;
+const float compFilterAlphaComplement = 1.0 - compFilterAlpha; // remove this, compiler will optimise anyway
 const float accelAverageAlpha = 0.05; // weight applied to new accel angle calculation in complementary filter
-const float accelAverageAlphaComplement = 1 - accelAverageAlpha;
+const float accelAverageAlphaComplement = 1.0 - accelAverageAlpha; // remove this, compiler will optimise anyway
 
 
 void setupMotionSensor() {
@@ -154,9 +154,6 @@ void accumulateAccelReadings() {
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
   AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
-  //  Serial.println(AcXAve);Serial.print('\t');
-  //  Serial.println(AcYAve);Serial.print('\t');
-  //  Serial.println(AcZAve);Serial.print('\n');
 }
 
 // each atan operation will take about 600us
