@@ -87,13 +87,11 @@ const float accelAverageAlphaComplement = 1.0 - accelAverageAlpha; // remove thi
 
 
 void setupMotionSensor() {
-  // ADD setting gyro range
-  // ADD setting accel range
   writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
   delay(50);  // delay desirable after reset
   writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
-  //  writeBits(MPU_ADDRESS,INT_PIN_CFG,0,1,0); // Set interupt Active High - this is already default
-  //  writeBitsNew(MPU_ADDRESS,INT_ENABLE,0,1,1); // Enable Data Ready interupt
+  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 0, 3, FS_SEL); // set gyro full scale range
+  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 0, 3, AFS_SEL); // set accel full scale range
   writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
   writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
   byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
