@@ -54,6 +54,7 @@ void setup() {
   setupRadio();
   setupPid();
 
+  calculateOffsets();
   initialiseCurrentAngles();
 
   // ARMING PROCEDURE

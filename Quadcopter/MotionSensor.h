@@ -30,28 +30,14 @@ const byte GYRO_ZOUT_H = 71;   // [15:8]
 const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
-int16_t GyXOffset = -419;
-int16_t GyYOffset = 328;
-int16_t GyZOffset = 206;
+// ax,ay,az,gx,gy,gz
+float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
+float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
+int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;
 const float gyroRes = 250.0f / 32768.0f;
-
-//const int16_t AccelXOffset = 794;   // default range, offset is 794
-//const int16_t AccelYOffset = 107;   // default range, offset is 107
-//const int16_t AccelZOffset = 2036;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
-//const float accelRes = 2.0f / 32768.0f;
-
-//const int16_t AccelXOffset = 397;   // default range, offset is 794
-//const int16_t AccelYOffset = 54;   // default range, offset is 107
-//const int16_t AccelZOffset = 1018;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
-//const float accelRes = 4.0f / 32768.0f;
-
-const int16_t AccelXOffset = 199;   // default range, offset is 794
-const int16_t AccelYOffset = 27;   // default range, offset is 107
-const int16_t AccelZOffset = 509;   // default is 18420, expectng 16384 (1g) // default range, offset is 2036
 const float accelRes = 8.0f / 32768.0f;
 
 
- 
 const float MICROS_TO_SECONDS = 0.000001;
 
 // MEASUREMENT
@@ -86,25 +72,6 @@ const float accelAverageAlpha = 0.05; // weight applied to new accel angle calcu
 const float accelAverageAlphaComplement = 1.0 - accelAverageAlpha; // remove this, compiler will optimise anyway
 
 
-void setupMotionSensor() {
-  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
-  delay(50);  // delay desirable after reset
-  writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
-  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 0, 3, FS_SEL); // set gyro full scale range
-  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 0, 3, AFS_SEL); // set accel full scale range
-  writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
-  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
-  byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
-  if (MPU_ADDRESS_CHECK == MPU_ADDRESS) {
-    Serial.println(F("MPU-6050 available"));
-  }
-  else {
-    Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
-    Serial.println(F("Try reseting..."));
-    while (1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
-  }
-}
-
 bool readGyrosAccels() {
   //
   I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
@@ -127,6 +94,62 @@ bool readGyrosAccels() {
     return false;
   }
 }
+
+
+// this depends on pre-calculated values of how the output changes with temperature
+void calculateOffsets() {
+  // first, get the temperature
+  long temperatureSum = 0;
+  int repetitions = 500;
+  for (int i = 0; i < 500; i++) {
+    readGyrosAccels();
+    delay(2);
+  }
+  for (int i = 0; i < repetitions; i++) {
+    readGyrosAccels();
+    temperatureSum += Tmp;
+    delay(2);
+  }
+  float temperature = (float)temperatureSum / (float)repetitions;
+  AccelXOffset = (int)(( temperature * offsetScale[0] ) + offsetIntercept[0]);
+  AccelYOffset = (int)(( temperature * offsetScale[1] ) + offsetIntercept[1]);
+  AccelZOffset = (int)(( temperature * offsetScale[2] ) + offsetIntercept[2] - 16384);
+  GyXOffset = (int)(( temperature * offsetScale[3] ) + offsetIntercept[3]);
+  GyYOffset = (int)(( temperature * offsetScale[4] ) + offsetIntercept[4]);
+  GyZOffset = (int)(( temperature * offsetScale[5] ) + offsetIntercept[5]);
+
+  byte accelRangeFactor = pow(2, AFS_SEL);
+  byte gyroRangeFactor = pow(2, FS_SEL);
+
+  AccelXOffset /= accelRangeFactor;
+  AccelYOffset /= accelRangeFactor;
+  AccelZOffset /= accelRangeFactor;
+  GyXOffset /= gyroRangeFactor;
+  GyYOffset /= gyroRangeFactor;
+  GyZOffset /= gyroRangeFactor;
+}
+
+
+void setupMotionSensor() {
+  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
+  delay(50);  // delay desirable after reset
+  writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
+  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 0, 3, FS_SEL); // set gyro full scale range
+  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 0, 3, AFS_SEL); // set accel full scale range
+  writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
+  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
+  byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
+  if (MPU_ADDRESS_CHECK == MPU_ADDRESS) {
+    Serial.println(F("MPU-6050 available"));
+  }
+  else {
+    Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
+    Serial.println(F("Try reseting..."));
+    while (1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
+  }
+}
+
+
 
 void convertGyroReadingsToValues() {
   valGyX = (GyX - GyXOffset) * gyroRes;
@@ -187,11 +210,11 @@ void mixAngles() {
   // calc gyro ony angle just for testing
   gyroAngles.roll += gyroChangeAngles.roll;
   gyroAngles.pitch += gyroChangeAngles.pitch;
-  gyroAngles.yaw += gyroChangeAngles.yaw;  
-  
+  gyroAngles.yaw += gyroChangeAngles.yaw;
+
   currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
   currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-//  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  //  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
   currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;   // add wrap around
 }
 
@@ -219,4 +242,5 @@ void calibrateGyro(int repetitions) {
   GyZOffset = GyZSum / repetitions;
 
 }
+
 
