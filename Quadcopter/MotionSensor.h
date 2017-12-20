@@ -128,13 +128,13 @@ void calculateOffsets() {
   GyYOffset /= gyroRangeFactor;
   GyZOffset /= gyroRangeFactor;
 
-  Serial.print(temperature); Serial.print('\t'); Serial.print((float)temperature/340+36.53); Serial.print('\t');
-  Serial.print(AccelXOffset); Serial.print('\t');
-  Serial.print(AccelYOffset); Serial.print('\t');
-  Serial.print(AccelZOffset); Serial.print('\t');
-  Serial.print(GyXOffset); Serial.print('\t');
-  Serial.print(GyYOffset); Serial.print('\t');
-  Serial.print(GyZOffset); Serial.print('\n');
+//  Serial.print(temperature); Serial.print('\t'); Serial.print((float)temperature/340+36.53); Serial.print('\t');
+//  Serial.print(AccelXOffset); Serial.print('\t');
+//  Serial.print(AccelYOffset); Serial.print('\t');
+//  Serial.print(AccelZOffset); Serial.print('\t');
+//  Serial.print(GyXOffset); Serial.print('\t');
+//  Serial.print(GyYOffset); Serial.print('\t');
+//  Serial.print(GyZOffset); Serial.print('\n');
 
 }
 

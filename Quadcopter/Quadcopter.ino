@@ -200,8 +200,8 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-//    if (millis() - lastPrint >= 1000) {
-//        lastPrint += 1000;
+//    if (millis() - lastPrint >= 50) {
+//        lastPrint += 50;
         
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -274,11 +274,10 @@ void loop() {
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
 
-//      Serial.print(currentAngles.roll); Serial.print('\t');
-//      Serial.print(accelAngles.roll); Serial.print('\t');
-//      Serial.print(gyroAngles.roll); Serial.print('\t');
+//      Serial.print(currentAngles.pitch); Serial.print('\t');
+//      Serial.print(accelAngles.pitch); Serial.print('\t');
+//      Serial.print(gyroAngles.pitch); Serial.print('\t');
 //      Serial.print('\n');
-//      
 //    }
 
 
