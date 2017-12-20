@@ -9,7 +9,7 @@ const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidAttitudeMin = -100;  // DEG/S
 const int pidAttitudeMax = 100;  // DEG/S
 
-const byte rateLoopFreq = 2;  // 500Hz
+const byte rateLoopFreq = 1;  // 500Hz
 const byte attitudeLoopFreq = 10; // 100Hz
 
 const byte ratePIDFreq = 10;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together

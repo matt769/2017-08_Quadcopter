@@ -127,6 +127,15 @@ void calculateOffsets() {
   GyXOffset /= gyroRangeFactor;
   GyYOffset /= gyroRangeFactor;
   GyZOffset /= gyroRangeFactor;
+
+  Serial.print(temperature); Serial.print('\t'); Serial.print((float)temperature/340+36.53); Serial.print('\t');
+  Serial.print(AccelXOffset); Serial.print('\t');
+  Serial.print(AccelYOffset); Serial.print('\t');
+  Serial.print(AccelZOffset); Serial.print('\t');
+  Serial.print(GyXOffset); Serial.print('\t');
+  Serial.print(GyYOffset); Serial.print('\t');
+  Serial.print(GyZOffset); Serial.print('\n');
+
 }
 
 
@@ -134,8 +143,8 @@ void setupMotionSensor() {
   writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
   delay(50);  // delay desirable after reset
   writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
-  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 0, 3, FS_SEL); // set gyro full scale range
-  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 0, 3, AFS_SEL); // set accel full scale range
+  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 3, 2, FS_SEL); // set gyro full scale range
+  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 3, 2, AFS_SEL); // set accel full scale range
   writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
   writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
   byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
@@ -169,12 +178,20 @@ void accumulateGyroChange() {
 
 void accumulateAccelReadings() {
   // don't need to convert to values at all because we only need relative values
+//  Serial.print(AcX); Serial.print('\t');
+//  Serial.print(AcY); Serial.print('\t');
+//  Serial.print(AcZ); Serial.print('\t');
   AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
   AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
+//  Serial.print(AcX); Serial.print('\t');
+//  Serial.print(AcY); Serial.print('\t');
+//  Serial.print(AcZ); Serial.print('\n');
+
+  
 }
 
 // each atan operation will take about 600us
@@ -198,6 +215,9 @@ void initialiseCurrentAngles() {
   currentAngles.pitch = accelAngles.pitch;
   //  currentAngles.yaw = accelAngles.yaw;
   currentAngles.yaw = 0;
+  gyroAngles.roll = currentAngles.roll;
+  gyroAngles.pitch = currentAngles.pitch;
+  gyroAngles.yaw = currentAngles.yaw;
 }
 
 void resetGyroChange() {
@@ -240,6 +260,9 @@ void calibrateGyro(int repetitions) {
   GyXOffset = GyXSum / repetitions;
   GyYOffset = GyYSum / repetitions;
   GyZOffset = GyZSum / repetitions;
+  Serial.print(GyXOffset); Serial.print('\t');
+  Serial.print(GyYOffset); Serial.print('\t');
+  Serial.print(GyZOffset); Serial.print('\n');
 
 }
 

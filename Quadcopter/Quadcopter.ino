@@ -41,8 +41,8 @@ const byte pinStatusLed = 8;
 
 unsigned long lastPrint = 0;  // FOR DEBUGGING
 //int loopCounterRx = 0;  // DEBUGGING
-//int loopCounterRate = 0;  // DEBUGGING
-//int loopCounterAttitude = 0;  // DEBUGGING
+int loopCounterRate = 0;  // DEBUGGING
+int loopCounterAttitude = 0;  // DEBUGGING
 
 void setup() {
   Serial.begin(115200);
@@ -55,6 +55,7 @@ void setup() {
   setupPid();
 
   calculateOffsets();
+//  calibrateGyro(500);
   initialiseCurrentAngles();
 
   // ARMING PROCEDURE
@@ -72,6 +73,11 @@ void setup() {
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
   pidRateModeOn();
+  unsigned long startTime = millis();
+  rateLoopLast = startTime;
+  attitudeLoopLast = startTime;
+  receiverLast = startTime;
+  batteryLoopLast = startTime;
 } // END SETUP
 
 
@@ -135,7 +141,7 @@ void loop() {
 // ****************************************************************************************
   if (millis() - rateLoopLast >= rateLoopFreq) {
     rateLoopLast += rateLoopFreq;
-    //    loopCounterRate++;
+        loopCounterRate++;
     readGyrosAccels();
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
@@ -157,7 +163,7 @@ void loop() {
 // ****************************************************************************************
   if (millis() - attitudeLoopLast >= attitudeLoopFreq) {
     attitudeLoopLast += attitudeLoopFreq;
-    //    loopCounterAttitude++;
+        loopCounterAttitude++;
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
@@ -194,8 +200,9 @@ void loop() {
 // DEBUGGING
 // ****************************************************************************************
 
-//    if (millis() - lastPrint >= 50) {
-  //
+//    if (millis() - lastPrint >= 1000) {
+//        lastPrint += 1000;
+        
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
 //      Serial.print(AcZ);
@@ -222,8 +229,10 @@ void loop() {
   //    functionTimeCounter = 0;
   //
   //    Serial.println(loopCounterRx); Serial.print('\t');
-  //    Serial.println(loopCounterRate); Serial.print('\t');
-  //    Serial.println(loopCounterAttitude); Serial.print('\n');
+//      Serial.print(loopCounterRate); Serial.print('\t');
+//      loopCounterRate = 0;
+//      Serial.print(loopCounterAttitude); Serial.print('\n');
+//      loopCounterAttitude = 0;
   //    loopCounter = 0;
   //
   //    Serial.print(throttle); Serial.print('\t');
@@ -259,7 +268,7 @@ void loop() {
 //      Serial.print(rateYawSettings.output); Serial.print('\n');
 //      Serial.print(currentAngles.roll); Serial.print('\t');
 //      Serial.print(currentAngles.pitch); Serial.print('\t');
-  //    Serial.print(currentAngles.yaw); Serial.print('\t');
+//      Serial.print(currentAngles.yaw); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.roll); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.pitch); Serial.print('\t');
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
@@ -269,7 +278,7 @@ void loop() {
 //      Serial.print(accelAngles.roll); Serial.print('\t');
 //      Serial.print(gyroAngles.roll); Serial.print('\t');
 //      Serial.print('\n');
-//      lastPrint = millis();
+//      
 //    }
 
 
