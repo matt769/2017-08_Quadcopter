@@ -13,7 +13,7 @@ const byte rateLoopFreq = 1;  // 1kHz
 const byte attitudeLoopFreq = 10; // 100Hz
 
 const byte ratePIDFreq = 10;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together
-const byte attitudePIDFreq = 20;
+const byte attitudePIDFreq = 10;
 
 struct pid {
   float actual;
