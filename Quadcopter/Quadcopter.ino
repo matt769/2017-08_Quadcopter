@@ -6,8 +6,11 @@
 
 // These variables need to be available for the additional tabs to use
 const int THROTTLE_LIMIT = 1500;
+const int ZERO_THROTTLE = 1000;
+const int THROTTLE_MIN_SPIN = 1125;
 int throttle;  // distinct from the user input because it may be modified
 bool error = false; // will be used in acknowledgement byte to indicate some error
+
 
 #include "PID.h"
 #include "Parameters.h"   // currently all commented out

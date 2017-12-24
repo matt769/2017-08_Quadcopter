@@ -148,7 +148,13 @@ bool checkHeartbeat(){
 //}
 
 void mapThrottle(int *throttle){
-  *throttle = map(rcPackage.throttle,0,255,1000,THROTTLE_LIMIT);
+  if (rcPackage.throttle < 12){
+    *throttle = 0;
+  }
+  else {
+    *throttle = map(rcPackage.throttle,0,255,THROTTLE_MIN_SPIN,THROTTLE_LIMIT);
+  }
+
 }
 
 void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
