@@ -152,7 +152,6 @@ void loop() {
     readGyrosAccels();
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
-//    needRecalcPulses = pidRateUpdate();
     // if PID has updated the outputs then recalculate the required motor pulses
       if(pidRateUpdate()){
         // calculate required pulse length
@@ -169,11 +168,7 @@ void loop() {
 
   
 
-  updateMotors(); // update the actual esc pulses
-
-//  Serial.print(motor4pulse); Serial.print('\t');
-//  Serial.print(needRecalcPulses); Serial.print('\t');
-//  Serial.print(needUpdatePulses); Serial.print('\n');
+  updateMotors(); // try and update the actual esc pulses in case it was locked previously
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
