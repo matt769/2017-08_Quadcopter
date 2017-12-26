@@ -196,7 +196,65 @@ void calcEndTimes() {
 
 // needRecalcPulses should be true when the rate PID has produced a new output
 // this function should be run as quickly as possible - maybe have at multiple points throughout the program?
+void updateMotorsTST() {
+  // calculate required counter ticks
+
+  resetOrder(); // reset escOrderMain
+  calculateRequiredTicks(); // populate escTicks
+  Serial.print("u"); Serial.print('\t');
+  Serial.print(motor4pulse); Serial.print('\t');
+  Serial.print(escTicks[3]); Serial.print('\t');
+
+
+  sortPulses(); // reorder escOrderMain and escTicks
+  calcEndTimes(); // what times should these finish - populate escTicksEndMain
+  Serial.print(escTicksEndMain[3]); Serial.print('\t');
+  Serial.print(escTicksEndIsr[3]); Serial.print('\n');
+  cli();
+  copyPulseInfoToIsrVariables();
+  sei();
+}
+
+
 void updateMotors() {
+  if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
+
+    // calculate required counter ticks
+    resetOrder(); // reset escOrderMain
+    calculateRequiredTicks(); // populate escTicks
+//  Serial.print("u"); Serial.print('\t');
+//  Serial.print(motor4pulse); Serial.print('\t');
+//  Serial.print(escTicks[3]); Serial.print('\t');
+    sortPulses(); // reorder escOrderMain and escTicks
+    calcEndTimes(); // what times should these finish - populate escTicksEndMain
+//  Serial.print(escTicksEndMain[3]); Serial.print('\t');
+//  Serial.print(escTicksEndIsr[3]); Serial.print('\n');
+    needRecalcPulses = false;
+    needUpdatePulses = true;
+
+    //        Serial.print(escOrderMain[0]); Serial.print('\t');
+    //        Serial.print(escTicks[0]); Serial.print('\n');
+    //        Serial.print(escOrderMain[1]); Serial.print('\t');
+    //        Serial.print(escTicks[1]); Serial.print('\n');
+    //        Serial.print(escOrderMain[2]); Serial.print('\t');
+    //        Serial.print(escTicks[2]); Serial.print('\n');
+    //        Serial.print(escOrderMain[3]); Serial.print('\t');
+    //        Serial.print(escTicks[3]); Serial.print('\n');
+    //        Serial.print('\n');
+
+  }
+  if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
+    //    Serial.print('\t');Serial.println(lockPulses);
+    cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
+    if (!lockPulses) {
+      copyPulseInfoToIsrVariables();
+      needUpdatePulses = false;
+    }
+    sei();
+  }
+}
+
+void updateMotorsBKP() {
   if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
 
     // calculate required counter ticks
@@ -207,19 +265,19 @@ void updateMotors() {
     needRecalcPulses = false;
     needUpdatePulses = true;
 
-//        Serial.print(escOrderMain[0]); Serial.print('\t');
-//        Serial.print(escTicks[0]); Serial.print('\n');
-//        Serial.print(escOrderMain[1]); Serial.print('\t');
-//        Serial.print(escTicks[1]); Serial.print('\n');
-//        Serial.print(escOrderMain[2]); Serial.print('\t');
-//        Serial.print(escTicks[2]); Serial.print('\n');
-//        Serial.print(escOrderMain[3]); Serial.print('\t');
-//        Serial.print(escTicks[3]); Serial.print('\n');
-//        Serial.print('\n');
-    
+    //        Serial.print(escOrderMain[0]); Serial.print('\t');
+    //        Serial.print(escTicks[0]); Serial.print('\n');
+    //        Serial.print(escOrderMain[1]); Serial.print('\t');
+    //        Serial.print(escTicks[1]); Serial.print('\n');
+    //        Serial.print(escOrderMain[2]); Serial.print('\t');
+    //        Serial.print(escTicks[2]); Serial.print('\n');
+    //        Serial.print(escOrderMain[3]); Serial.print('\t');
+    //        Serial.print(escTicks[3]); Serial.print('\n');
+    //        Serial.print('\n');
+
   }
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
-//    Serial.print('\t');Serial.println(lockPulses);
+    //    Serial.print('\t');Serial.println(lockPulses);
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
       copyPulseInfoToIsrVariables();
@@ -228,8 +286,6 @@ void updateMotors() {
     sei();
   }
 }
-
-
 
 
 // ****************************************************************************************

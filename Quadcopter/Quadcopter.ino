@@ -84,6 +84,7 @@ void setup() {
 } // END SETUP
 
 
+
 void loop() {
 
   // ****************************************************************************************
@@ -121,6 +122,7 @@ void loop() {
     }
   }
 
+//  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // HANDLE STATE CHANGES
@@ -138,6 +140,8 @@ void loop() {
     }
   }
 
+//  updateMotors(); // update the actual esc pulses
+
   // ****************************************************************************************
   // RUN RATE LOOP
   // includes sensor read
@@ -148,13 +152,14 @@ void loop() {
     readGyrosAccels();
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
-    needRecalcPulses = pidRateUpdate();
+//    needRecalcPulses = pidRateUpdate();
     // if PID has updated the outputs then recalculate the required motor pulses
       if(pidRateUpdate()){
         // calculate required pulse length
         calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
         capMotorInputNearMaxThrottle();
         capMotorInputNearMinThrottle();
+        updateMotors();
         needRecalcPulses = true;  // will trigger esc routine update
       }
     // required for attitude calculations
@@ -162,8 +167,13 @@ void loop() {
     accumulateAccelReadings();
   }
 
+  
 
   updateMotors(); // update the actual esc pulses
+
+//  Serial.print(motor4pulse); Serial.print('\t');
+//  Serial.print(needRecalcPulses); Serial.print('\t');
+//  Serial.print(needUpdatePulses); Serial.print('\n');
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
@@ -195,6 +205,8 @@ void loop() {
     }
   }
 
+//  updateMotors(); // update the actual esc pulses
+
   // ****************************************************************************************
   // CHECK BATTERY
   // ****************************************************************************************
@@ -203,6 +215,8 @@ void loop() {
     calculateBatteryLevel();
   }
 
+//  updateMotors(); // update the actual esc pulses
+  
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
