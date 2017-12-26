@@ -167,7 +167,7 @@ void resetOrder() {
 void sortPulses() {
   uint16_t j;
   uint8_t jIdx;
-  uint8_t k;
+  int16_t k;
   for (uint8_t i = 1; i < 4; ++i)
   {
     j = escTicks[i];
@@ -190,14 +190,15 @@ void calcEndTimes() {
   escTicksEndMain[3] = escTicks[3] + (4 * PULSE_GAP);
 }
 
+
+
+
+
 // needRecalcPulses should be true when the rate PID has produced a new output
 // this function should be run as quickly as possible - maybe have at multiple points throughout the program?
 void updateMotors() {
   if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
-    // calculate required pulse length
-    calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
-    capMotorInputNearMaxThrottle();
-    capMotorInputNearMinThrottle();
+
     // calculate required counter ticks
     resetOrder(); // reset escOrderMain
     calculateRequiredTicks(); // populate escTicks
@@ -205,8 +206,20 @@ void updateMotors() {
     calcEndTimes(); // what times should these finish - populate escTicksEndMain
     needRecalcPulses = false;
     needUpdatePulses = true;
+
+//        Serial.print(escOrderMain[0]); Serial.print('\t');
+//        Serial.print(escTicks[0]); Serial.print('\n');
+//        Serial.print(escOrderMain[1]); Serial.print('\t');
+//        Serial.print(escTicks[1]); Serial.print('\n');
+//        Serial.print(escOrderMain[2]); Serial.print('\t');
+//        Serial.print(escTicks[2]); Serial.print('\n');
+//        Serial.print(escOrderMain[3]); Serial.print('\t');
+//        Serial.print(escTicks[3]); Serial.print('\n');
+//        Serial.print('\n');
+    
   }
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
+//    Serial.print('\t');Serial.println(lockPulses);
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
       copyPulseInfoToIsrVariables();

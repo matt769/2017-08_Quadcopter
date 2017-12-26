@@ -150,8 +150,12 @@ void loop() {
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
     needRecalcPulses = pidRateUpdate();
     // if PID has updated the outputs then recalculate the required motor pulses
-      if(needRecalcPulses){
-        updateMotors();
+      if(pidRateUpdate()){
+        // calculate required pulse length
+        calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
+        capMotorInputNearMaxThrottle();
+        capMotorInputNearMinThrottle();
+        needRecalcPulses = true;  // will trigger esc routine update
       }
     // required for attitude calculations
     accumulateGyroChange();
@@ -159,8 +163,7 @@ void loop() {
   }
 
 
-  updateMotors(); // in case the esc pulse sequence was active previously, keep checking so that it can be update asap
-                  // if new info is available
+  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
@@ -242,11 +245,29 @@ void loop() {
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
   //      printPackage();
-  //      Serial.print(motor1pulse); Serial.print('\t');
-  //      Serial.print(motor2pulse); Serial.print('\n');
-  //      Serial.print(motor3pulse); Serial.print('\t');
-  //      Serial.print(motor4pulse); Serial.print('\n');
-  //      Serial.print('\n');
+//        Serial.print(motor1pulse); Serial.print('\t');
+//        Serial.print(motor2pulse); Serial.print('\n');
+//        Serial.print(motor3pulse); Serial.print('\t');
+//        Serial.print(motor4pulse); Serial.print('\n');
+//        Serial.print('\n');
+
+
+
+//
+//        Serial.print(motor1pulse); Serial.print('\t');
+//        Serial.print(motor2pulse); Serial.print('\t');
+//        Serial.print(motor3pulse); Serial.print('\t');
+//        Serial.print(motor4pulse); Serial.print('\n');
+//        Serial.print(escOrderMain[0]); Serial.print('\t');
+//        Serial.print(escTicks[0]); Serial.print('\n');
+//        Serial.print(escOrderMain[1]); Serial.print('\t');
+//        Serial.print(escTicks[1]); Serial.print('\n');
+//        Serial.print(escOrderMain[2]); Serial.print('\t');
+//        Serial.print(escTicks[2]); Serial.print('\n');
+//        Serial.print(escOrderMain[3]); Serial.print('\t');
+//        Serial.print(escTicks[3]); Serial.print('\n');
+//        Serial.print('\n');
+        
   //
   //    Serial.println(maxLoopDuration);
   //    Serial.print(F("Outer loop: ")); Serial.print('\t');
