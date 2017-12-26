@@ -2,8 +2,8 @@
 // Interupt routine originally based on the standard Servo library
 // ****************************************************************************************
 
-#include <avr/interrupt.h>
-#include <Arduino.h>
+//#include <avr/interrupt.h>
+//#include <Arduino.h>
 
 const uint16_t REFRESH_INTERVAL_TICKS = 20000;  // how often ESC pulses will be sent //20000 ticks = 10000us = 10ms <=> 100Hz (assumes prescaler of 8)
 int volatile escTicks[5]; // not certain why needs to be volatile but pulses don't work without this
@@ -18,9 +18,6 @@ int motor1pulse;
 int motor2pulse;
 int motor3pulse;
 int motor4pulse;
-
-
-
 
 
 // ****************************************************************************************
