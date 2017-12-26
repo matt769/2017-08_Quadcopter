@@ -1,13 +1,16 @@
-// ****************************************************************************************
-// Interupt routine originally based on the standard Servo library
-// ****************************************************************************************
-
-//#include <avr/interrupt.h>
-//#include <Arduino.h>
-
-const uint16_t REFRESH_INTERVAL_TICKS = 20000;  // how often ESC pulses will be sent //20000 ticks = 10000us = 10ms <=> 100Hz (assumes prescaler of 8)
-int volatile escTicks[5]; // not certain why needs to be volatile but pulses don't work without this
-byte escIndex = 0;
+const uint16_t CYCLE_TICKS = 10000; // 10000ticks, 5000us, 5ms, 200Hz
+uint16_t escTicks[4];
+uint16_t escTicksEndMain[4];
+uint16_t volatile escTicksEndIsr[4];  // copy to use in IRS
+uint8_t escOrderMain[4];
+uint8_t volatile escOrderIsr[4];  // copy to use in IRS
+uint8_t escIndex = 0;
+bool volatile lockPulses = false;
+bool needUpdatePulses = false; // this needs to be set to true after the rate PID runs
+bool needRecalcPulses = false;  // this needs to be set to true after the new pulse information is calulated
+uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
+const uint16_t PULSE_GAP = 200;  // gap between starting pulses, in ticks
+const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
 
 const byte pinMotor1 = 3; // front left (CW)
 const byte pinMotor2 = 6; // front right (CCW)
@@ -21,18 +24,19 @@ int motor4pulse;
 
 
 // ****************************************************************************************
-//        FUNCTIONS FOR ESC PULSE CREATION
+//        FUNCTIONS FOR ESC CREATION
 // ****************************************************************************************
 
 // configure timer1 for generating pulses for the ESCs
 static void setupPulseTimer() {
+  cli();
   TCCR1A = 0;             // normal counting mode
   TCCR1B = _BV(CS11);     // set prescaler of 8 - 2 ticks per microsecond
   TCNT1 = 0;              // clear the timer count
   TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
   TIMSK1 |=  _BV(OCIE1A) ; // enable the output compare interrupt
+  OCR1A = CYCLE_TICKS;
   sei(); // enable interrupts
-  OCR1A = REFRESH_INTERVAL_TICKS;
 }
 
 static void endPulseTimer() {
@@ -43,48 +47,47 @@ static void endPulseTimer() {
 }
 
 static inline void generate_esc_pulses() {
-  if (escIndex == 0) {
-    TCNT1 = 0; // index set to 0 to indicate that refresh interval completed so reset the timer
-  }
-  else {  // interupt has fired and we're not yet at end of pulse sequence
-    if (escIndex == 1) {
-      PORTD &= B11110111; // set bit/pin 3 LOW
+
+  if (escPulseGenerationCycle == 0) {  // interupt has fired and we're starting the pulses
+    uint8_t currentEsc = escOrderIsr[escIndex];
+    if (currentEsc == 1) PORTD |= B00001000; // set bit/pin 3 HIGH
+    if (currentEsc == 2) PORTD |= B01000000; // set bit/pin 6 HIGH
+    if (currentEsc == 3) PORTD |= B00010000; // set bit/pin 4 HIGH
+    if (currentEsc == 4) PORTD |= B00100000; // set bit/pin 5 HIGH
+    escIndex++;
+    if (escIndex > 3) {
+      escIndex = 0;
+      OCR1A = escTicksEndIsr[0]; // set to end time of first pulse
+      escPulseGenerationCycle = 1;
     }
-    if (escIndex == 2) {
-      PORTD &= B10111111; // set bit/pin 6 LOW
-    }
-    if (escIndex == 3) {
-      PORTD &= B11101111; // set bit/pin 4 LOW
-    }
-    if (escIndex == 4) {
-      PORTD &= B11011111; // set bit/pin 5 LOW
+    else {
+      OCR1A = escTicksStart[escIndex];  // next interrupt when the next pulse needs to start
     }
   }
 
-  escIndex++;    // increment to the next esc
-  if (escIndex < 5) { // still in range of our 4 escs
-    OCR1A = TCNT1 + escTicks[escIndex]; // set the compare register to the pulse length for the next ESC plus the current time
-    if (escIndex == 1) {
-      PORTD |= B00001000;
+  else if (escPulseGenerationCycle == 1) {  // interupt has fired and we're ending the pulses
+    uint8_t currentEsc = escOrderIsr[escIndex];
+    if (currentEsc == 1) PORTD &= B11110111;
+    if (currentEsc == 2) PORTD &= B10111111;
+    if (currentEsc == 3) PORTD &= B11101111;
+    if (currentEsc == 4) PORTD &= B11011111;
+    escIndex++;
+    if (escIndex > 3) {
+      OCR1A = CYCLE_TICKS;
+      escIndex = 0;
+      escPulseGenerationCycle = 2; // reset back to beginning
+      lockPulses = false;   // it's now ok to update the pulse length
     }
-    if (escIndex == 2) {
-      PORTD |= B01000000;
-    }
-    if (escIndex == 3) {
-      PORTD |= B00010000;
-    }
-    if (escIndex == 4) {
-      PORTD |= B00100000;
+    else {
+      OCR1A = escTicksEndIsr[escIndex];
     }
   }
-  else {
-    // finished all channels so wait for the refresh period to expire before starting over
-    // if there's any chance we could have gone over this value already then would need to check if so
-    // but here the max time the pulses will take is 4*2000 micros (plus some small overhead)
-    // and if our refresh interval is 10000 micros then we have approx ~2000 micros of spare time
-    // if I want to reduce refresh interval below 10000micros (10ms<=>100Hz) then may need to do this check
-    OCR1A = REFRESH_INTERVAL_TICKS;
-    escIndex = 0; // reset back to beginning
+
+  else {  // i.e. escPulseGenerationCycle = 2;
+    TCNT1 = 0;  // reset the timer
+    OCR1A = PULSE_GAP;  // start again after the standard gap
+    escPulseGenerationCycle = 0; // next time interupt fire we want to start the pulses
+    lockPulses = true;  // this is the begging of the pulse train, so don't allow the pulse lengths to be updated until this cycle is 'finished'
   }
 }
 
@@ -92,10 +95,84 @@ ISR(TIMER1_COMPA_vect) {
   generate_esc_pulses();
 }
 
+void copyPulseInfoToIsrVariables() {
+  cli();
+  escOrderIsr[0] = escOrderMain[0];
+  escOrderIsr[1] = escOrderMain[1];
+  escOrderIsr[2] = escOrderMain[2];
+  escOrderIsr[3] = escOrderMain[3];
+  escTicksEndIsr[0] = escTicksEndMain[0];
+  escTicksEndIsr[1] = escTicksEndMain[1];
+  escTicksEndIsr[2] = escTicksEndMain[2];
+  escTicksEndIsr[3] = escTicksEndMain[3];
+  sei();
+}
+
+void calculateRequiredTicks() {
+  escTicks[0] = motor1pulse << 1;
+  escTicks[1] = motor2pulse << 1;
+  escTicks[2] = motor3pulse << 1;
+  escTicks[3] = motor4pulse << 1;
+}
+
+void resetOrder() {
+  escOrderMain[0] = 1;
+  escOrderMain[1] = 2;
+  escOrderMain[2] = 3;
+  escOrderMain[3] = 4;
+}
+
+void sortPulses() {
+  uint16_t j;
+  uint8_t jIdx;
+  uint8_t k;
+  for (uint8_t i = 1; i < 4; ++i)
+  {
+    j = escTicks[i];
+    jIdx = escOrderMain[i];
+    k;
+    for (k = i - 1; (k >= 0) && (j < escTicks[k]); k--)
+    {
+      escTicks[k + 1] = escTicks[k];
+      escOrderMain[k + 1] = escOrderMain[k];
+    }
+    escTicks[k + 1] = j;
+    escOrderMain[k + 1] = jIdx;
+  }
+}
+
+void calcEndTimes() {
+  escTicksEndMain[0] = escTicks[0] + PULSE_GAP;
+  escTicksEndMain[1] = escTicks[1] + (2 * PULSE_GAP);
+  escTicksEndMain[2] = escTicks[2] + (3 * PULSE_GAP);
+  escTicksEndMain[3] = escTicks[3] + (4 * PULSE_GAP);
+}
+
+// needRecalcPulses should be true when the rate PID has produced a new output
+// this function should be run as quickly as possible - maybe have at multiple points throughout the program?
+void updateMotors() {
+  if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
+    resetOrder(); // reset escOrderMain
+    calculateRequiredTicks(); // populate escTicks
+    sortPulses(); // reorder escOrderMain and escTicks
+    calcEndTimes(); // what times should these finish - populate escTicksEndMain
+    needRecalcPulses = false;
+    needUpdatePulses = true;
+  }
+  if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
+    cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
+    if (!lockPulses) {
+      copyPulseInfoToIsrVariables();
+      needUpdatePulses = false;
+    }
+    sei();
+  }
+}
+
 
 
 // ****************************************************************************************
-//        FUNCTIONS FOR CALCULATING ESC PULSE LENGTH
+//        FUNCTIONS FOR CALCULATING MOTOR PULSES
 // ****************************************************************************************
 
 void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
@@ -133,12 +210,6 @@ void capMotorInputNearMinThrottle() {
   }
 }
 
-void updateMotors() {
-  escTicks[1] = motor1pulse << 1;  // multiply by 2 // 2 ticks per microsecond // compiler probably does bitshift anyway
-  escTicks[2] = motor2pulse << 1;
-  escTicks[3] = motor3pulse << 1;
-  escTicks[4] = motor4pulse << 1;
-}
 
 // ****************************************************************************************
 //        SETUP FOR MAIN FILE
