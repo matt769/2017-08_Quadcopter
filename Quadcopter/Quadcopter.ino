@@ -18,8 +18,8 @@ bool error = false; // will be used in acknowledgement byte to indicate some err
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "Receiver.h"
-#include "Motors.h"
 #include "PIDSettings.h"
+#include "Motors.h"
 
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
 bool auto_level = false;
@@ -148,19 +148,19 @@ void loop() {
     readGyrosAccels();
     convertGyroReadingsToValues();
     setRatePidActual(&valGyX, &valGyY, &valGyZ);
-    // if PID has updated the outputs then recalculate the required motor pulses
     needRecalcPulses = pidRateUpdate();
-    if (needRecalcPulses) {
-      calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
-      capMotorInputNearMaxThrottle();
-      capMotorInputNearMinThrottle();
-      updateMotors();
-    }
+    // if PID has updated the outputs then recalculate the required motor pulses
+      if(needRecalcPulses){
+        updateMotors();
+      }
     // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings();
-
   }
+
+
+  updateMotors(); // in case the esc pulse sequence was active previously, keep checking so that it can be update asap
+                  // if new info is available
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
@@ -204,8 +204,8 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
 
-  //    if (millis() - lastPrint >= 50) {
-  //        lastPrint += 50;
+//      if (millis() - lastPrint >= 1000) {
+//          lastPrint += 1000;
 
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -233,10 +233,10 @@ void loop() {
   //    functionTimeCounter = 0;
   //
   //    Serial.println(loopCounterRx); Serial.print('\t');
-  //      Serial.print(loopCounterRate); Serial.print('\t');
-  //      loopCounterRate = 0;
-  //      Serial.print(loopCounterAttitude); Serial.print('\n');
-  //      loopCounterAttitude = 0;
+//        Serial.print(loopCounterRate); Serial.print('\t');
+//        loopCounterRate = 0;
+//        Serial.print(loopCounterAttitude); Serial.print('\n');
+//        loopCounterAttitude = 0;
   //    loopCounter = 0;
   //
   //    Serial.print(throttle); Serial.print('\t');
@@ -282,7 +282,7 @@ void loop() {
   //      Serial.print(accelAngles.pitch); Serial.print('\t');
   //      Serial.print(gyroAngles.pitch); Serial.print('\t');
   //      Serial.print('\n');
-  //    }
+//      }
 
 
 } // END LOOP

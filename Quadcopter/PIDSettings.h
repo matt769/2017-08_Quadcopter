@@ -10,10 +10,10 @@ const int pidAttitudeMin = -100;  // DEG/S
 const int pidAttitudeMax = 100;  // DEG/S
 
 const byte rateLoopFreq = 1;  // 1kHz
-const byte attitudeLoopFreq = 10; // 100Hz
+const byte attitudeLoopFreq = 5; // 100Hz
 
-const byte ratePIDFreq = 10;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together
-const byte attitudePIDFreq = 10;
+const byte ratePIDFreq = 5;  // 10ms <=> 100Hz of motor refresh // ideally tie the values together
+const byte attitudePIDFreq = 5;
 
 struct pid {
   float actual;
@@ -69,20 +69,20 @@ void setupPid() {
 
   rateRollSettings.kP = 1.2;
   rateRollSettings.kI = 0;
-  rateRollSettings.kD = 0.0025;
+  rateRollSettings.kD = 0.0; // 0.0025
   ratePitchSettings.kP = 1.2;
   ratePitchSettings.kI = 0;
-  ratePitchSettings.kD = 0.0025;
+  ratePitchSettings.kD = 0.0; // 0.0025
   rateYawSettings.kP = 1.0;
   rateYawSettings.kI = 0;
   rateYawSettings.kD = 0;
 
   attitudeRollSettings.kP = 4.0;
   attitudeRollSettings.kI = 0.0;
-  attitudeRollSettings.kD = 0.001;
+  attitudeRollSettings.kD = 0.0; // 0.001
   attitudePitchSettings.kP = 4.0;
   attitudePitchSettings.kI = 0.0;
-  attitudePitchSettings.kD = 0.001;
+  attitudePitchSettings.kD = 0.0; // 0.001
   attitudeYawSettings.kP = 0;
   attitudeYawSettings.kI = 0;
   attitudeYawSettings.kD = 0;
@@ -175,7 +175,7 @@ void connectionLostDescend(int *throttle, float *ZAccel) {
     *throttle -= 1;
   }
   if (*throttle < 1050) {
-    setMotorsLow();
+//    setMotorsLow();
     digitalWrite(8, HIGH);
     while (1);
   }

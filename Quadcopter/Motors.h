@@ -23,6 +23,48 @@ int motor3pulse;
 int motor4pulse;
 
 
+
+// ****************************************************************************************
+//        FUNCTIONS FOR CALCULATING MOTOR PULSES
+// ****************************************************************************************
+
+void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
+  motor1pulse = *throttle + (int) * rollOffset - (int) * pitchOffset - (int) * yawOffset;
+  motor2pulse = *throttle - (int) * rollOffset - (int) * pitchOffset + (int) * yawOffset;
+  motor3pulse = *throttle + (int) * rollOffset + (int) * pitchOffset + (int) * yawOffset;
+  motor4pulse = *throttle - (int) * rollOffset + (int) * pitchOffset - (int) * yawOffset;
+}
+
+void capMotorInputNearMaxThrottle() {
+  int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
+  int adj = maxMotorValue - THROTTLE_LIMIT;
+  if (adj > 0) {
+    motor1pulse -= adj;
+    motor2pulse -= adj;
+    motor3pulse -= adj;
+    motor4pulse -= adj;
+  }
+}
+
+void capMotorInputNearMinThrottle() {
+  //at the very least, stop pulse going below 1000
+  // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
+  if (throttle < THROTTLE_MIN_SPIN) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements
+    motor1pulse = ZERO_THROTTLE;
+    motor2pulse = ZERO_THROTTLE;
+    motor3pulse = ZERO_THROTTLE;
+    motor4pulse = ZERO_THROTTLE;
+  }
+  else {
+    if (motor1pulse < THROTTLE_MIN_SPIN) motor1pulse = THROTTLE_MIN_SPIN;
+    if (motor2pulse < THROTTLE_MIN_SPIN) motor2pulse = THROTTLE_MIN_SPIN;
+    if (motor3pulse < THROTTLE_MIN_SPIN) motor3pulse = THROTTLE_MIN_SPIN;
+    if (motor4pulse < THROTTLE_MIN_SPIN) motor4pulse = THROTTLE_MIN_SPIN;
+  }
+}
+
+
+
 // ****************************************************************************************
 //        FUNCTIONS FOR ESC CREATION
 // ****************************************************************************************
@@ -152,6 +194,11 @@ void calcEndTimes() {
 // this function should be run as quickly as possible - maybe have at multiple points throughout the program?
 void updateMotors() {
   if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
+    // calculate required pulse length
+    calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
+    capMotorInputNearMaxThrottle();
+    capMotorInputNearMinThrottle();
+    // calculate required counter ticks
     resetOrder(); // reset escOrderMain
     calculateRequiredTicks(); // populate escTicks
     sortPulses(); // reorder escOrderMain and escTicks
@@ -170,45 +217,6 @@ void updateMotors() {
 }
 
 
-
-// ****************************************************************************************
-//        FUNCTIONS FOR CALCULATING MOTOR PULSES
-// ****************************************************************************************
-
-void calculateMotorInput(int *throttle, float *rollOffset, float *pitchOffset, float *yawOffset) {
-  motor1pulse = *throttle + (int) * rollOffset - (int) * pitchOffset - (int) * yawOffset;
-  motor2pulse = *throttle - (int) * rollOffset - (int) * pitchOffset + (int) * yawOffset;
-  motor3pulse = *throttle + (int) * rollOffset + (int) * pitchOffset + (int) * yawOffset;
-  motor4pulse = *throttle - (int) * rollOffset + (int) * pitchOffset - (int) * yawOffset;
-}
-
-void capMotorInputNearMaxThrottle() {
-  int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
-  int adj = maxMotorValue - THROTTLE_LIMIT;
-  if (adj > 0) {
-    motor1pulse -= adj;
-    motor2pulse -= adj;
-    motor3pulse -= adj;
-    motor4pulse -= adj;
-  }
-}
-
-void capMotorInputNearMinThrottle() {
-  //at the very least, stop pulse going below 1000
-  // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
-  if (throttle < THROTTLE_MIN_SPIN) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements
-    motor1pulse = ZERO_THROTTLE;
-    motor2pulse = ZERO_THROTTLE;
-    motor3pulse = ZERO_THROTTLE;
-    motor4pulse = ZERO_THROTTLE;
-  }
-  else {
-    if (motor1pulse < THROTTLE_MIN_SPIN) motor1pulse = THROTTLE_MIN_SPIN;
-    if (motor2pulse < THROTTLE_MIN_SPIN) motor2pulse = THROTTLE_MIN_SPIN;
-    if (motor3pulse < THROTTLE_MIN_SPIN) motor3pulse = THROTTLE_MIN_SPIN;
-    if (motor4pulse < THROTTLE_MIN_SPIN) motor4pulse = THROTTLE_MIN_SPIN;
-  }
-}
 
 
 // ****************************************************************************************
