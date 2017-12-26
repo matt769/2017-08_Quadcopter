@@ -5,7 +5,7 @@
 
 
 // These variables need to be available for the additional tabs to use
-const int THROTTLE_LIMIT = 1500;
+const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
 const int ZERO_THROTTLE = 1000;
 const int THROTTLE_MIN_SPIN = 1125;
 int throttle;  // distinct from the user input because it may be modified
@@ -244,7 +244,8 @@ void loop() {
   //    functionTimeSum = 0;
   //    functionTimeCounter = 0;
   //
-  //    Serial.println(loopCounterRx); Serial.print('\t');
+//      Serial.println(loopCounterRx); Serial.print('\t');
+
 //        Serial.print(loopCounterRate); Serial.print('\t');
 //        loopCounterRate = 0;
 //        Serial.print(loopCounterAttitude); Serial.print('\n');
@@ -259,9 +260,6 @@ void loop() {
 //        Serial.print(motor3pulse); Serial.print('\t');
 //        Serial.print(motor4pulse); Serial.print('\n');
 //        Serial.print('\n');
-
-
-
 //
 //        Serial.print(motor1pulse); Serial.print('\t');
 //        Serial.print(motor2pulse); Serial.print('\t');

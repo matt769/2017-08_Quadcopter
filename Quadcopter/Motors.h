@@ -1,4 +1,4 @@
-const uint16_t CYCLE_TICKS = 10000; // 10000ticks, 5000us, 5ms, 200Hz
+const uint16_t CYCLE_TICKS = 5000; // 10000ticks, 5000us, 5ms, 200Hz
 uint16_t escTicks[4];
 uint16_t escTicksEndMain[4];
 uint16_t volatile escTicksEndIsr[4];  // copy to use in IRS
@@ -9,7 +9,7 @@ bool volatile lockPulses = false;
 bool needUpdatePulses = false; // this needs to be set to true after the rate PID runs
 bool needRecalcPulses = false;  // this needs to be set to true after the new pulse information is calulated
 uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
-const uint16_t PULSE_GAP = 200;  // gap between starting pulses, in ticks
+const uint16_t PULSE_GAP = 100;  // gap between starting pulses, in ticks
 const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
 
 const byte pinMotor1 = 3; // front left (CW)
