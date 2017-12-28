@@ -67,7 +67,7 @@ const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
 const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1.0f - compFilterAlpha; // remove this, compiler should optimise anyway
-const float accelAverageAlpha = 0.05f; // weight applied to new accel angle calculation in complementary filter
+const float accelAverageAlpha = 0.1f; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1.0f - accelAverageAlpha; // remove this, compiler should optimise anyway
 
 
@@ -169,20 +169,12 @@ void accumulateGyroChange() {
 
 void accumulateAccelReadings() {
   // don't need to convert to values at all because we only need relative values
-//  Serial.print(AcX); Serial.print('\t');
-//  Serial.print(AcY); Serial.print('\t');
-//  Serial.print(AcZ); Serial.print('\t');
   AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
   AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
   AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
   AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
-//  Serial.print(AcX); Serial.print('\t');
-//  Serial.print(AcY); Serial.print('\t');
-//  Serial.print(AcZ); Serial.print('\n');
-
-  
 }
 
 // each atan operation will take about 600us
