@@ -31,12 +31,11 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 
 // DERIVE THESE SETTINGS FROM CALIBRATION & SETUP
 // ax,ay,az,gx,gy,gz
-float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
-float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
+const float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
+const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
 int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;
 const float gyroRes = 250.0f / 32768.0f;  // or could be (250 * pow(2,FS_SEL)) / 32768.0f
 const float accelRes = 8.0f / 32768.0f;
-
 
 const float MICROS_TO_SECONDS = 0.000001;
 
@@ -127,14 +126,6 @@ void calculateOffsets() {
   GyXOffset /= gyroRangeFactor;
   GyYOffset /= gyroRangeFactor;
   GyZOffset /= gyroRangeFactor;
-
-//  Serial.print(temperature); Serial.print('\t'); Serial.print((float)temperature/340+36.53); Serial.print('\t');
-//  Serial.print(AccelXOffset); Serial.print('\t');
-//  Serial.print(AccelYOffset); Serial.print('\t');
-//  Serial.print(AccelZOffset); Serial.print('\t');
-//  Serial.print(GyXOffset); Serial.print('\t');
-//  Serial.print(GyYOffset); Serial.print('\t');
-//  Serial.print(GyZOffset); Serial.print('\n');
 
 }
 

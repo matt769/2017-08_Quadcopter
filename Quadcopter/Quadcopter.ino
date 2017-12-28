@@ -18,8 +18,9 @@ bool error = false; // will be used in acknowledgement byte to indicate some err
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
 #include "Receiver.h"
-#include "PIDSettings.h"
 #include "Motors.h"
+#include "PIDSettings.h"
+
 
 bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
 bool auto_level = false;

@@ -182,8 +182,7 @@ void connectionLostDescend(int *throttle, float *ZAccel) {
     *throttle -= 1;
   }
   if (*throttle < 1050) {
-//    setMotorsLow();
-    endPulseTimer2();
+    setMotorsLow();
     digitalWrite(8, HIGH);
     while (1);
   }
