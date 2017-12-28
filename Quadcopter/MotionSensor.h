@@ -34,7 +34,7 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
 float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
 int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;
-const float gyroRes = 250.0f / 32768.0f;
+const float gyroRes = 250.0f / 32768.0f;  // or could be (250 * pow(2,FS_SEL)) / 32768.0f
 const float accelRes = 8.0f / 32768.0f;
 
 
@@ -66,10 +66,10 @@ struct angle currentAngles;
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.99; // weight applied to gyro angle estimate
-const float compFilterAlphaComplement = 1.0 - compFilterAlpha; // remove this, compiler will optimise anyway
-const float accelAverageAlpha = 0.05; // weight applied to new accel angle calculation in complementary filter
-const float accelAverageAlphaComplement = 1.0 - accelAverageAlpha; // remove this, compiler will optimise anyway
+const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
+const float compFilterAlphaComplement = 1.0f - compFilterAlpha; // remove this, compiler should optimise anyway
+const float accelAverageAlpha = 0.05f; // weight applied to new accel angle calculation in complementary filter
+const float accelAverageAlphaComplement = 1.0f - accelAverageAlpha; // remove this, compiler should optimise anyway
 
 
 bool readGyrosAccels() {

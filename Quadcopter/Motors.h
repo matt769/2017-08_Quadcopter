@@ -231,26 +231,18 @@ void setupMotors() {
 }
 
 // ****************************************************************************************
-//        FOR TESTING
+//        OTHER
 // ****************************************************************************************
 
 
 void setMotorsLow() {
-  escTicks[1] = 2000;  // = 1000us
-  escTicks[2] = 2000;
-  escTicks[3] = 2000;
-  escTicks[4] = 2000;
+  motor1pulse = 1000;
+  motor2pulse = 1000;
+  motor3pulse = 1000;
+  motor4pulse = 1000;
+  calculateRequiredTicks();
+  calcEndTimes();
+  copyPulseInfoToIsrVariables();
 }
-void setMotorsHigh() {
-  escTicks[1] = 4000;  // = 1000us
-  escTicks[2] = 4000;
-  escTicks[3] = 4000;
-  escTicks[4] = 4000;
-}
-void setMotorsCustom(int input) {
-  escTicks[1] = input << 1;  // input * 2
-  escTicks[2] = input << 1;
-  escTicks[3] = input << 1;
-  escTicks[4] = input << 1;
-}
+
 
