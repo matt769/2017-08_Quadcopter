@@ -16,8 +16,8 @@
 // bit 4: 
 // bits 5/6/7: battery indicator (0-7)
 
-const byte addresses[][6] = {"1Node", "2Node"};
-const bool radioNumber = 1; // receiver should be 1 (or anything not 0)
+const byte address[6] = "1Node";
+const byte pipeNumber = 1;
 RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
@@ -81,15 +81,7 @@ void setupRadio() {
 //   * max is 15.  0 means 250us, 15 means 4000us.
 //   * @param count How many retries before giving up, max 15
 //  radio.setRetries();   // default is setRetries(5,15) // note restrictions due to ack payload
-  
-  // Open a writing and reading pipe on each radio, MUST BE OPPOSITE addresses to the receiver
-  if(radioNumber){
-    radio.openWritingPipe(addresses[1]);
-    radio.openReadingPipe(1,addresses[0]);
-  }else{
-    radio.openWritingPipe(addresses[0]);
-    radio.openReadingPipe(1,addresses[1]);
-  }
+  radio.openReadingPipe(pipeNumber, address);
   radio.startListening();
 //  Serial.println(radio.isChipConnected());
 }
