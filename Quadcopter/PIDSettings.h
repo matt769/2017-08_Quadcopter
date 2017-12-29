@@ -12,8 +12,8 @@ const int pidAttitudeMax = 100;  // DEG/S
 const byte rateLoopFreq = 1;  // 1kHz
 const byte attitudeLoopFreq = 5; // 200Hz
 
-const byte ratePIDFreq = 5;  // 5ms <=> 200Hz 
-const byte attitudePIDFreq = 5;
+const byte ratePIDFreq = attitudeLoopFreq;  // 5ms <=> 200Hz 
+const byte attitudePIDFreq = attitudeLoopFreq;
 
 struct pid {
   float actual;
