@@ -46,7 +46,6 @@ float AcXAve = 0, AcYAve = 0, AcZAve = 0;
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 bool sensorRead;  // indicates whether valid information was read from the sensor
-float ZAccel;
 
 struct angle {
   float roll;
@@ -221,7 +220,7 @@ void mixAngles() {
 }
 
 void calculateVerticalAccel() {
-  ZAccel = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
+  valAcZ = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
 
 void calibrateGyro(int repetitions) {

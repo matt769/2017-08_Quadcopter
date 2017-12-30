@@ -17,10 +17,10 @@ int throttle;  // distinct from the user input because it may be modified
 // STATE
 const bool RATE = false;
 const bool ATTITUDE = true;
-bool MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
-bool PREV_MODE = RATE;
+bool mode = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
+bool previousMode = RATE;
 bool autoLevel = false;
-bool KILL = 0;
+bool kill = 0;
 
 // CONTROL LOOPS
 unsigned long rateLoopLast = 0;
@@ -91,7 +91,7 @@ void loop() {
     checkHeartbeat();  // must be done outside if(radio.available) loop
     if (checkRadioForInput()) {
       // CHECK MODES
-      MODE = getMode();
+      mode = getMode();
       autoLevel = getAutolevel();
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
@@ -100,32 +100,32 @@ void loop() {
       }
       // MAP CONTROL VALUES
       mapThrottle(&throttle);
-      if (MODE || autoLevel) {
-        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, MODE);
-        MODE = ATTITUDE;
+      if (mode || autoLevel) {
+        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
+        mode = ATTITUDE;
       }
       else {
-        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, MODE);
-        MODE = RATE;
+        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, mode);
+        mode = RATE;
       }
     }
     autoLevel = autoLevel || !rxHeartbeat;
     if (autoLevel) {
-      MODE = ATTITUDE;
+      mode = ATTITUDE;
     }
   }
 
   // ****************************************************************************************
   // HANDLE STATE CHANGES
   // ****************************************************************************************
-  if (MODE != PREV_MODE) {
-    if (MODE == ATTITUDE) {
+  if (mode != previousMode) {
+    if (mode == ATTITUDE) {
       pidAttitudeModeOn();
-      PREV_MODE = ATTITUDE;
+      previousMode = ATTITUDE;
     }
     else {
       pidAttitudeModeOff();
-      PREV_MODE = RATE;
+      previousMode = RATE;
     }
   }
 
@@ -172,11 +172,11 @@ void loop() {
       // If connection lost then also modify throttle so that QC is descending slowly
       if (!rxHeartbeat) {
         calculateVerticalAccel();
-        connectionLostDescend(&throttle, ZAccel);
+        connectionLostDescend(&throttle, valAcZ);
       }
     }
     // The attitude PID itself will not run unless QC is in ATTITUDE mode
-    if (MODE) {
+    if (mode) {
       setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       // if PID has updated the outputs then recalculate the required motor pulses
       if (pidAttitudeUpdate()) {
@@ -223,7 +223,7 @@ void loop() {
     //      Serial.print(rxHeartbeat); Serial.print('\t');
     //      Serial.print(autoLevel); Serial.print('\t');
     //      Serial.print(lastRxReceived); Serial.print('\t');
-    //      Serial.print(MODE); Serial.print('\t');
+    //      Serial.print(mode); Serial.print('\t');
     //      Serial.print(throttle); Serial.print('\n');
     //
     

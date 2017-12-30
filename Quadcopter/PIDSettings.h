@@ -150,9 +150,9 @@ void setAttitudePidActual(float roll, float pitch, float yaw) {
   attitudeYawSettings.actual = yaw;
 }
 
-void connectionLostDescend(int *throttle, float ZAccel) {
+void connectionLostDescend(int *throttle, float accelZ) {
 //  Serial.println(*throttle);
-  if (ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
+  if (accelZ > 0.95) {    // accelZ < 1 implies downwards movement, reduce throttle until I get it
     *throttle -= 1;
   }
   if (*throttle < 1050) {
