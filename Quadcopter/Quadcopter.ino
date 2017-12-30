@@ -1,12 +1,6 @@
-
 #include <I2C.h>  // http://dsscircuits.com/articles/86-articles/66-arduino-i2c-master-library
 #include <SPI.h>  // standard Arduino DPI library
 #include <RF24.h> // https://github.com/nRF24/RF24
-
-// Shared settings
-const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
-const int ZERO_THROTTLE = 1000;
-const int THROTTLE_MIN_SPIN = 1125;
 
 #include "Parameters.h"
 #include "PID.h"
@@ -17,8 +11,10 @@ const int THROTTLE_MIN_SPIN = 1125;
 #include "Motors.h"
 #include "PIDSettings.h"
 
+// THROTTLE
 int throttle;  // distinct from the user input because it may be modified
 
+// STATE
 const bool RATE = false;
 const bool ATTITUDE = true;
 bool MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
@@ -26,21 +22,20 @@ bool PREV_MODE = RATE;
 bool autoLevel = false;
 bool KILL = 0;
 
-// all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
-//rateLoopFreq defined in PID.h
+// CONTROL LOOPS
 unsigned long rateLoopLast = 0;
-//attitudeLoopFreq defined in PID.h
 unsigned long attitudeLoopLast = 0;
-const byte receiverFreq = 50;  // although this can also be controlled on the transmitter side
 unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
-const int batteryFreq = 1000;
-const byte pinStatusLed = 8;
 
-unsigned long lastPrint = 0;  // FOR DEBUGGING
-//int loopCounterRx = 0;  // DEBUGGING
-int loopCounterRate = 0;  // DEBUGGING
-int loopCounterAttitude = 0;  // DEBUGGING
+// DEBUGGING // PERFORMANCE CHECKING
+unsigned long lastPrint = 0;
+//int loopCounterRx = 0;
+int loopCounterRate = 0;
+int loopCounterAttitude = 0;
+
+// LED
+const byte pinStatusLed = 8;
 
 void setup() {
   Serial.begin(115200);

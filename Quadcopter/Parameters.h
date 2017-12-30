@@ -1,14 +1,11 @@
-
-
-
-
 // CONTROL LOOP FREQUENCY
-const byte rateLoopFreq = 1;  // 1kHz
-const byte attitudeLoopFreq = 5; // 200Hz
+// all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
+const byte rateLoopFreq = 1;  // 1 -> 1kHz
+const byte attitudeLoopFreq = 5; // 5 -> 200Hz
 const byte ratePIDFreq = attitudeLoopFreq;
 const byte attitudePIDFreq = attitudeLoopFreq;
-
-
+const byte receiverFreq = 50;
+const int batteryFreq = 1000;
 
 // PID OUTPUT LIMITS
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
@@ -37,21 +34,16 @@ const float attitudeYawKp = 0;
 const float attitudeYawKi = 0;
 const float attitudeYawKd = 0;
 
+// MOTORS
+const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
+const int ZERO_THROTTLE = 1000;
+const int THROTTLE_MIN_SPIN = 1125;
 
 
 // RADIO
 
 
-
-
-// MOTORS
-
-
-
-
 // MOTION
-
-
 
 
 // BATTERY
