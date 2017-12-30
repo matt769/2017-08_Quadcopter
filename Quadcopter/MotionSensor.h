@@ -36,7 +36,6 @@ const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.771
 int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;
 const float gyroRes = 250.0f / 32768.0f;  // or could be (250 * pow(2,FS_SEL)) / 32768.0f
 const float accelRes = 8.0f / 32768.0f;
-
 const float MICROS_TO_SECONDS = 0.000001;
 
 // MEASUREMENT

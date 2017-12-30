@@ -4,16 +4,14 @@
 #include <RF24.h> // https://github.com/nRF24/RF24
 
 
-// These variables need to be available for the additional tabs to use
 const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
 const int ZERO_THROTTLE = 1000;
 const int THROTTLE_MIN_SPIN = 1125;
 int throttle;  // distinct from the user input because it may be modified
 bool error = false; // will be used in acknowledgement byte to indicate some error
 
-
+#include "Parameters.h"
 #include "PID.h"
-#include "Parameters.h"   // currently all commented out
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
 #include "MotionSensor.h"
@@ -26,7 +24,7 @@ bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change 
 bool auto_level = false;
 
 byte RATE = 0;
-byte BALANCE = 1;
+byte ATTITUDE = 1;
 byte MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
 byte PREV_MODE = RATE;
 
@@ -111,7 +109,7 @@ void loop() {
       mapThrottle(&throttle);
       if (attitude_mode || auto_level) {
         mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, attitude_mode);
-        MODE = BALANCE;
+        MODE = ATTITUDE;
       }
       else {
         mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, attitude_mode);
@@ -120,7 +118,7 @@ void loop() {
     }
     auto_level = auto_level || !rxHeartbeat;
     if (auto_level) {
-      MODE = BALANCE;
+      MODE = ATTITUDE;
     }
   }
 
@@ -130,10 +128,10 @@ void loop() {
   // HANDLE STATE CHANGES
   // ****************************************************************************************
   if (MODE != PREV_MODE) {
-    if (MODE == BALANCE) {
+    if (MODE == ATTITUDE) {
       pidAttitudeModeOn();
       //      Serial.println(F("Entering attitude mode"));
-      PREV_MODE = BALANCE;
+      PREV_MODE = ATTITUDE;
     }
     else {
       pidAttitudeModeOff();
