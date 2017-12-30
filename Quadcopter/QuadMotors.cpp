@@ -1,66 +1,56 @@
-const uint16_t CYCLE_TICKS = 5000; // 10000ticks, 5000us, 5ms, 200Hz
-uint16_t escTicks[4];
-uint16_t escTicksEndMain[4];
-uint16_t volatile escTicksEndIsr[4];  // copy to use in IRS
-uint8_t escOrderMain[4];
-uint8_t volatile escOrderIsr[4];  // copy to use in IRS
-uint8_t escIndex = 0;
-bool volatile lockPulses = false;
-bool needUpdatePulses = false; // this needs to be set to true after the rate PID runs
-bool needRecalcPulses = false;  // this needs to be set to true after the new pulse information is calulated
-uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
-const uint16_t PULSE_GAP = 100;  // gap between starting pulses, in ticks
-const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
+#include "QuadMotors.h"
+#include "Parameters.h"
 
-// these pins are currently hardcoded within the pulse generation function (direct port manipulation)
-const byte pinMotor1 = 3; // front left (CW)
-const byte pinMotor2 = 6; // front right (CCW)
-const byte pinMotor3 = 4; // back left (CCW)
-const byte pinMotor4 = 5; // back right (CW)
-
-int motor1pulse;
-int motor2pulse;
-int motor3pulse;
-int motor4pulse;
+static uint16_t QuadMotors::escTicks[4] = {0, 0, 0, 0};
+static uint16_t QuadMotors::escTicksEndMain[4] = {0, 0, 0, 0};
+static uint16_t volatile QuadMotors::escTicksEndIsr[4] = {0, 0, 0, 0};
+static uint8_t QuadMotors::escOrderMain[4] = {0, 0, 0, 0};
+static uint8_t volatile QuadMotors::escOrderIsr[4] = {0, 0, 0, 0};
+static uint8_t QuadMotors::escIndex = 0;
+static bool volatile QuadMotors::lockPulses = false;
+static bool QuadMotors::needUpdatePulses = false;
+//static bool QuadMotors::needRecalcPulses = false;
+static uint8_t QuadMotors::escPulseGenerationCycle = 2;  // 0 = start, 1 = stop, 2 = reset
+static uint16_t QuadMotors::motorPulseLengthMs[4] = {0, 0, 0, 0};
 
 
 
-// ****************************************************************************************
-//        FUNCTIONS FOR CALCULATING MOTOR PULSES
-// ****************************************************************************************
-
-void calculateMotorInput(int throttle, float rollOffset, float pitchOffset, float yawOffset) {
-  motor1pulse = throttle + (int) rollOffset - (int) pitchOffset - (int) yawOffset;
-  motor2pulse = throttle - (int) rollOffset - (int) pitchOffset + (int) yawOffset;
-  motor3pulse = throttle + (int) rollOffset + (int) pitchOffset + (int) yawOffset;
-  motor4pulse = throttle - (int) rollOffset + (int) pitchOffset - (int) yawOffset;
+QuadMotors::QuadMotors() {
 }
 
-void capMotorInputNearMaxThrottle() {
-  int maxMotorValue = max(motor1pulse, max(motor2pulse, max(motor3pulse, motor4pulse)));
-  int adj = maxMotorValue - THROTTLE_LIMIT;
+static void QuadMotors::calculateMotorInput(uint16_t throttle, float rollOffset, float pitchOffset, float yawOffset) {
+  motorPulseLengthMs[0] = throttle + (uint16_t) rollOffset - (uint16_t) pitchOffset - (uint16_t) yawOffset;
+  motorPulseLengthMs[1] = throttle - (uint16_t) rollOffset - (uint16_t) pitchOffset + (uint16_t) yawOffset;
+  motorPulseLengthMs[2] = throttle + (uint16_t) rollOffset + (uint16_t) pitchOffset + (uint16_t) yawOffset;
+  motorPulseLengthMs[3] = throttle - (uint16_t) rollOffset + (uint16_t) pitchOffset - (uint16_t) yawOffset;
+
+}
+
+static void QuadMotors::capMotorInputNearMaxThrottle() {
+  uint16_t maxMotorValue = max(motorPulseLengthMs[0], max(motorPulseLengthMs[1], max(motorPulseLengthMs[2], motorPulseLengthMs[3])));
+  int16_t adj = maxMotorValue - THROTTLE_LIMIT;
   if (adj > 0) {
-    motor1pulse -= adj;
-    motor2pulse -= adj;
-    motor3pulse -= adj;
-    motor4pulse -= adj;
+    motorPulseLengthMs[0] -= adj;
+    motorPulseLengthMs[1] -= adj;
+    motorPulseLengthMs[2] -= adj;
+    motorPulseLengthMs[3] -= adj;
   }
 }
 
-void capMotorInputNearMinThrottle(int throttle) {
+static void QuadMotors::capMotorInputNearMinThrottle(uint16_t throttle) {
   //at the very least, stop pulse going below 1000
   // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
   if (throttle < THROTTLE_MIN_SPIN) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements
-    motor1pulse = ZERO_THROTTLE;
-    motor2pulse = ZERO_THROTTLE;
-    motor3pulse = ZERO_THROTTLE;
-    motor4pulse = ZERO_THROTTLE;
+    motorPulseLengthMs[0] = ZERO_THROTTLE;
+    motorPulseLengthMs[1] = ZERO_THROTTLE;
+    motorPulseLengthMs[2] = ZERO_THROTTLE;
+    motorPulseLengthMs[3] = ZERO_THROTTLE;
   }
   else {
-    if (motor1pulse < THROTTLE_MIN_SPIN) motor1pulse = THROTTLE_MIN_SPIN;
-    if (motor2pulse < THROTTLE_MIN_SPIN) motor2pulse = THROTTLE_MIN_SPIN;
-    if (motor3pulse < THROTTLE_MIN_SPIN) motor3pulse = THROTTLE_MIN_SPIN;
-    if (motor4pulse < THROTTLE_MIN_SPIN) motor4pulse = THROTTLE_MIN_SPIN;
+    if (motorPulseLengthMs[0] < THROTTLE_MIN_SPIN) motorPulseLengthMs[0] = THROTTLE_MIN_SPIN;
+    if (motorPulseLengthMs[1] < THROTTLE_MIN_SPIN) motorPulseLengthMs[1] = THROTTLE_MIN_SPIN;
+    if (motorPulseLengthMs[2] < THROTTLE_MIN_SPIN) motorPulseLengthMs[2] = THROTTLE_MIN_SPIN;
+    if (motorPulseLengthMs[3] < THROTTLE_MIN_SPIN) motorPulseLengthMs[3] = THROTTLE_MIN_SPIN;
   }
 }
 
@@ -70,8 +60,13 @@ void capMotorInputNearMinThrottle(int throttle) {
 //        FUNCTIONS FOR ESC CREATION
 // ****************************************************************************************
 
+// how to include this?
+ISR(TIMER1_COMPA_vect) {
+  QuadMotors::generateEscPulses();
+}
+
 // configure timer1 for generating pulses for the ESCs
-static void setupPulseTimer() {
+static void QuadMotors::setupPulseTimer() {
   cli();
   TCCR1A = 0;             // normal counting mode
   TCCR1B = _BV(CS11);     // set prescaler of 8 - 2 ticks per microsecond
@@ -82,14 +77,14 @@ static void setupPulseTimer() {
   sei(); // enable interrupts
 }
 
-static void endPulseTimer() {
+static void QuadMotors::endPulseTimer() {
   cli();
   TIMSK1 =  0 ; // disable the output compare interrupt
   TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
   sei();
 }
 
-static inline void generate_esc_pulses() {
+static void QuadMotors::generateEscPulses() {
 
   if (escPulseGenerationCycle == 0) {  // interupt has fired and we're starting the pulses
     uint8_t currentEsc = escOrderIsr[escIndex];
@@ -130,15 +125,12 @@ static inline void generate_esc_pulses() {
     TCNT1 = 0;  // reset the timer
     OCR1A = PULSE_GAP;  // start again after the standard gap
     escPulseGenerationCycle = 0; // next time interupt fire we want to start the pulses
-    lockPulses = true;  // this is the begging of the pulse train, so don't allow the pulse lengths to be updated until this cycle is 'finished'
+    lockPulses = true;  // this is the beginning of the pulse train, so don't allow the pulse lengths to be updated until this cycle is 'finished'
   }
 }
 
-ISR(TIMER1_COMPA_vect) {
-  generate_esc_pulses();
-}
 
-void copyPulseInfoToIsrVariables() {
+static void QuadMotors::copyPulseInfoToIsrVariables() {
   cli();
   escOrderIsr[0] = escOrderMain[0];
   escOrderIsr[1] = escOrderMain[1];
@@ -151,21 +143,21 @@ void copyPulseInfoToIsrVariables() {
   sei();
 }
 
-void calculateRequiredTicks() {
-  escTicks[0] = motor1pulse << 1;
-  escTicks[1] = motor2pulse << 1;
-  escTicks[2] = motor3pulse << 1;
-  escTicks[3] = motor4pulse << 1;
+static void QuadMotors::calculateRequiredTicks() {
+  escTicks[0] = motorPulseLengthMs[0] << 1;
+  escTicks[1] = motorPulseLengthMs[1] << 1;
+  escTicks[2] = motorPulseLengthMs[2] << 1;
+  escTicks[3] = motorPulseLengthMs[3] << 1;
 }
 
-void resetOrder() {
+static void QuadMotors::resetOrder() {
   escOrderMain[0] = 1;
   escOrderMain[1] = 2;
   escOrderMain[2] = 3;
   escOrderMain[3] = 4;
 }
 
-void sortPulses() {
+static void QuadMotors::sortPulses() {
   uint16_t j;
   uint8_t jIdx;
   int16_t k;
@@ -184,7 +176,7 @@ void sortPulses() {
   }
 }
 
-void calcEndTimes() {
+static void QuadMotors::calcEndTimes() {
   escTicksEndMain[0] = escTicks[0] + PULSE_GAP;
   escTicksEndMain[1] = escTicks[1] + (2 * PULSE_GAP);
   escTicksEndMain[2] = escTicks[2] + (3 * PULSE_GAP);
@@ -194,8 +186,16 @@ void calcEndTimes() {
 
 // needRecalcPulses should be true when the rate PID has produced a new output
 // this function should be run as quickly as possible - maybe have at multiple points throughout the program?
-
-void updateMotorPulseISR() {
+static void QuadMotors::updateMotors(bool needRecalcPulses) {
+  if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
+    // calculate required counter ticks
+    resetOrder(); // reset escOrderMain
+    calculateRequiredTicks(); // populate escTicks
+    sortPulses(); // reorder escOrderMain and escTicks
+    calcEndTimes(); // what times should these finish - populate escTicksEndMain
+    //    needRecalcPulses = false;
+    needUpdatePulses = true;
+  }
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
@@ -206,30 +206,22 @@ void updateMotorPulseISR() {
   }
 }
 
-void recalculateMotorPulses() {
-    resetOrder(); // reset escOrderMain
-    calculateRequiredTicks(); // populate escTicks
-    sortPulses(); // reorder escOrderMain and escTicks
-    calcEndTimes(); // what times should these finish - populate escTicksEndMain
-    needUpdatePulses = true;
-    updateMotorPulseISR();
-}
-
-
 
 // ****************************************************************************************
 //        SETUP FOR MAIN FILE
 // ****************************************************************************************
 
-void setupMotors() {
-  pinMode(pinMotor1, OUTPUT);
-  pinMode(pinMotor2, OUTPUT);
-  pinMode(pinMotor3, OUTPUT);
-  pinMode(pinMotor4, OUTPUT);
-  escTicks[1] = 2000;  // set starting pulse to 0.4micros (out of ESC range)
-  escTicks[2] = 2000;
-  escTicks[3] = 2000;
-  escTicks[4] = 2000;
+static void QuadMotors::setupMotors() {
+  escPulseGenerationCycle = 2;
+  escIndex = 0;
+  lockPulses = false;
+  needUpdatePulses = false;
+  //  needRecalcPulses = false;
+  pinMode(motorPins[0], OUTPUT);
+  pinMode(motorPins[1], OUTPUT);
+  pinMode(motorPins[2], OUTPUT);
+  pinMode(motorPins[3], OUTPUT);
+  setMotorsLow();
   setupPulseTimer();
 }
 
@@ -238,14 +230,12 @@ void setupMotors() {
 // ****************************************************************************************
 
 
-void setMotorsLow() {
-  motor1pulse = 1000;
-  motor2pulse = 1000;
-  motor3pulse = 1000;
-  motor4pulse = 1000;
+static void QuadMotors::setMotorsLow() {
+  motorPulseLengthMs[0] = 1000;
+  motorPulseLengthMs[1] = 1000;
+  motorPulseLengthMs[2] = 1000;
+  motorPulseLengthMs[3] = 1000;
   calculateRequiredTicks();
   calcEndTimes();
   copyPulseInfoToIsrVariables();
 }
-
-

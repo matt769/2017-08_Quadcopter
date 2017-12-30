@@ -1,11 +1,7 @@
-struct pid {
-  float actual;
-  float output;
-  float target;
-  float kP;
-  float kI;
-  float kD;
-};
+#include "PIDManager.h"
+#include <Arduino.h>
+#include "PID.h"
+#include "Parameters.h"
 
 struct pid rateRollSettings;
 struct pid ratePitchSettings;
@@ -52,20 +48,20 @@ void setupPid() {
 
   rateRollSettings.kP = rateRollKp;
   rateRollSettings.kI = rateRollKi;
-  rateRollSettings.kD = rateRollKd;
+  rateRollSettings.kD = rateRollKd; // 0.0025
   ratePitchSettings.kP = ratePitchKp;
   ratePitchSettings.kI = ratePitchKi;
-  ratePitchSettings.kD = ratePitchKd;
+  ratePitchSettings.kD = ratePitchKd; // 0.0025
   rateYawSettings.kP = rateYawKp;
   rateYawSettings.kI = rateYawKi;
   rateYawSettings.kD = rateYawKd;
 
   attitudeRollSettings.kP = attitudeRollKp;
   attitudeRollSettings.kI = attitudeRollKi;
-  attitudeRollSettings.kD = attitudeRollKd;
+  attitudeRollSettings.kD = attitudeRollKd; // 0.001
   attitudePitchSettings.kP = attitudePitchKp;
   attitudePitchSettings.kI = attitudePitchKi;
-  attitudePitchSettings.kD = attitudePitchKd;
+  attitudePitchSettings.kD = attitudePitchKd; // 0.001
   attitudeYawSettings.kP = attitudeYawKp;
   attitudeYawSettings.kI = attitudeYawKi;
   attitudeYawSettings.kD = attitudeYawKd;
@@ -73,9 +69,9 @@ void setupPid() {
   pidRateRoll.SetSampleTime(ratePIDFreq);
   pidRatePitch.SetSampleTime(ratePIDFreq);
   pidRateYaw.SetSampleTime(ratePIDFreq);
-  pidAttitudeRoll.SetSampleTime(attitudeLoopFreq);
-  pidAttitudePitch.SetSampleTime(attitudeLoopFreq);
-  pidAttitudeYaw.SetSampleTime(attitudeLoopFreq);
+  pidAttitudeRoll.SetSampleTime(attitudePIDFreq);
+  pidAttitudePitch.SetSampleTime(attitudePIDFreq);
+  pidAttitudeYaw.SetSampleTime(attitudePIDFreq);
 
   pidRateRoll.SetTunings(rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD);
   pidRatePitch.SetTunings(ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD);
@@ -93,6 +89,7 @@ void setupPid() {
 
 }
 
+// return true if all PIDs are run
 bool pidRateUpdate() {
   static unsigned long thisTime;
   static unsigned long lastTime;
@@ -109,6 +106,7 @@ bool pidRateUpdate() {
   return false;
 }
 
+// return true if all PIDs are run
 bool pidAttitudeUpdate() {
   static unsigned long thisTime;
   static unsigned long lastTime;
@@ -119,7 +117,7 @@ bool pidAttitudeUpdate() {
     lastTime += attitudePIDFreq;
     pidAttitudeRoll.Compute();
     pidAttitudePitch.Compute();
-//    pidAttitudeYaw.Compute();
+    pidAttitudeYaw.Compute();
     return true;
   }
   return false;
@@ -150,22 +148,21 @@ void setAttitudePidActual(float roll, float pitch, float yaw) {
   attitudeYawSettings.actual = yaw;
 }
 
-void connectionLostDescend(int *throttle, float accelZ) {
+void connectionLostDescend(int *throttle, float ZAccel) {
 //  Serial.println(*throttle);
-  if (accelZ > 0.95) {    // accelZ < 1 implies downwards movement, reduce throttle until I get it
+  if (ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
     *throttle -= 1;
   }
   if (*throttle < 1050) {
-    setMotorsLow();
+//    setMotorsLow(); // change to modify global KILL flag
     digitalWrite(8, HIGH);
     while (1);
   }
 }
 
+
 void overrideYawTarget() {
-//  rateYawSettings.target = 0;
-  // replace with what the rate target would have been
-  rateYawSettings.target = (float)map(rcPackage.yaw+1, 0,255, rateMax, rateMin);
+  rateYawSettings.target = 0;
 }
 
 
