@@ -15,7 +15,7 @@ const int pidAttitudeMax = 100;  // DEG/S
 
 // PID GAINS
 const float rateRollKp = 1.2;
-const float rateRollKi = 0;
+const float rateRollKi = 0.0;
 const float rateRollKd = 0.0025; // 0.0025
 const float ratePitchKp = 1.2;
 const float ratePitchKi = 0;
