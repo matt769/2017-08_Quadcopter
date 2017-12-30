@@ -194,16 +194,8 @@ void calcEndTimes() {
 
 // needRecalcPulses should be true when the rate PID has produced a new output
 // this function should be run as quickly as possible - maybe have at multiple points throughout the program?
-void updateMotors() {
-  if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
-    // calculate required counter ticks
-    resetOrder(); // reset escOrderMain
-    calculateRequiredTicks(); // populate escTicks
-    sortPulses(); // reorder escOrderMain and escTicks
-    calcEndTimes(); // what times should these finish - populate escTicksEndMain
-    needRecalcPulses = false;
-    needUpdatePulses = true;
-  }
+
+void updateMotorPulseISR() {
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
@@ -213,6 +205,16 @@ void updateMotors() {
     sei();
   }
 }
+
+void recalculateMotorPulses() {
+    resetOrder(); // reset escOrderMain
+    calculateRequiredTicks(); // populate escTicks
+    sortPulses(); // reorder escOrderMain and escTicks
+    calcEndTimes(); // what times should these finish - populate escTicksEndMain
+    needUpdatePulses = true;
+    updateMotorPulseISR();
+}
+
 
 
 // ****************************************************************************************

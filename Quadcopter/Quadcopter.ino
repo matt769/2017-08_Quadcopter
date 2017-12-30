@@ -146,15 +146,14 @@ void loop() {
       calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
       capMotorInputNearMaxThrottle();
       capMotorInputNearMinThrottle(throttle);
-      needRecalcPulses = true;  // will trigger esc routine update
-      updateMotors();
+      recalculateMotorPulses();
     }
     // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings(); 
   }
 
-  updateMotors(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
+  updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
