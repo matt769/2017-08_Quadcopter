@@ -33,18 +33,17 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 // ax,ay,az,gx,gy,gz
 const float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
 const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
-int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;
-const float gyroRes = 250.0f / 32768.0f;  // or could be (250 * pow(2,FS_SEL)) / 32768.0f
-const float accelRes = 8.0f / 32768.0f;
-const float MICROS_TO_SECONDS = 0.000001;
+
+int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;  // to be populated during setup depending on the temperature
+
 
 // MEASUREMENT
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // raw measurement values
 float valAcX, valAcY, valAcZ, valTmp, valGyX, valGyY, valGyZ; // converted to real units
 float AcXAve = 0, AcYAve = 0, AcZAve = 0;
-
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
+const float MICROS_TO_SECONDS = 0.000001;
 bool sensorRead;  // indicates whether valid information was read from the sensor
 
 struct angle {
@@ -58,7 +57,6 @@ struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 
-
 // PARAMETERS
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
@@ -67,7 +65,8 @@ const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
 const float compFilterAlphaComplement = 1.0f - compFilterAlpha; // remove this, compiler should optimise anyway
 const float accelAverageAlpha = 0.1f; // weight applied to new accel angle calculation in complementary filter
 const float accelAverageAlphaComplement = 1.0f - accelAverageAlpha; // remove this, compiler should optimise anyway
-
+const float gyroRes = (250.0f * pow(2,FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
+const float accelRes = (8.0f * pow(2,AFS_SEL)) / 32768.0f
 
 bool readGyrosAccels() {
   //
