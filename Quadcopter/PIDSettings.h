@@ -1,15 +1,4 @@
 
-const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
-const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
-const int pidAttitudeMin = -100;  // DEG/S
-const int pidAttitudeMax = 100;  // DEG/S
-
-const byte rateLoopFreq = 1;  // 1kHz
-const byte attitudeLoopFreq = 5; // 200Hz
-
-const byte ratePIDFreq = attitudeLoopFreq;  // 5ms <=> 200Hz 
-const byte attitudePIDFreq = attitudeLoopFreq;
-
 struct pid {
   float actual;
   float output;
@@ -62,25 +51,25 @@ void setupPid() {
   pidRateModeOff();
   pidAttitudeModeOff();
 
-  rateRollSettings.kP = 1.2;
-  rateRollSettings.kI = 0;
-  rateRollSettings.kD = 0.0025; // 0.0025
-  ratePitchSettings.kP = 1.2;
-  ratePitchSettings.kI = 0;
-  ratePitchSettings.kD = 0.0025; // 0.0025
-  rateYawSettings.kP = 1.0;
-  rateYawSettings.kI = 0;
-  rateYawSettings.kD = 0;
+  rateRollSettings.kP = rateRollKp;
+  rateRollSettings.kI = rateRollKi;
+  rateRollSettings.kD = rateRollKd;
+  ratePitchSettings.kP = ratePitchKp;
+  ratePitchSettings.kI = ratePitchKi;
+  ratePitchSettings.kD = ratePitchKd;
+  rateYawSettings.kP = rateYawKp;
+  rateYawSettings.kI = rateYawKi;
+  rateYawSettings.kD = rateYawKd;
 
-  attitudeRollSettings.kP = 4.0;
-  attitudeRollSettings.kI = 0.0;
-  attitudeRollSettings.kD = 0.001; // 0.001
-  attitudePitchSettings.kP = 4.0;
-  attitudePitchSettings.kI = 0.0;
-  attitudePitchSettings.kD = 0.001; // 0.001
-  attitudeYawSettings.kP = 0;
-  attitudeYawSettings.kI = 0;
-  attitudeYawSettings.kD = 0;
+  attitudeRollSettings.kP = attitudeRollKp;
+  attitudeRollSettings.kI = attitudeRollKi;
+  attitudeRollSettings.kD = attitudeRollKd;
+  attitudePitchSettings.kP = attitudePitchKp;
+  attitudePitchSettings.kI = attitudePitchKi;
+  attitudePitchSettings.kD = attitudePitchKd;
+  attitudeYawSettings.kP = attitudeYawKp;
+  attitudeYawSettings.kI = attitudeYawKi;
+  attitudeYawSettings.kD = attitudeYawKd;
 
   pidRateRoll.SetSampleTime(ratePIDFreq);
   pidRatePitch.SetSampleTime(ratePIDFreq);
