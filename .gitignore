@@ -1,6 +1,10 @@
 # Ignore everything
 *
 
+
 # Except
 !.gitignore
-!Quadcopter/
+!/Quadcopter/*
+
+# even if the files are in subdirectories
+!*/
