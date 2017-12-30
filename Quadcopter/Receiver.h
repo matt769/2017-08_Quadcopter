@@ -21,8 +21,8 @@ const byte pipeNumber = 1;
 RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
 
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
-const byte OK = 1;
-const byte GENERAL_ERROR = 2;
+const byte OK = 1;  // not currently used
+//const byte GENERAL_ERROR = 2;  // not yet implemented
 // Bits 5,6,7 show battery level (that gives 8 segments)
 
 struct dataStruct{
@@ -42,7 +42,7 @@ const float attitudeMax = 30;  // DEGREES
 
 bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
-unsigned long heartbeatTimeout = 500;
+const unsigned long heartbeatTimeout = 500;
 
 
 
@@ -149,8 +149,8 @@ void mapThrottle(int *throttle){
 
 }
 
-void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool *mode) {
-  if (!*mode) {
+void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
+  if (!mode) {
     *roll = (float)map(rcPackage.roll+1, 0,255, rateMin, rateMax);
     *pitch = (float)map(rcPackage.pitch+1, 0,255, rateMin, rateMax);
     *yaw = (float)map(rcPackage.yaw+1, 0,255, rateMax, rateMin);

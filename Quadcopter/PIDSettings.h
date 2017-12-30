@@ -151,34 +151,34 @@ void setAutoLevelTargets() {
 }
 
 // will either be set directly by (mapped) receiver input, or output from the attitude PID
-void setRatePidTargets(float *roll, float *pitch, float *yaw) {
-  rateRollSettings.target = *roll;
-  ratePitchSettings.target = *pitch;
-  rateYawSettings.target = *yaw;
+void setRatePidTargets(float roll, float pitch, float yaw) {
+  rateRollSettings.target = roll;
+  ratePitchSettings.target = pitch;
+  rateYawSettings.target = yaw;
 }
 
-void setRatePidActual(float *roll, float *pitch, float *yaw) {
-  rateRollSettings.actual = *roll;
-  ratePitchSettings.actual = *pitch;
-  rateYawSettings.actual = *yaw;
+void setRatePidActual(float roll, float pitch, float yaw) {
+  rateRollSettings.actual = roll;
+  ratePitchSettings.actual = pitch;
+  rateYawSettings.actual = yaw;
 }
 
-void setAttitudePidActual(float *roll, float *pitch, float *yaw) {
-  attitudeRollSettings.actual = *roll;
-  attitudePitchSettings.actual = *pitch;
-  attitudeYawSettings.actual = *yaw;
+void setAttitudePidActual(float roll, float pitch, float yaw) {
+  attitudeRollSettings.actual = roll;
+  attitudePitchSettings.actual = pitch;
+  attitudeYawSettings.actual = yaw;
 }
 
-void endPulseTimer2() {
-  cli();
-  TIMSK1 =  0 ; // disable the output compare interrupt
-  TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
-  sei();
-}
+//void endPulseTimer2() {
+//  cli();
+//  TIMSK1 =  0 ; // disable the output compare interrupt
+//  TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
+//  sei();
+//}
 
-void connectionLostDescend(int *throttle, float *ZAccel) {
+void connectionLostDescend(int *throttle, float ZAccel) {
 //  Serial.println(*throttle);
-  if (*ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
+  if (ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
     *throttle -= 1;
   }
   if (*throttle < 1050) {

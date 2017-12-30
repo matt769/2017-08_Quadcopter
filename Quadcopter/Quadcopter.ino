@@ -110,11 +110,11 @@ void loop() {
       // MAP CONTROL VALUES
       mapThrottle(&throttle);
       if (attitude_mode || auto_level) {
-        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, &attitude_mode);
+        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, attitude_mode);
         MODE = BALANCE;
       }
       else {
-        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, &attitude_mode);
+        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, attitude_mode);
         MODE = RATE;
       }
     }
@@ -124,7 +124,7 @@ void loop() {
     }
   }
 
-//  updateMotors(); // update the actual esc pulses
+  //  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // HANDLE STATE CHANGES
@@ -142,7 +142,7 @@ void loop() {
     }
   }
 
-//  updateMotors(); // update the actual esc pulses
+  //  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // RUN RATE LOOP
@@ -153,22 +153,22 @@ void loop() {
     loopCounterRate++;
     readGyrosAccels();
     convertGyroReadingsToValues();
-    setRatePidActual(&valGyX, &valGyY, &valGyZ);
+    setRatePidActual(valGyX, valGyY, valGyZ);
     // if PID has updated the outputs then recalculate the required motor pulses
-      if(pidRateUpdate()){
-        // calculate required pulse length
-        calculateMotorInput(&throttle, &rateRollSettings.output, &ratePitchSettings.output, &rateYawSettings.output);
-        capMotorInputNearMaxThrottle();
-        capMotorInputNearMinThrottle();
-        updateMotors();
-        needRecalcPulses = true;  // will trigger esc routine update
-      }
+    if (pidRateUpdate()) {
+      // calculate required pulse length
+      calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
+      capMotorInputNearMaxThrottle();
+      capMotorInputNearMinThrottle();
+      needRecalcPulses = true;  // will trigger esc routine update
+      updateMotors();
+    }
     // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings();
   }
 
-  
+
 
   updateMotors(); // try and update the actual esc pulses in case it was locked previously
 
@@ -187,22 +187,22 @@ void loop() {
       // If connection lost then also change throttle so that QC is descending slowly
       if (!rxHeartbeat) {
         calculateVerticalAccel();
-        connectionLostDescend(&throttle, &ZAccel);
+        connectionLostDescend(&throttle, ZAccel);
       }
     }
     // The attitude PID itself will not run unless QC is in ATTITUDE mode
     if (attitude_mode) {
-      setAttitudePidActual(&currentAngles.roll, &currentAngles.pitch, &currentAngles.yaw);
+      setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       // if PID has updated the outputs then recalculate the required motor pulses
       if (pidAttitudeUpdate()) {
         // set rate setpoints
-        setRatePidTargets(&attitudeRollSettings.output, &attitudePitchSettings.output, &attitudeYawSettings.output);
+        setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
         overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
       }
     }
   }
 
-//  updateMotors(); // update the actual esc pulses
+  //  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // CHECK BATTERY
@@ -212,14 +212,14 @@ void loop() {
     calculateBatteryLevel();
   }
 
-//  updateMotors(); // update the actual esc pulses
-  
+  //  updateMotors(); // update the actual esc pulses
+
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
 
-//      if (millis() - lastPrint >= 50) {
-//          lastPrint += 50;
+        if (millis() - lastPrint >= 50) {
+            lastPrint += 50;
 
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -246,37 +246,37 @@ void loop() {
   //    functionTimeSum = 0;
   //    functionTimeCounter = 0;
   //
-//      Serial.println(loopCounterRx); Serial.print('\t');
+  //      Serial.println(loopCounterRx); Serial.print('\t');
 
-//        Serial.print(loopCounterRate); Serial.print('\t');
-//        loopCounterRate = 0;
-//        Serial.print(loopCounterAttitude); Serial.print('\n');
-//        loopCounterAttitude = 0;
+  //        Serial.print(loopCounterRate); Serial.print('\t');
+  //        loopCounterRate = 0;
+  //        Serial.print(loopCounterAttitude); Serial.print('\n');
+  //        loopCounterAttitude = 0;
   //    loopCounter = 0;
   //
   //    Serial.print(throttle); Serial.print('\t');
   //    Serial.print(valGyX); Serial.print('\n');
   //      printPackage();
-//        Serial.print(motor1pulse); Serial.print('\t');
-//        Serial.print(motor2pulse); Serial.print('\n');
-//        Serial.print(motor3pulse); Serial.print('\t');
-//        Serial.print(motor4pulse); Serial.print('\n');
-//        Serial.print('\n');
-//
-//        Serial.print(motor1pulse); Serial.print('\t');
-//        Serial.print(motor2pulse); Serial.print('\t');
-//        Serial.print(motor3pulse); Serial.print('\t');
-//        Serial.print(motor4pulse); Serial.print('\n');
-//        Serial.print(escOrderMain[0]); Serial.print('\t');
-//        Serial.print(escTicks[0]); Serial.print('\n');
-//        Serial.print(escOrderMain[1]); Serial.print('\t');
-//        Serial.print(escTicks[1]); Serial.print('\n');
-//        Serial.print(escOrderMain[2]); Serial.print('\t');
-//        Serial.print(escTicks[2]); Serial.print('\n');
-//        Serial.print(escOrderMain[3]); Serial.print('\t');
-//        Serial.print(escTicks[3]); Serial.print('\n');
-//        Serial.print('\n');
-        
+  //        Serial.print(motor1pulse); Serial.print('\t');
+  //        Serial.print(motor2pulse); Serial.print('\n');
+  //        Serial.print(motor3pulse); Serial.print('\t');
+  //        Serial.print(motor4pulse); Serial.print('\n');
+  //        Serial.print('\n');
+  //
+  //        Serial.print(motor1pulse); Serial.print('\t');
+  //        Serial.print(motor2pulse); Serial.print('\t');
+  //        Serial.print(motor3pulse); Serial.print('\t');
+  //        Serial.print(motor4pulse); Serial.print('\n');
+  //        Serial.print(escOrderMain[0]); Serial.print('\t');
+  //        Serial.print(escTicks[0]); Serial.print('\n');
+  //        Serial.print(escOrderMain[1]); Serial.print('\t');
+  //        Serial.print(escTicks[1]); Serial.print('\n');
+  //        Serial.print(escOrderMain[2]); Serial.print('\t');
+  //        Serial.print(escTicks[2]); Serial.print('\n');
+  //        Serial.print(escOrderMain[3]); Serial.print('\t');
+  //        Serial.print(escTicks[3]); Serial.print('\n');
+  //        Serial.print('\n');
+
   //
   //    Serial.println(maxLoopDuration);
   //    Serial.print(F("Outer loop: ")); Serial.print('\t');
@@ -308,13 +308,13 @@ void loop() {
   //    Serial.print(gyroChangeAngles.yaw); Serial.print('\t');
   //
 
-//          Serial.print(GyY);Serial.print('\n');
-      
-//        Serial.print(currentAngles.pitch); Serial.print('\t');
-//        Serial.print(accelAngles.pitch); Serial.print('\t');
-//        Serial.print(gyroAngles.pitch); Serial.print('\t');
-//        Serial.print('\n');
-//      }
+  //          Serial.print(GyY);Serial.print('\n');
+
+          Serial.print(currentAngles.pitch); Serial.print('\t');
+          Serial.print(accelAngles.pitch); Serial.print('\t');
+          Serial.print(gyroAngles.pitch); Serial.print('\t');
+          Serial.print('\n');
+        }
 
 
 } // END LOOP
