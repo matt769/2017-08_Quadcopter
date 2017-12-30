@@ -6,10 +6,10 @@
 // bit 4: 
 // bit 5: 
 // bit 6: 
-// bit 7; 1 = TURN OFF MOTORS - reset required for re-enable
+// bit 7; 1 = TURN OFF MOTORS - reset required for re-enable // not implemented on current Tx
 
 // Acknowledgement byte
-// bit 0: non-zero (for Tx to distinguish from no acknowledgement - not sure if required)
+// bit 0: non-zero // for Tx to easily distinguish from no acknowledgement
 // bit 1: 1 = OK
 // bit 2: 1 = some error
 // bit 3:
@@ -18,12 +18,10 @@
 
 const byte address[6] = "1Node";
 const byte pipeNumber = 1;
-RF24 radio(9,10); // CE, CSN (SPI SS) *** WILL NEED TO BE UPDATED***
+RF24 radio(9,10); // CE, CSN (SPI SS)
 
 byte statusForAck = 0; // send this back to transmitter as acknowledgement package
-const byte OK = 1;  // not currently used
-//const byte GENERAL_ERROR = 2;  // not yet implemented
-// Bits 5,6,7 show battery level (that gives 8 segments)
+const byte OK = 1;
 
 struct dataStruct{
   int throttle; // number 0 to 1000

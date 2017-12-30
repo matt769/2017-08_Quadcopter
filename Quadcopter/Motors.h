@@ -12,6 +12,7 @@ uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
 const uint16_t PULSE_GAP = 100;  // gap between starting pulses, in ticks
 const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
 
+// these pins are currently hardcoded within the pulse generation function (direct port manipulation)
 const byte pinMotor1 = 3; // front left (CW)
 const byte pinMotor2 = 6; // front right (CCW)
 const byte pinMotor3 = 4; // back left (CCW)
@@ -46,7 +47,7 @@ void capMotorInputNearMaxThrottle() {
   }
 }
 
-void capMotorInputNearMinThrottle() {
+void capMotorInputNearMinThrottle(int throttle) {
   //at the very least, stop pulse going below 1000
   // this could be a problem if trying to control at lowish throttle (if higher than 1000 set as min)
   if (throttle < THROTTLE_MIN_SPIN) { //this is the base throttle i.e. if stick is low, no motor should move even if there's a big movements

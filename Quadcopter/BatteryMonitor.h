@@ -15,7 +15,6 @@ const int dividerRange = dividerMaxReading - dividerMinReading;
 int dividerReading = 0;
 int batteryLevel = 0;
 
-
 void calculateBatteryLevel() {
   int tmp = analogRead(pinBatteryMonitor);
   dividerReading = (1-batteryFilterAlpha) * dividerReading + batteryFilterAlpha * tmp;

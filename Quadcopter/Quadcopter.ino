@@ -3,12 +3,10 @@
 #include <SPI.h>  // standard Arduino DPI library
 #include <RF24.h> // https://github.com/nRF24/RF24
 
-
+// Shared settings
 const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
 const int ZERO_THROTTLE = 1000;
 const int THROTTLE_MIN_SPIN = 1125;
-int throttle;  // distinct from the user input because it may be modified
-bool error = false; // will be used in acknowledgement byte to indicate some error
 
 #include "Parameters.h"
 #include "PID.h"
@@ -19,6 +17,7 @@ bool error = false; // will be used in acknowledgement byte to indicate some err
 #include "Motors.h"
 #include "PIDSettings.h"
 
+int throttle;  // distinct from the user input because it may be modified
 
 const bool RATE = false;
 const bool ATTITUDE = true;
@@ -52,11 +51,8 @@ void setup() {
   setupMotionSensor();
   setupRadio();
   setupPid();
-
   calculateOffsets();
-  //  calibrateGyro(500);
   initialiseCurrentAngles();
-
   // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()) {
@@ -71,7 +67,7 @@ void setup() {
   setupMotors();
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
-  checkHeartbeat();
+  checkHeartbeat(); // refresh
   pidRateModeOn();
   unsigned long startTime = millis();
   rateLoopLast = startTime;
@@ -119,25 +115,19 @@ void loop() {
     }
   }
 
-  //  updateMotors(); // update the actual esc pulses
-
   // ****************************************************************************************
   // HANDLE STATE CHANGES
   // ****************************************************************************************
   if (MODE != PREV_MODE) {
     if (MODE == ATTITUDE) {
       pidAttitudeModeOn();
-      //      Serial.println(F("Entering attitude mode"));
       PREV_MODE = ATTITUDE;
     }
     else {
       pidAttitudeModeOff();
-      //      Serial.println(F("Leaving attitude mode"));
       PREV_MODE = RATE;
     }
   }
-
-  //  updateMotors(); // update the actual esc pulses
 
   // ****************************************************************************************
   // RUN RATE LOOP
@@ -154,7 +144,7 @@ void loop() {
       // calculate required pulse length
       calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
       capMotorInputNearMaxThrottle();
-      capMotorInputNearMinThrottle();
+      capMotorInputNearMinThrottle(throttle);
       needRecalcPulses = true;  // will trigger esc routine update
       updateMotors();
     }
@@ -179,7 +169,7 @@ void loop() {
     // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
     if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
-      // If connection lost then also change throttle so that QC is descending slowly
+      // If connection lost then also modify throttle so that QC is descending slowly
       if (!rxHeartbeat) {
         calculateVerticalAccel();
         connectionLostDescend(&throttle, ZAccel);
@@ -213,8 +203,8 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
 
-        if (millis() - lastPrint >= 50) {
-            lastPrint += 50;
+//        if (millis() - lastPrint >= 50) {
+//            lastPrint += 50;
 
   //    Serial.print(AcX); Serial.print('\t');
   //    Serial.print(AcY); Serial.print('\t');
@@ -305,11 +295,11 @@ void loop() {
 
   //          Serial.print(GyY);Serial.print('\n');
 
-          Serial.print(currentAngles.pitch); Serial.print('\t');
-          Serial.print(accelAngles.pitch); Serial.print('\t');
-          Serial.print(gyroAngles.pitch); Serial.print('\t');
-          Serial.print('\n');
-        }
+//          Serial.print(currentAngles.pitch); Serial.print('\t');
+//          Serial.print(accelAngles.pitch); Serial.print('\t');
+//          Serial.print(gyroAngles.pitch); Serial.print('\t');
+//          Serial.print('\n');
+//        }
 
 
 } // END LOOP

@@ -1,5 +1,6 @@
 // ****************************************************************************************
-// Based on PID Library by Brett Beauregard
+// PID Library by Brett Beauregard
+//    with some modifications - mainly that the time interval is checked outside the functions here
 // https://github.com/br3ttb/Arduino-PID-Library
 // ****************************************************************************************
 

@@ -1,8 +1,3 @@
-// PID controller by Brett Beauregard, code can be found here
-// https://github.com/br3ttb/Arduino-PID-Library/
-
-// NOTE THAT PID SETTINGS ARE DEFINED IN THE SETUP FUNCTION
-// alternatively initialise as shown here: https://arduino.stackexchange.com/questions/14763/assigning-value-inside-structure-array-outside-setup-and-loop-functions
 
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
