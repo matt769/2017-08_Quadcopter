@@ -45,6 +45,8 @@ unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 const float MICROS_TO_SECONDS = 0.000001;
 bool sensorRead;  // indicates whether valid information was read from the sensor
+const float gyroRes = (250.0f * pow(2,FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
+const float accelRes = (8.0f * pow(2,AFS_SEL)) / 32768.0f;
 
 struct angle {
   float roll;
@@ -57,16 +59,7 @@ struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 
-// PARAMETERS
-const byte DPLF_VALUE = 3;  // set low pass filter
-const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
-const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
-const float compFilterAlphaComplement = 1.0f - compFilterAlpha; // remove this, compiler should optimise anyway
-const float accelAverageAlpha = 0.1f; // weight applied to new accel angle calculation in complementary filter
-const float accelAverageAlphaComplement = 1.0f - accelAverageAlpha; // remove this, compiler should optimise anyway
-const float gyroRes = (250.0f * pow(2,FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
-const float accelRes = (8.0f * pow(2,AFS_SEL)) / 32768.0f
+
 
 bool readGyrosAccels() {
   //
@@ -169,9 +162,9 @@ void accumulateAccelReadings() {
   AcX = - AcX + AccelXOffset;
   AcY = AcY - AccelYOffset;
   AcZ = AcZ - AccelZOffset;
-  AcXAve = (AcXAve * accelAverageAlphaComplement) + (AcX * accelAverageAlpha);
-  AcYAve = (AcYAve * accelAverageAlphaComplement) + (AcY * accelAverageAlpha);
-  AcZAve = (AcZAve * accelAverageAlphaComplement) + (AcZ * accelAverageAlpha);
+  AcXAve = (AcXAve * (1.0f - accelAverageAlpha)) + (AcX * accelAverageAlpha);
+  AcYAve = (AcYAve * (1.0f - accelAverageAlpha)) + (AcY * accelAverageAlpha);
+  AcZAve = (AcZAve * (1.0f - accelAverageAlpha)) + (AcZ * accelAverageAlpha);
 }
 
 // each atan operation will take about 600us
@@ -212,9 +205,9 @@ void mixAngles() {
   gyroAngles.pitch += gyroChangeAngles.pitch;
   gyroAngles.yaw += gyroChangeAngles.yaw;
 
-  currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * compFilterAlphaComplement);
-  currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * compFilterAlphaComplement);
-  //  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * compFilterAlphaComplement);
+  currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * (1.0f - compFilterAlpha));
+  currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * (1.0f - compFilterAlpha));
+  //  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * (1.0f - compFilterAlpha));
   currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;   // add wrap around
 }
 
