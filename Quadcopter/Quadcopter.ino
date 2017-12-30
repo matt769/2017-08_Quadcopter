@@ -81,13 +81,12 @@ void setup() {
 void loop() {
 
   // ****************************************************************************************
-  // CHECK FOR USER INPUT
+  // CHECK FOR USER INPUT AND SET MODE
   // ****************************************************************************************
   if (millis() - receiverLast >= receiverFreq) {
     receiverLast += receiverFreq;
     //    loopCounterRx++;
     checkHeartbeat();  // must be done outside if(radio.available) loop
-    // we don't need to bother doing the rest of this stuff if there's no actual input
     if (checkRadioForInput()) {
       // CHECK MODES
       MODE = getMode();
@@ -96,7 +95,6 @@ void loop() {
         setMotorsLow();
         digitalWrite(pinStatusLed, HIGH);
         while (1);
-
       }
       // MAP CONTROL VALUES
       mapThrottle(&throttle);

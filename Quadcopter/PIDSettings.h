@@ -185,7 +185,9 @@ void connectionLostDescend(int *throttle, float ZAccel) {
 
 
 void overrideYawTarget() {
-  rateYawSettings.target = 0;
+//  rateYawSettings.target = 0;
+  // replace with what the rate target would have been
+  rateYawSettings.target = (float)map(rcPackage.yaw+1, 0,255, rateMax, rateMin);
 }
 
 

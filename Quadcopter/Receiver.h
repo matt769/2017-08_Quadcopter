@@ -161,13 +161,9 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
 }
 
 
-// could combine all of these into a single function?
-bool getSomething() {
-  return bitRead(rcPackage.control, 0);
-}
-bool getSomethingElse() {
-  return bitRead(rcPackage.control, 1);
-}
+
+
+
 bool getMode() {
   return bitRead(rcPackage.control, 2);
 }
