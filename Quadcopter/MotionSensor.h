@@ -34,13 +34,13 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 const float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
 const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
 
-int16_t AccelXOffset, AccelYOffset, AccelZOffset, GyXOffset, GyYOffset, GyZOffset;  // to be populated during setup depending on the temperature
+int16_t accelXOffset, accelYOffset, accelZOffset, gyXOffset, gyYOffset, gyZOffset;  // to be populated during setup depending on the temperature
 
 
 // MEASUREMENT
-int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // raw measurement values
+int16_t accX, accY, accZ, tmp, gyX, gyY, gyZ; // raw measurement values
 float valAcX, valAcY, valAcZ, valTmp, valGyX, valGyY, valGyZ; // converted to real units
-float AcXAve = 0, AcYAve = 0, AcZAve = 0;
+float accXAve = 0, accYAve = 0, accZAve = 0;
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 const float MICROS_TO_SECONDS = 0.000001;
@@ -67,13 +67,13 @@ bool readGyrosAccels() {
   // read the most significant bit register into the variable then shift to the left
   // and binary add the least significant
   if (I2c.available() == 14) {
-    AcX = I2c.receive() << 8 | I2c.receive(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-    AcY = I2c.receive() << 8 | I2c.receive(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-    AcZ = I2c.receive() << 8 | I2c.receive(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-    Tmp = I2c.receive() << 8 | I2c.receive(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
-    GyX = I2c.receive() << 8 | I2c.receive(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
-    GyY = I2c.receive() << 8 | I2c.receive(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
-    GyZ = I2c.receive() << 8 | I2c.receive(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+    accX = I2c.receive() << 8 | I2c.receive(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+    accY = I2c.receive() << 8 | I2c.receive(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+    accZ = I2c.receive() << 8 | I2c.receive(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+    tmp = I2c.receive() << 8 | I2c.receive(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+    gyX = I2c.receive() << 8 | I2c.receive(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+    gyY = I2c.receive() << 8 | I2c.receive(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+    gyZ = I2c.receive() << 8 | I2c.receive(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
     lastReadingTime = thisReadingTime;
     thisReadingTime = micros();
     return true;
@@ -96,27 +96,26 @@ void calculateOffsets() {
   }
   for (int i = 0; i < repetitions; i++) {
     readGyrosAccels();
-    temperatureSum += Tmp;
+    temperatureSum += tmp;
     delay(2);
   }
   float temperature = (float)temperatureSum / (float)repetitions;
-  AccelXOffset = (int)(( temperature * offsetScale[0] ) + offsetIntercept[0]);
-  AccelYOffset = (int)(( temperature * offsetScale[1] ) + offsetIntercept[1]);
-  AccelZOffset = (int)(( temperature * offsetScale[2] ) + offsetIntercept[2] - 16384);
-  GyXOffset = (int)(( temperature * offsetScale[3] ) + offsetIntercept[3]);
-  GyYOffset = (int)(( temperature * offsetScale[4] ) + offsetIntercept[4]);
-  GyZOffset = (int)(( temperature * offsetScale[5] ) + offsetIntercept[5]);
+  accelXOffset = (int)(( temperature * offsetScale[0] ) + offsetIntercept[0]);
+  accelYOffset = (int)(( temperature * offsetScale[1] ) + offsetIntercept[1]);
+  accelZOffset = (int)(( temperature * offsetScale[2] ) + offsetIntercept[2] - 16384);
+  gyXOffset = (int)(( temperature * offsetScale[3] ) + offsetIntercept[3]);
+  gyYOffset = (int)(( temperature * offsetScale[4] ) + offsetIntercept[4]);
+  gyZOffset = (int)(( temperature * offsetScale[5] ) + offsetIntercept[5]);
 
   byte accelRangeFactor = pow(2, AFS_SEL);
   byte gyroRangeFactor = pow(2, FS_SEL);
 
-  AccelXOffset /= accelRangeFactor;
-  AccelYOffset /= accelRangeFactor;
-  AccelZOffset /= accelRangeFactor;
-  GyXOffset /= gyroRangeFactor;
-  GyYOffset /= gyroRangeFactor;
-  GyZOffset /= gyroRangeFactor;
-
+  accelXOffset /= accelRangeFactor;
+  accelYOffset /= accelRangeFactor;
+  accelZOffset /= accelRangeFactor;
+  gyXOffset /= gyroRangeFactor;
+  gyYOffset /= gyroRangeFactor;
+  gyZOffset /= gyroRangeFactor;
 }
 
 
@@ -142,9 +141,9 @@ void setupMotionSensor() {
 
 
 void convertGyroReadingsToValues() {
-  valGyX = (GyX - GyXOffset) * gyroRes;
-  valGyY = (GyY - GyYOffset) * gyroRes;
-  valGyZ = (GyZ - GyZOffset) * gyroRes;
+  valGyX = (gyX - gyXOffset) * gyroRes;
+  valGyY = (gyY - gyYOffset) * gyroRes;
+  valGyZ = (gyZ - gyZOffset) * gyroRes;
 }
 
 void accumulateGyroChange() {
@@ -159,18 +158,18 @@ void accumulateGyroChange() {
 
 void accumulateAccelReadings() {
   // don't need to convert to values at all because we only need relative values
-  AcX = - AcX + AccelXOffset;
-  AcY = AcY - AccelYOffset;
-  AcZ = AcZ - AccelZOffset;
-  AcXAve = (AcXAve * (1.0f - accelAverageAlpha)) + (AcX * accelAverageAlpha);
-  AcYAve = (AcYAve * (1.0f - accelAverageAlpha)) + (AcY * accelAverageAlpha);
-  AcZAve = (AcZAve * (1.0f - accelAverageAlpha)) + (AcZ * accelAverageAlpha);
+  accX = - accX + accelXOffset;
+  accY = accY - accelYOffset;
+  accZ = accZ - accelZOffset;
+  accXAve = (accXAve * (1.0f - accelAverageAlpha)) + (accX * accelAverageAlpha);
+  accYAve = (accYAve * (1.0f - accelAverageAlpha)) + (accY * accelAverageAlpha);
+  accZAve = (accZAve * (1.0f - accelAverageAlpha)) + (accZ * accelAverageAlpha);
 }
 
 // each atan operation will take about 600us
 void calcAnglesAccel() {
-  accelAngles.roll = atan2(AcYAve, AcZAve) * RAD_TO_DEG;
-  accelAngles.pitch = atan2(AcXAve, AcZAve) * RAD_TO_DEG;
+  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
+  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
   //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 }
 
@@ -200,8 +199,7 @@ void resetGyroChange() {
 }
 
 void mixAngles() {
-  // calc gyro ony angle just for testing
-  gyroAngles.roll += gyroChangeAngles.roll;
+  gyroAngles.roll += gyroChangeAngles.roll;   // calc gyro ony angle just for testing
   gyroAngles.pitch += gyroChangeAngles.pitch;
   gyroAngles.yaw += gyroChangeAngles.yaw;
 
@@ -212,11 +210,11 @@ void mixAngles() {
 }
 
 void calculateVerticalAccel() {
-  valAcZ = AcZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
+  valAcZ = accZAve * accelRes;      // AcZAve has already been filtered, although I might wish to have a different filter parameter
 }
 
 void calibrateGyro(int repetitions) {
-  long GyXSum = 0, GyYSum = 0, GyZSum = 0;
+  long gyXSum = 0, gyYSum = 0, gyZSum = 0;
   int i = 0;
   // throw away first 100 readings
   for (i = 0; i < 100; i++) {
@@ -225,17 +223,17 @@ void calibrateGyro(int repetitions) {
   }
   for (i = 0; i < repetitions; i++) {
     readGyrosAccels();
-    GyXSum += GyX;
-    GyYSum += GyY;
-    GyZSum += GyZ;
+    gyXSum += gyX;
+    gyYSum += gyY;
+    gyZSum += gyZ;
     delay(2);
   }
-  GyXOffset = GyXSum / repetitions;
-  GyYOffset = GyYSum / repetitions;
-  GyZOffset = GyZSum / repetitions;
-  Serial.print(GyXOffset); Serial.print('\t');
-  Serial.print(GyYOffset); Serial.print('\t');
-  Serial.print(GyZOffset); Serial.print('\n');
+  gyXOffset = gyXSum / repetitions;
+  gyYOffset = gyYSum / repetitions;
+  gyZOffset = gyZSum / repetitions;
+//  Serial.print(gyXOffset); Serial.print('\t');
+//  Serial.print(gyYOffset); Serial.print('\t');
+//  Serial.print(gyZOffset); Serial.print('\n');
 
 }
 
