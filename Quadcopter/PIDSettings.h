@@ -1,4 +1,3 @@
-
 struct pid {
   float actual;
   float output;
@@ -94,7 +93,6 @@ void setupPid() {
 
 }
 
-// return true if all PIDs are run
 bool pidRateUpdate() {
   static unsigned long thisTime;
   static unsigned long lastTime;
@@ -111,7 +109,6 @@ bool pidRateUpdate() {
   return false;
 }
 
-// return true if all PIDs are run
 bool pidAttitudeUpdate() {
   static unsigned long thisTime;
   static unsigned long lastTime;
@@ -122,7 +119,7 @@ bool pidAttitudeUpdate() {
     lastTime += attitudePIDFreq;
     pidAttitudeRoll.Compute();
     pidAttitudePitch.Compute();
-    pidAttitudeYaw.Compute();
+//    pidAttitudeYaw.Compute();
     return true;
   }
   return false;
@@ -153,13 +150,6 @@ void setAttitudePidActual(float roll, float pitch, float yaw) {
   attitudeYawSettings.actual = yaw;
 }
 
-//void endPulseTimer2() {
-//  cli();
-//  TIMSK1 =  0 ; // disable the output compare interrupt
-//  TIFR1 |= _BV(OCF1A);     // clear any pending interrupts;
-//  sei();
-//}
-
 void connectionLostDescend(int *throttle, float ZAccel) {
 //  Serial.println(*throttle);
   if (ZAccel > 0.95) {    // ZAccel < 1 implies downwards movement, reduce throttle until I get it
@@ -171,7 +161,6 @@ void connectionLostDescend(int *throttle, float ZAccel) {
     while (1);
   }
 }
-
 
 void overrideYawTarget() {
 //  rateYawSettings.target = 0;
