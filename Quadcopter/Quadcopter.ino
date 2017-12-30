@@ -20,14 +20,11 @@ bool error = false; // will be used in acknowledgement byte to indicate some err
 #include "PIDSettings.h"
 
 
-bool attitude_mode = false;  // REMOVE THIS AND JUST USE STATE (actually change STATE to MODE)
-bool auto_level = false;
-
-byte RATE = 0;
-byte ATTITUDE = 1;
-byte MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
-byte PREV_MODE = RATE;
-
+const bool RATE = false;
+const bool ATTITUDE = true;
+bool MODE = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
+bool PREV_MODE = RATE;
+bool autoLevel = false;
 bool KILL = 0;
 
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
@@ -97,8 +94,8 @@ void loop() {
     // we don't need to bother doing the rest of this stuff if there's no actual input
     if (checkRadioForInput()) {
       // CHECK MODES
-      attitude_mode = getMode();
-      auto_level = getAutolevel();
+      MODE = getMode();
+      autoLevel = getAutolevel();
       if (getKill() && (throttle < 1050)) {
         setMotorsLow();
         digitalWrite(pinStatusLed, HIGH);
@@ -107,17 +104,17 @@ void loop() {
       }
       // MAP CONTROL VALUES
       mapThrottle(&throttle);
-      if (attitude_mode || auto_level) {
-        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, attitude_mode);
+      if (MODE || autoLevel) {
+        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, MODE);
         MODE = ATTITUDE;
       }
       else {
-        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, attitude_mode);
+        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, MODE);
         MODE = RATE;
       }
     }
-    auto_level = auto_level || !rxHeartbeat;
-    if (auto_level) {
+    autoLevel = autoLevel || !rxHeartbeat;
+    if (autoLevel) {
       MODE = ATTITUDE;
     }
   }
@@ -180,7 +177,7 @@ void loop() {
     mixAngles();
     resetGyroChange();
     // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
-    if (auto_level) { // if no communication received, OR user has specified auto-level
+    if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
       // If connection lost then also change throttle so that QC is descending slowly
       if (!rxHeartbeat) {
@@ -189,7 +186,7 @@ void loop() {
       }
     }
     // The attitude PID itself will not run unless QC is in ATTITUDE mode
-    if (attitude_mode) {
+    if (MODE) {
       setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       // if PID has updated the outputs then recalculate the required motor pulses
       if (pidAttitudeUpdate()) {
@@ -233,7 +230,7 @@ void loop() {
   //      Serial.print('\n');
   //
   //      Serial.print(rxHeartbeat); Serial.print('\t');
-  //      Serial.print(auto_level); Serial.print('\t');
+  //      Serial.print(autoLevel); Serial.print('\t');
   //      Serial.print(lastRxReceived); Serial.print('\t');
   //      Serial.print(MODE); Serial.print('\t');
   //      Serial.print(throttle); Serial.print('\n');
