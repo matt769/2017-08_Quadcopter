@@ -47,11 +47,20 @@ const int THROTTLE_MIN_SPIN = 1125;
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.95f; // weight applied to gyro angle estimate
-const float accelAverageAlpha = 0.05f; // weight given to the new reading
+const float compFilterAlpha = 0.992f; // weight applied to gyro angle estimate
+const float accelAverageAlpha = 0.02f; // weight given to the new reading over the running average
 
 
 
 
 // BATTERY
+
+
+
+
+
+
+
+
+
 

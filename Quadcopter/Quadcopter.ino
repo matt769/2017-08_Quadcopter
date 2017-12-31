@@ -45,8 +45,14 @@ const byte pinStatusLed = 8;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println(gyroRes,6);
-  Serial.println(accelRes,6);
+
+//Serial.println(rateLoopFreq);
+//Serial.println(attitudeLoopFreq);
+//Serial.println(ratePIDFreq);
+//Serial.println(attitudePIDFreq);
+//Serial.println(receiverFreq);
+//Serial.println(batteryFreq);
+
   pinMode(pinStatusLed, OUTPUT);
   digitalWrite(pinStatusLed, HIGH);
   setupBatteryMonitor();
@@ -174,9 +180,9 @@ void loop() {
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
-            Serial.print(currentAngles.roll); Serial.print('\t');
-            Serial.print(accelAngles.roll); Serial.print('\t');
-            Serial.print(gyroAngles.roll); Serial.print('\n');
+//            Serial.print(currentAngles.roll); Serial.print('\t');
+//            Serial.print(accelAngles.roll); Serial.print('\t');
+//            Serial.print(gyroAngles.roll); Serial.print('\n');
     // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
     if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
