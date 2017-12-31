@@ -1,11 +1,11 @@
 // CONTROL LOOP FREQUENCY
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
-const byte rateLoopFreq = 1;  // 1 -> 1kHz
-const byte attitudeLoopFreq = 5; // 5 -> 200Hz
-const byte ratePIDFreq = attitudeLoopFreq;
-const byte attitudePIDFreq = attitudeLoopFreq;
-const byte receiverFreq = 50;
-const int batteryFreq = 1000;
+const uint16_t rateLoopFreq = 1250;  // 1 -> 1kHz
+const uint16_t attitudeLoopFreq = 5000; // 5 -> 200Hz
+const uint16_t ratePIDFreq = attitudeLoopFreq / 1000;
+const uint16_t attitudePIDFreq = attitudeLoopFreq / 1000;
+const uint16_t receiverFreq = 50;
+const uint16_t batteryFreq = 1000;
 
 // PID OUTPUT LIMITS
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)

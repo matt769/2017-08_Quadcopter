@@ -68,14 +68,15 @@ void setup() {
   setupMotors();
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
+  lastPrint = millis();
   checkHeartbeat(); // refresh
   pidRateModeOn();
-  unsigned long startTime = millis();
-  lastPrint = startTime;
-  rateLoopLast = startTime;
-  attitudeLoopLast = startTime;
-  receiverLast = startTime;
-  batteryLoopLast = startTime;
+  unsigned long startTimeMillis = millis();
+  receiverLast = startTimeMillis;
+  batteryLoopLast = startTimeMillis;
+  unsigned long startTimeMicros = micros();
+  rateLoopLast = startTimeMicros;
+  attitudeLoopLast = startTimeMicros;
 } // END SETUP
 
 
@@ -135,7 +136,7 @@ void loop() {
   // RUN RATE LOOP
   // includes sensor read
   // ****************************************************************************************
-  if (millis() - rateLoopLast >= rateLoopFreq) {
+  if (micros() - rateLoopLast >= rateLoopFreq) {
 
     rateLoopLast += rateLoopFreq;
     loopCounterRate++;
@@ -161,7 +162,7 @@ void loop() {
   // RUN ATTITUDE CALCULATIONS
   // ****************************************************************************************
 
-  if (millis() - attitudeLoopLast >= attitudeLoopFreq) {
+  if (micros() - attitudeLoopLast >= attitudeLoopFreq) {
     attitudeLoopLast += attitudeLoopFreq;
     loopCounterAttitude++;
     calcAnglesAccel();
