@@ -23,6 +23,9 @@ int motor2pulse;
 int motor3pulse;
 int motor4pulse;
 
+uint16_t loopCounterMotorRecalc;
+uint16_t loopCounterMotorUpdate;
+uint16_t loopCounterMotorPulse;
 
 
 // ****************************************************************************************
@@ -131,6 +134,7 @@ static inline void generate_esc_pulses() {
     OCR1A = PULSE_GAP;  // start again after the standard gap
     escPulseGenerationCycle = 0; // next time interupt fire we want to start the pulses
     lockPulses = true;  // this is the begging of the pulse train, so don't allow the pulse lengths to be updated until this cycle is 'finished'
+    loopCounterMotorPulse++;
   }
 }
 
@@ -197,8 +201,10 @@ void calcEndTimes() {
 
 void updateMotorPulseISR() {
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
+//    loopCounterMotorUpdateTry++;
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
+      loopCounterMotorUpdate++;
       copyPulseInfoToIsrVariables();
       needUpdatePulses = false;
     }
@@ -207,12 +213,13 @@ void updateMotorPulseISR() {
 }
 
 void recalculateMotorPulses() {
-    resetOrder(); // reset escOrderMain
-    calculateRequiredTicks(); // populate escTicks
-    sortPulses(); // reorder escOrderMain and escTicks
-    calcEndTimes(); // what times should these finish - populate escTicksEndMain
-    needUpdatePulses = true;
-    updateMotorPulseISR();
+  loopCounterMotorRecalc++;
+  resetOrder(); // reset escOrderMain
+  calculateRequiredTicks(); // populate escTicks
+  sortPulses(); // reorder escOrderMain and escTicks
+  calcEndTimes(); // what times should these finish - populate escTicksEndMain
+  needUpdatePulses = true;
+  updateMotorPulseISR();
 }
 
 

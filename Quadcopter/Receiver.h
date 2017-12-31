@@ -42,8 +42,6 @@ bool rxHeartbeat = false;
 unsigned long lastRxReceived = 0;
 const unsigned long heartbeatTimeout = 500;
 
-
-
 byte calculateCheckSum(){
   byte sum = 0;
   sum += rcPackage.throttle;
@@ -81,7 +79,6 @@ void setupRadio() {
 //  radio.setRetries();   // default is setRetries(5,15) // note restrictions due to ack payload
   radio.openReadingPipe(pipeNumber, address);
   radio.startListening();
-//  Serial.println(radio.isChipConnected());
 }
 
 void updateAckStatusForTx(){
@@ -98,7 +95,6 @@ bool checkRadioForInput() {
       radio.read( &rcPackage, sizeof(rcPackage) );
     }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
-//    statusForAck = highByte(millis());  // PLACEHOLDER
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
     if(rcPackage.checksum != calculateCheckSum()){
       radio.flush_rx();
@@ -124,19 +120,6 @@ bool checkHeartbeat(){
   return rxHeartbeat;
 }
 
-//bool checkRadioForInput() {
-//  // ADD PLACEHOLDER VALUES
-//  rcPackage.throttle = 127;
-//  rcPackage.roll = 127;
-//  rcPackage.pitch = 127;
-//  rcPackage.yaw = 127;
-//  rcPackage.control = B00000000;  // B00000100; attitude mode
-//  rxHeartbeat = true;
-//  lastRxReceived = millis();
-//  updateAckStatusForTx(); // for next time
-//  return true;
-//}
-
 void mapThrottle(int *throttle){
   if (rcPackage.throttle < 12){
     *throttle = 0;
@@ -144,7 +127,6 @@ void mapThrottle(int *throttle){
   else {
     *throttle = map(rcPackage.throttle,0,255,THROTTLE_MIN_SPIN,THROTTLE_LIMIT);
   }
-
 }
 
 void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
@@ -160,10 +142,6 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
   }
 }
 
-
-
-
-
 bool getMode() {
   return bitRead(rcPackage.control, 2);
 }
@@ -173,7 +151,4 @@ bool getAutolevel() {
 bool getKill() {
   return bitRead(rcPackage.control, 7);
 }
-
-
-
 

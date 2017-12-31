@@ -33,7 +33,7 @@ const byte GYRO_ZOUT_L = 72;   //[7:0]
 // ax,ay,az,gx,gy,gz
 const float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0.02385017929, 0.00375586283, 0.00117846130};
 const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
-
+// will be used to populate these
 int16_t accelXOffset, accelYOffset, accelZOffset, gyXOffset, gyYOffset, gyZOffset;  // to be populated during setup depending on the temperature
 
 
@@ -59,13 +59,8 @@ struct angle gyroAngles;
 struct angle gyroChangeAngles;
 struct angle currentAngles;
 
-
-
 bool readGyrosAccels() {
-  //
   I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 14);
-  // read the most significant bit register into the variable then shift to the left
-  // and binary add the least significant
   if (I2c.available() == 14) {
     accX = I2c.receive() << 8 | I2c.receive(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
     accY = I2c.receive() << 8 | I2c.receive(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
@@ -118,7 +113,6 @@ void calculateOffsets() {
   gyZOffset /= gyroRangeFactor;
 }
 
-
 void setupMotionSensor() {
   writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
   delay(50);  // delay desirable after reset
@@ -137,8 +131,6 @@ void setupMotionSensor() {
     while (1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
   }
 }
-
-
 
 void convertGyroReadingsToValues() {
   valGyX = (gyX - gyXOffset) * gyroRes;
@@ -166,14 +158,13 @@ void accumulateAccelReadings() {
   accZAve = (accZAve * (1.0f - accelAverageAlpha)) + (accZ * accelAverageAlpha);
 }
 
-// each atan operation will take about 600us
 void calcAnglesAccel() {
   accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
   accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
   //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 }
 
-// QC must be sationary when this runs
+// QC must be stationary when this runs
 void initialiseCurrentAngles() {
   // take a certain number of readings
   readGyrosAccels();  // just to get timing variables filled

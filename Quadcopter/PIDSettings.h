@@ -1,3 +1,9 @@
+uint16_t loopCounterPidRate;
+uint16_t loopCounterPidAttitude;
+
+unsigned long lastPidRate;
+unsigned long lastPidAttitude;
+
 struct pid {
   float actual;
   float output;
@@ -90,17 +96,12 @@ void setupPid() {
   pidAttitudeRoll.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
   pidAttitudePitch.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
   pidAttitudeYaw.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
-
 }
 
 bool pidRateUpdate() {
-  static unsigned long thisTime;
-  static unsigned long lastTime;
-  static unsigned long interval;
-  thisTime = millis();
-  interval = thisTime - lastTime; // saving value of interval in case I want to send to PID calculation
-  if (interval >= ratePIDFreq) {
-    lastTime += ratePIDFreq;
+  if (millis() - lastPidRate >= ratePIDFreq) {
+    lastPidRate += ratePIDFreq;
+    loopCounterPidRate ++;
     pidRateRoll.Compute();
     pidRatePitch.Compute();
     pidRateYaw.Compute();
@@ -110,13 +111,9 @@ bool pidRateUpdate() {
 }
 
 bool pidAttitudeUpdate() {
-  static unsigned long thisTime;
-  static unsigned long lastTime;
-  static unsigned long interval;
-  thisTime = millis();
-  interval = thisTime - lastTime;
-  if (interval >= attitudePIDFreq) {
-    lastTime += attitudePIDFreq;
+  if (millis() - lastPidAttitude >= attitudePIDFreq) {
+    loopCounterPidAttitude ++;
+    lastPidAttitude += attitudePIDFreq;
     pidAttitudeRoll.Compute();
     pidAttitudePitch.Compute();
 //    pidAttitudeYaw.Compute();
@@ -167,5 +164,4 @@ void overrideYawTarget() {
   // replace with what the rate target would have been
   rateYawSettings.target = (float)map(rcPackage.yaw+1, 0,255, rateMax, rateMin);
 }
-
 
