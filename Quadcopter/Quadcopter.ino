@@ -31,6 +31,7 @@ unsigned long batteryLoopLast = 0;
 // DEBUGGING // PERFORMANCE CHECKING
 unsigned long lastPrint = 0;
 int loopCounter = 0;
+int loopCounterRx = 0;
 int loopCounterRate = 0;
 int loopCounterAttitude = 0;
 unsigned long functionTimeSum = 0;
@@ -88,6 +89,7 @@ void loop() {
   // ****************************************************************************************
   if (millis() - receiverLast >= receiverFreq) {
     receiverLast += receiverFreq;
+    loopCounterRx ++;
     checkHeartbeat();  // must be done outside if(radio.available) loop
     if (checkRadioForInput()) {
       // CHECK MODES
@@ -232,13 +234,14 @@ void loop() {
 //    functionTimeSum = 0;
 //    functionTimeCounter = 0;
     //
-    //      Serial.println(loopCounterRx); Serial.print('\t');
-
-    //          Serial.print(loopCounterRate); Serial.print('\t');
-    //          loopCounterRate = 0;
-    //          Serial.print(loopCounterAttitude); Serial.print('\n');
-    //          loopCounterAttitude = 0;
-    //    loopCounter = 0;
+//    Serial.print(loopCounter); Serial.print('\t');
+//    loopCounter = 0;
+//    Serial.print(loopCounterRx); Serial.print('\t');
+//    loopCounterRx = 0;
+//    Serial.print(loopCounterRate); Serial.print('\t');
+//    loopCounterRate = 0;
+//    Serial.print(loopCounterAttitude); Serial.print('\n');
+//    loopCounterAttitude = 0;
     //
     //    Serial.print(throttle); Serial.print('\t');
     //    Serial.print(valGyX); Serial.print('\n');
