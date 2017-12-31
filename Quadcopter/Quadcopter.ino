@@ -45,6 +45,8 @@ const byte pinStatusLed = 8;
 
 void setup() {
   Serial.begin(115200);
+  Serial.println(gyroRes,6);
+  Serial.println(accelRes,6);
   pinMode(pinStatusLed, OUTPUT);
   digitalWrite(pinStatusLed, HIGH);
   setupBatteryMonitor();
@@ -118,6 +120,8 @@ void loop() {
     }
   }
 
+  updateMotorPulseISR();
+  
   // ****************************************************************************************
   // HANDLE STATE CHANGES
   // ****************************************************************************************
@@ -131,6 +135,8 @@ void loop() {
       previousMode = RATE;
     }
   }
+
+  updateMotorPulseISR();
 
   // ****************************************************************************************
   // RUN RATE LOOP
@@ -168,6 +174,9 @@ void loop() {
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
+            Serial.print(currentAngles.roll); Serial.print('\t');
+            Serial.print(accelAngles.roll); Serial.print('\t');
+            Serial.print(gyroAngles.roll); Serial.print('\n');
     // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
     if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
@@ -190,7 +199,7 @@ void loop() {
   }
 
 
-  //  updateMotors(); // update the actual esc pulses
+  updateMotorPulseISR();
 
   // ****************************************************************************************
   // CHECK BATTERY
@@ -200,14 +209,14 @@ void loop() {
     calculateBatteryLevel();
   }
 
-  //  updateMotors(); // update the actual esc pulses
+  updateMotorPulseISR();
 
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
 
-//  if (millis() - lastPrint >= 1000) {
-//    lastPrint += 1000;
+//  if (millis() - lastPrint >= 50) {
+//    lastPrint += 50;
 
     //    Serial.print(AcX); Serial.print('\t');
     //    Serial.print(AcY); Serial.print('\t');
@@ -299,11 +308,13 @@ void loop() {
     //
 
     //          Serial.print(GyY);Serial.print('\n');
-
-    //          Serial.print(currentAngles.pitch); Serial.print('\t');
-    //          Serial.print(accelAngles.pitch); Serial.print('\t');
-    //          Serial.print(gyroAngles.pitch); Serial.print('\t');
-    //          Serial.print('\n');
+//              Serial.print(currentAngles.roll); Serial.print('\t');
+//              Serial.print(accelAngles.roll); Serial.print('\t');
+//              Serial.print(gyroAngles.roll); Serial.print('\t');
+//              Serial.print(currentAngles.pitch); Serial.print('\t');
+//              Serial.print(accelAngles.pitch); Serial.print('\t');
+//              Serial.print(gyroAngles.pitch); Serial.print('\t');
+//              Serial.print('\n');
 //  }
 
 

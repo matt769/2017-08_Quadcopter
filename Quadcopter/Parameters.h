@@ -1,7 +1,7 @@
 // CONTROL LOOP FREQUENCY
 // all frequencies expressed in loop duration in milliseconds e.g. 100Hz = 1000/100 = 10ms
-const uint16_t rateLoopFreq = 1250;  // 1 -> 1kHz
-const uint16_t attitudeLoopFreq = 5000; // 5 -> 200Hz
+const uint16_t rateLoopFreq = 1250;  // 1250 -> 800Hz
+const uint16_t attitudeLoopFreq = 5000; // 5000 -> 200Hz
 const uint16_t ratePIDFreq = attitudeLoopFreq / 1000;
 const uint16_t attitudePIDFreq = attitudeLoopFreq / 1000;
 const uint16_t receiverFreq = 50;
@@ -47,8 +47,8 @@ const int THROTTLE_MIN_SPIN = 1125;
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
-const float accelAverageAlpha = 0.1f; // weight applied to new accel angle calculation in complementary filter
+const float compFilterAlpha = 0.95f; // weight applied to gyro angle estimate
+const float accelAverageAlpha = 0.05f; // weight given to the new reading
 
 
 
