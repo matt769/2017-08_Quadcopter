@@ -27,7 +27,7 @@ void PID::SetMode(int Mode)
 bool PID::Compute()
 {
   if (!inAuto) return false;
-  /*Compute all the working error variables*/
+
   float input = *myInput;
   float error = *mySetpoint - input;
   ITerm += (ki * error);
@@ -35,14 +35,12 @@ bool PID::Compute()
   else if (ITerm < outMin) ITerm = outMin;
   float dInput = (input - lastInput);
 
-  /*Compute PID Output*/
   float output = kp * error + ITerm - kd * dInput;
 
   if (output > outMax) output = outMax;
   else if (output < outMin) output = outMin;
   *myOutput = output;
 
-  /*Remember some variables for next time*/
   lastInput = input;
   return true;
 }
@@ -97,8 +95,7 @@ void PID::SetSampleTime(int NewSampleTime)
 {
   if (NewSampleTime > 0)
   {
-    float ratio  = (float)NewSampleTime
-                   / (float)SampleTime;
+    float ratio  = (float)NewSampleTime / (float)SampleTime;
     ki *= ratio;
     kd /= ratio;
     SampleTime = (unsigned long)NewSampleTime;
