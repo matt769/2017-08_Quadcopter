@@ -35,7 +35,6 @@ MPU6050::MPU6050() {
   accelResolution = (2.0f * pow(2,0)) / 32768.0f;	// default
 }
 
-
 void MPU6050::on() {
   I2CH.writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
 }
@@ -70,11 +69,12 @@ void MPU6050::defaultConfig(){
   setClockSource(1);
 }
 
-
 uint8_t getGyroFullScaleRange(){
+  // TODO
 }
-uint8_t getAccelFullScaleRange();
-
+uint8_t getAccelFullScaleRange(){
+  // TODO
+}
 
 bool MPU6050::getAccel(int16_t sensorData[]) {
   I2CH.read(MPU_ADDRESS, ACCEL_XOUT_H, 6);
