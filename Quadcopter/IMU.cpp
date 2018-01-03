@@ -1,10 +1,8 @@
 #include "IMU.h"
 #include "Parameters.h"
 
-
 IMU::IMU() {
 }
-
 
 bool IMU::getData() {   // for testing, will rename later
   unsigned long tm = micros();
@@ -55,14 +53,12 @@ void IMU::accumulateGyroChange() {
   // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds
 }
 
-
 void IMU::averageAccelReadings() {
   // don't need to convert to values at all because we only need relative values
   accelAverages[0] = (accelAverages[0] * (1.0f - accelAverageAlpha)) + (accelReadings[0] * accelAverageAlpha);
   accelAverages[1] = (accelAverages[1] * (1.0f - accelAverageAlpha)) + (accelReadings[1] * accelAverageAlpha);
   accelAverages[2] = (accelAverages[2] * (1.0f - accelAverageAlpha)) + (accelReadings[2] * accelAverageAlpha);
 }
-
 
 void IMU::calculateAccelAngles() {
   accelAngles[0] = atan2(accelAverages[1], accelAverages[2]) * RAD_TO_DEG;
@@ -115,8 +111,6 @@ void IMU::updateRate(){
 }
 
 void IMU::updateAttitude(){
-  // put 'full' routine in here
-
     calculateAccelAngles();
     complementaryFilter();
     resetGyroChangeAccumulator();
@@ -153,7 +147,6 @@ void IMU::calculateOffsetValues() {
   gyroOffsets[0] /= gyroRangeFactor;
   gyroOffsets[1] /= gyroRangeFactor;
   gyroOffsets[2] /= gyroRangeFactor;
-
 }
 
 void IMU::calculateVerticalAccel() {

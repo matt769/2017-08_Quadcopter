@@ -7,7 +7,6 @@
 
 
 class IMU {
-    //  private:
   public:
     int16_t accelOffsets[3], gyroOffsets[3];
     float accelAverages[3];
@@ -15,7 +14,6 @@ class IMU {
     unsigned long lastReadingTime;
     unsigned long thisReadingTime;
     bool sensorRead;
-
     void applyOffsets();
     void gyroReadingsToValues();
     void accelReadingsToValues();
@@ -25,12 +23,9 @@ class IMU {
     void resetGyroChangeAccumulator();
     void complementaryFilter();
     void calculateOffsetValues();
-
-    //  public:
     MPU6050 mpu;
     int16_t accelReadings[3], gyroReadings[3], tempReading; // raw readings, x, y, z
     float accelAngles[3], gyroAngles[3], gyroChangeAngles[3], currentAngles[3];
-
     IMU();
     void sensorOn();
     bool getData(); // rename? versions for gyro/accel only?
