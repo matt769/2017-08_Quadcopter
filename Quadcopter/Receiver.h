@@ -5,8 +5,6 @@
 
 // consider moving some functions out of this class e.g. the mapping of inputs
 
-
-
 class Receiver {
   public:
     uint8_t statusForAckExternal;
@@ -22,7 +20,6 @@ class Receiver {
     bool getAutolevel();
     bool getKill();
     void ArmingProcedure();
-
 
   private:
     uint8_t statusForAck;
@@ -42,7 +39,5 @@ class Receiver {
     } rcPackage;
 
 };
-
-
 
 #endif

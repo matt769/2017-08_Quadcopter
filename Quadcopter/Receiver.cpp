@@ -1,7 +1,6 @@
 #include "Receiver.h"
 #include "Parameters.h"
 
-
 static const uint8_t OK = 1;
 
 Receiver::Receiver(uint16_t ce, uint16_t csn): radio(ce, csn) {
@@ -30,7 +29,7 @@ void Receiver::printPackage() {
   Serial.print("CHKSUM_DIFF: "); Serial.println(rcPackage.checksum - calculateCheckSum());
 }
 
-// move the parameters here into the parameters file
+
 void Receiver::setupRadio() {
   radio.begin();
   radio.setPALevel(RF24_PA_HIGH);  // MIN, LOW, HIGH, MAX
@@ -86,19 +85,6 @@ bool Receiver::checkHeartbeat() {
   return rxHeartbeat;
 }
 
-////bool Receiver::checkRadioForInput() {
-////  // PLACEHOLDER VALUES
-////  rcPackage.throttle = 127;
-////  rcPackage.roll = 127;
-////  rcPackage.pitch = 127;
-////  rcPackage.yaw = 127;
-////  rcPackage.control = B00000000;  // B00000100; attitude mode
-////  rxHeartbeat = true;
-////  lastRxReceived = millis();
-////  updateAckStatusForTx(); // for next time
-////  return true;
-////}
-
 void Receiver::mapThrottle(int *throttle) {
   if (rcPackage.throttle < 12) {
     *throttle = 0;
@@ -108,8 +94,6 @@ void Receiver::mapThrottle(int *throttle) {
   }
 }
 
-// CONSIDER SPLITTING TO SEPARATE FUNCTIONS? NOT SURE MUCH ADVANTAGE LIKE THIS
-// UNLESS I PASS THE min and max as well?
 void Receiver::mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
   if (!mode) {
     *roll = (float)map(rcPackage.roll + 1, 0, 255, rateMin, rateMax);
@@ -133,7 +117,6 @@ bool Receiver::getKill() {
   return bitRead(rcPackage.control, 7);
 }
 
-
 void Receiver::ArmingProcedure() {
   while (!checkRadioForInput()) {
   }
@@ -144,10 +127,4 @@ void Receiver::ArmingProcedure() {
     checkRadioForInput();
   }
 }
-
-
-
-
-
-
 
