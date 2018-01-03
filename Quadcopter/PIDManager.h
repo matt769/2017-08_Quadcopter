@@ -1,7 +1,6 @@
 #ifndef PIDMANAGER_H
 #define PIDMANAGER_H
 
-
 struct pid {
   float actual;
   float output;
@@ -10,15 +9,6 @@ struct pid {
   float kI;
   float kD;
 };
-
-
-
-//struct pid rateRollSettings;
-//struct pid ratePitchSettings;
-//struct pid rateYawSettings;
-//struct pid attitudeRollSettings;
-//struct pid attitudePitchSettings;
-//struct pid attitudeYawSettings;
 
 void pidRateModeOn();
 void pidRateModeOff();
@@ -33,6 +23,5 @@ void setRatePidActual(float roll, float pitch, float yaw);
 void setAttitudePidActual(float roll, float pitch, float yaw);
 void connectionLostDescend(int *throttle, float ZAccel);
 void overrideYawTarget();
-
 
 #endif

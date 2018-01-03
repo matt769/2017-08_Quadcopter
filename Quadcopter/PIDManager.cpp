@@ -160,9 +160,7 @@ void connectionLostDescend(int *throttle, float ZAccel) {
   }
 }
 
-
 void overrideYawTarget() {
   rateYawSettings.target = 0;
 }
-
 
