@@ -9,10 +9,8 @@ static uint8_t volatile QuadMotors::escOrderIsr[4] = {0, 0, 0, 0};
 static uint8_t QuadMotors::escIndex = 0;
 static bool volatile QuadMotors::lockPulses = false;
 static bool QuadMotors::needUpdatePulses = false;
-//static bool QuadMotors::needRecalcPulses = false;
 static uint8_t QuadMotors::escPulseGenerationCycle = 2;  // 0 = start, 1 = stop, 2 = reset
 static uint16_t QuadMotors::motorPulseLengthMs[4] = {0, 0, 0, 0};
-
 
 
 QuadMotors::QuadMotors() {
@@ -55,12 +53,10 @@ static void QuadMotors::capMotorInputNearMinThrottle(uint16_t throttle) {
 }
 
 
-
 // ****************************************************************************************
 //        FUNCTIONS FOR ESC CREATION
 // ****************************************************************************************
 
-// how to include this?
 ISR(TIMER1_COMPA_vect) {
   QuadMotors::generateEscPulses();
 }
@@ -129,7 +125,6 @@ static void QuadMotors::generateEscPulses() {
   }
 }
 
-
 static void QuadMotors::copyPulseInfoToIsrVariables() {
   cli();
   escOrderIsr[0] = escOrderMain[0];
@@ -183,9 +178,6 @@ static void QuadMotors::calcEndTimes() {
   escTicksEndMain[3] = escTicks[3] + (4 * PULSE_GAP);
 }
 
-
-// needRecalcPulses should be true when the rate PID has produced a new output
-// this function should be run as quickly as possible - maybe have at multiple points throughout the program?
 static void QuadMotors::updateMotors(bool needRecalcPulses) {
   if (needRecalcPulses) { // allow the calculation to start as soon as new values are available
     // calculate required counter ticks
@@ -193,7 +185,6 @@ static void QuadMotors::updateMotors(bool needRecalcPulses) {
     calculateRequiredTicks(); // populate escTicks
     sortPulses(); // reorder escOrderMain and escTicks
     calcEndTimes(); // what times should these finish - populate escTicksEndMain
-    //    needRecalcPulses = false;
     needUpdatePulses = true;
   }
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
@@ -228,7 +219,6 @@ static void QuadMotors::setupMotors() {
 // ****************************************************************************************
 //        OTHER
 // ****************************************************************************************
-
 
 static void QuadMotors::setMotorsLow() {
   motorPulseLengthMs[0] = 1000;

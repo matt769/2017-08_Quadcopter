@@ -35,6 +35,5 @@ class QuadMotors {
     static void updateMotors(bool needRecalcPulses);
     static void setupMotors();
 
-
 };
 #endif
