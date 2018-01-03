@@ -112,7 +112,6 @@ void loop() {
     }
   }
 
-
   // ****************************************************************************************
   // RUN RATE LOOP
   // includes sensor read
@@ -134,7 +133,6 @@ void loop() {
   // UPDATE MOTORS
   // ****************************************************************************************
   QuadMotors::updateMotors(false); // try and update the esc pulses only in case it was locked previously
-
 
   // ****************************************************************************************
   // RUN ATTITUDE CALCULATIONS
