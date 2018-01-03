@@ -16,7 +16,6 @@ const uint8_t accelFullScaleRange = 2;  // note this is the required register va
 const uint8_t gyroFullScaleRange = 0;
 const float MICROS_TO_SECONDS = 0.000001; // consider moving somewhere else
 
-
 // PID
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
@@ -25,10 +24,8 @@ const int pidAttitudeMax = 100;  // DEG/S
 
 const byte rateLoopFreq = 1;  // 1kHz
 const byte attitudeLoopFreq = 5; // 200Hz
-
 const byte ratePIDFreq = attitudeLoopFreq;  // 5ms <=> 200Hz 
 const byte attitudePIDFreq = attitudeLoopFreq;
-
 
 const float rateRollKp = 1.2;
 const float rateRollKi = 0;
