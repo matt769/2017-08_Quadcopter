@@ -45,8 +45,8 @@ unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 const float MICROS_TO_SECONDS = 0.000001;
 bool sensorRead;  // indicates whether valid information was read from the sensor
-const float gyroRes = (250.0f * pow(2,FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
-const float accelRes = (2.0f * pow(2,AFS_SEL)) / 32768.0f;
+const float gyroRes = (250.0f * pow(2, FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
+const float accelRes = (2.0f * pow(2, AFS_SEL)) / 32768.0f;
 
 struct angle {
   float roll;
@@ -164,30 +164,29 @@ void accumulateGyroChange() {
   // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds
 }
 
-void accumulateAccelReadings() {
-  // don't need to convert to values at all because we only need relative values
-
-//Serial.print(accX);Serial.print('\t');
-//Serial.print(accY);Serial.print('\t');
-//Serial.print(accZ);Serial.print('\n');
-  
+void applyAccelOffsets() {
   accX = - accX + accelXOffset;
   accY = accY - accelYOffset;
   accZ = accZ - accelZOffset;
-//Serial.print(accX);Serial.print('\t');
-//Serial.print(accY);Serial.print('\t');
-//Serial.print(accZ);Serial.print('\t');
+}
+
+
+void accumulateAccelReadings() {
+  // don't need to convert to values at all because we only need relative values
   accXAve = (accXAve * (1.0f - accelAverageAlpha)) + (accX * accelAverageAlpha);
   accYAve = (accYAve * (1.0f - accelAverageAlpha)) + (accY * accelAverageAlpha);
   accZAve = (accZAve * (1.0f - accelAverageAlpha)) + (accZ * accelAverageAlpha);
-//  Serial.print(accXAve);Serial.print('\t');
-//Serial.print(accYAve);Serial.print('\t');
-//Serial.print(accZAve);Serial.print('\n');
 }
 
+//void calcAnglesAccel() {
+//  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
+//  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
+//  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
+//}
+
 void calcAnglesAccel() {
-  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
-  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
+  accelAngles.roll = atan2(accY, accZ) * RAD_TO_DEG;
+  accelAngles.pitch = atan2(accX, accZ) * RAD_TO_DEG;
   //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 }
 
@@ -197,6 +196,7 @@ void initialiseCurrentAngles() {
   readGyrosAccels();  // just to get timing variables filled
   for (int i = 0; i < 200; i++) {
     readGyrosAccels();
+    applyAccelOffsets();
     accumulateAccelReadings();
     delay(5);
   }
@@ -249,9 +249,9 @@ void calibrateGyro(int repetitions) {
   gyXOffset = gyXSum / repetitions;
   gyYOffset = gyYSum / repetitions;
   gyZOffset = gyZSum / repetitions;
-//  Serial.print(gyXOffset); Serial.print('\t');
-//  Serial.print(gyYOffset); Serial.print('\t');
-//  Serial.print(gyZOffset); Serial.print('\n');
+  //  Serial.print(gyXOffset); Serial.print('\t');
+  //  Serial.print(gyYOffset); Serial.print('\t');
+  //  Serial.print(gyZOffset); Serial.print('\n');
 
 }
 

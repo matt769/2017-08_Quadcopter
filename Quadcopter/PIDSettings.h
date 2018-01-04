@@ -76,12 +76,12 @@ void setupPid() {
   attitudeYawSettings.kI = attitudeYawKi;
   attitudeYawSettings.kD = attitudeYawKd;
 
-  pidRateRoll.SetSampleTime(ratePIDFreq);
-  pidRatePitch.SetSampleTime(ratePIDFreq);
-  pidRateYaw.SetSampleTime(ratePIDFreq);
-  pidAttitudeRoll.SetSampleTime(attitudeLoopFreq);
-  pidAttitudePitch.SetSampleTime(attitudeLoopFreq);
-  pidAttitudeYaw.SetSampleTime(attitudeLoopFreq);
+  pidRateRoll.SetSampleTime(subLoopFreq);
+  pidRatePitch.SetSampleTime(subLoopFreq);
+  pidRateYaw.SetSampleTime(subLoopFreq);
+  pidAttitudeRoll.SetSampleTime(subLoopFreq);
+  pidAttitudePitch.SetSampleTime(subLoopFreq);
+  pidAttitudeYaw.SetSampleTime(subLoopFreq);
 
   pidRateRoll.SetTunings(rateRollSettings.kP, rateRollSettings.kI, rateRollSettings.kD);
   pidRatePitch.SetTunings(ratePitchSettings.kP, ratePitchSettings.kI, ratePitchSettings.kD);
