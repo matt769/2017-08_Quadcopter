@@ -98,28 +98,16 @@ void setupPid() {
   pidAttitudeYaw.SetOutputLimits(pidAttitudeMin, pidAttitudeMax);
 }
 
-bool pidRateUpdate() {
-  if (millis() - lastPidRate >= ratePIDFreq) {
-    lastPidRate += ratePIDFreq;
-    loopCounterPidRate ++;
+void pidRateUpdate() {
     pidRateRoll.Compute();
     pidRatePitch.Compute();
     pidRateYaw.Compute();
-    return true;
-  }
-  return false;
 }
 
-bool pidAttitudeUpdate() {
-  if (millis() - lastPidAttitude >= attitudePIDFreq) {
-    loopCounterPidAttitude ++;
-    lastPidAttitude += attitudePIDFreq;
+void pidAttitudeUpdate() {
     pidAttitudeRoll.Compute();
     pidAttitudePitch.Compute();
 //    pidAttitudeYaw.Compute();
-    return true;
-  }
-  return false;
 }
 
 void setAutoLevelTargets() {
