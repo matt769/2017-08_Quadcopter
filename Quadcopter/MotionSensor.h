@@ -79,6 +79,22 @@ bool readGyrosAccels() {
   }
 }
 
+bool readGyrosAccels() {
+  I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 6);
+  if (I2c.available() == 6) {
+    gyX = I2c.receive() << 8 | I2c.receive(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+    gyY = I2c.receive() << 8 | I2c.receive(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+    gyZ = I2c.receive() << 8 | I2c.receive(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+    lastReadingTime = thisReadingTime;
+    thisReadingTime = micros();
+    return true;
+  }
+  else {
+    flushI2cBuffer();
+    return false;
+  }
+}
+
 
 // this depends on pre-calculated values of how the output changes with temperature
 void calculateOffsets() {

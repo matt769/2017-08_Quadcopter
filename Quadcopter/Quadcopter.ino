@@ -193,10 +193,10 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
 
-  //  if (millis() - lastPrint >= 50) {
-  //    lastPrint += 50;
-  //    printAnglesAllSourcesPitch();
-  //  }
+    if (millis() - lastPrint >= 50) {
+      lastPrint += 50;
+      printAnglesAllSourcesPitch();
+    }
 
 
 
