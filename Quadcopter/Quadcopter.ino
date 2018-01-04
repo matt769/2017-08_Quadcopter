@@ -28,6 +28,7 @@ unsigned long rateLoopLast = 0;
 unsigned long attitudeLoopLast = 0;
 unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
+unsigned long mainLoopLast = 0;
 
 // DEBUGGING // PERFORMANCE CHECKING
 unsigned long lastPrint = 0;
@@ -135,23 +136,41 @@ void loop() {
   // includes sensor read
   // ****************************************************************************************
   if (micros() - rateLoopLast >= rateLoopFreq) {
-
     rateLoopLast += rateLoopFreq;
     loopCounterRate++;
     readGyrosAccels();
     convertGyroReadingsToValues();
-    setRatePidActual(valGyX, valGyY, valGyZ);
-    // if PID has updated the outputs then recalculate the required motor pulses
-    if (pidRateUpdate()) {
-      calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
-      capMotorInputNearMaxThrottle();
-      capMotorInputNearMinThrottle(throttle);
-      recalculateMotorPulses();
-    }
-    // required for attitude calculations
     accumulateGyroChange();
     accumulateAccelReadings();
   }
+
+
+  if (micros() - mainLoopLast >= mainLoopFreq) {
+    mainLoopLast += mainLoopFreq;
+    setRatePidActual(valGyX, valGyY, valGyZ);
+    pidRateUpdate();
+
+    if (autoLevel) { // if no communication received, OR user has specified auto-level
+      setAutoLevelTargets();
+      // If connection lost then also modify throttle so that QC is descending slowly
+      if (!rxHeartbeat) {
+        calculateVerticalAccel();
+        connectionLostDescend(&throttle, valAcZ);
+      }
+    }
+    if (mode) {
+      setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
+      pidAttitudeUpdate();
+      setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
+      overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
+    }
+
+    calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
+    capMotorInputNearMaxThrottle();
+    capMotorInputNearMinThrottle(throttle);
+    recalculateMotorPulses();
+  }
+
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
@@ -165,23 +184,6 @@ void loop() {
     calcAnglesAccel();
     mixAngles();
     resetGyroChange();
-    // OVERRIDE PID SETTINGS IF TRYING TO AUTO-LEVEL
-    if (autoLevel) { // if no communication received, OR user has specified auto-level
-      setAutoLevelTargets();
-      // If connection lost then also modify throttle so that QC is descending slowly
-      if (!rxHeartbeat) {
-        calculateVerticalAccel();
-        connectionLostDescend(&throttle, valAcZ);
-      }
-    }
-    // The attitude PID itself will not run unless QC is in ATTITUDE mode
-    if (mode) {
-      setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
-      if (pidAttitudeUpdate()) {
-        setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-        overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
-      }
-    }
   }
 
 
@@ -197,10 +199,10 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
 
-//  if (millis() - lastPrint >= 50) {
-//    lastPrint += 50;
-//    printAnglesAllSourcesPitch();
-//  }
+  //  if (millis() - lastPrint >= 50) {
+  //    lastPrint += 50;
+  //    printAnglesAllSourcesPitch();
+  //  }
 
 
 

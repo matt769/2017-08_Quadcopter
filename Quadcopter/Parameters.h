@@ -6,6 +6,8 @@ const uint16_t attitudePIDFreq = attitudeLoopFreq / 1000; // expressed in loop d
 const uint16_t receiverFreq = 50; // expressed in loop duration in milliseconds
 const uint16_t batteryFreq = 1000; // expressed in loop duration in milliseconds
 
+const uint16_t mainLoopFreq = 5000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+
 // PID OUTPUT LIMITS
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
 const int pidRateMax = 150;  // MOTOR INPUT (PULSE LENGTH)
