@@ -79,8 +79,8 @@ bool readGyrosAccels() {
   }
 }
 
-bool readGyrosAccels() {
-  I2c.read(MPU_ADDRESS, ACCEL_XOUT_H, 6);
+bool readGyros() {
+  I2c.read(MPU_ADDRESS, GYRO_XOUT_H, 6);
   if (I2c.available() == 6) {
     gyX = I2c.receive() << 8 | I2c.receive(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
     gyY = I2c.receive() << 8 | I2c.receive(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
@@ -166,12 +166,23 @@ void accumulateGyroChange() {
 
 void accumulateAccelReadings() {
   // don't need to convert to values at all because we only need relative values
+
+//Serial.print(accX);Serial.print('\t');
+//Serial.print(accY);Serial.print('\t');
+//Serial.print(accZ);Serial.print('\n');
+  
   accX = - accX + accelXOffset;
   accY = accY - accelYOffset;
   accZ = accZ - accelZOffset;
+//Serial.print(accX);Serial.print('\t');
+//Serial.print(accY);Serial.print('\t');
+//Serial.print(accZ);Serial.print('\t');
   accXAve = (accXAve * (1.0f - accelAverageAlpha)) + (accX * accelAverageAlpha);
   accYAve = (accYAve * (1.0f - accelAverageAlpha)) + (accY * accelAverageAlpha);
   accZAve = (accZAve * (1.0f - accelAverageAlpha)) + (accZ * accelAverageAlpha);
+//  Serial.print(accXAve);Serial.print('\t');
+//Serial.print(accYAve);Serial.print('\t');
+//Serial.print(accZAve);Serial.print('\n');
 }
 
 void calcAnglesAccel() {

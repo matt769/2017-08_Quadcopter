@@ -76,6 +76,7 @@ void setup() {
   unsigned long startTimeMicros = micros();
   rateLoopLast = startTimeMicros;
   attitudeLoopLast = startTimeMicros;
+  mainLoopLast = startTimeMicros;
 } // END SETUP
 
 
@@ -135,48 +136,53 @@ void loop() {
   // RUN RATE LOOP
   // includes sensor read
   // ****************************************************************************************
-  if (micros() - rateLoopLast >= rateLoopFreq) {
-    rateLoopLast += rateLoopFreq;
+  if (micros() - mainLoopLast >= mainLoopFreq) {
+    static uint8_t subloopCounter = 0;
+    mainLoopLast += mainLoopFreq;
+    subloopCounter++;
+
     loopCounterRate++;
-    readGyrosAccels();
+
+    readGyros();
     convertGyroReadingsToValues();
     accumulateGyroChange();
-    accumulateAccelReadings();
-  }
 
 
-  if (micros() - mainLoopLast >= mainLoopFreq) {
-    mainLoopLast += mainLoopFreq;
+    if (subloopCounter >= (mainLoopDivisor - 1)) {
+      subloopCounter = 0;
+      readGyrosAccels();
+      loopCounterAttitude++;
+      accumulateAccelReadings();
+      convertGyroReadingsToValues();
+      accumulateGyroChange();
+      calcAnglesAccel();
+      mixAngles();
+      resetGyroChange();
 
-    loopCounterAttitude++;
-    calcAnglesAccel();
-    mixAngles();
-    resetGyroChange();
-
-    if (autoLevel) { // if no communication received, OR user has specified auto-level
-      setAutoLevelTargets();
-      // If connection lost then also modify throttle so that QC is descending slowly
-      if (!rxHeartbeat) {
-        calculateVerticalAccel();
-        connectionLostDescend(&throttle, valAcZ);
+      if (autoLevel) { // if no communication received, OR user has specified auto-level
+        setAutoLevelTargets();
+        // If connection lost then also modify throttle so that QC is descending slowly
+        if (!rxHeartbeat) {
+          calculateVerticalAccel();
+          connectionLostDescend(&throttle, valAcZ);
+        }
       }
-    }
-    if (mode) {
-      setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
-      pidAttitudeUpdate();
-      setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-      overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
-    }
+      if (mode) {
+        setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
+        pidAttitudeUpdate();
+        setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
+        overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
+      }
 
-    setRatePidActual(valGyX, valGyY, valGyZ);
-    pidRateUpdate();
+      setRatePidActual(valGyX, valGyY, valGyZ);
+      pidRateUpdate();
 
-    calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
-    capMotorInputNearMaxThrottle();
-    capMotorInputNearMinThrottle(throttle);
-    recalculateMotorPulses();
+      calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
+      capMotorInputNearMaxThrottle();
+      capMotorInputNearMinThrottle(throttle);
+      recalculateMotorPulses();
+    }
   }
-
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
@@ -192,11 +198,11 @@ void loop() {
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
-
-    if (millis() - lastPrint >= 50) {
-      lastPrint += 50;
-      printAnglesAllSourcesPitch();
-    }
+  //
+  if (millis() - lastPrint >= 50) {
+    lastPrint += 50;
+    printAnglesAllSourcesPitch();
+  }
 
 
 

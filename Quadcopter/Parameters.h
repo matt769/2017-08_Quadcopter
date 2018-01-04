@@ -6,7 +6,8 @@ const uint16_t attitudePIDFreq = attitudeLoopFreq / 1000; // expressed in loop d
 const uint16_t receiverFreq = 50; // expressed in loop duration in milliseconds
 const uint16_t batteryFreq = 1000; // expressed in loop duration in milliseconds
 
-const uint16_t mainLoopFreq = 5000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+const uint16_t mainLoopFreq = 1250;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+const uint8_t mainLoopDivisor = 4;
 
 // PID OUTPUT LIMITS
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
@@ -48,8 +49,8 @@ const int THROTTLE_MIN_SPIN = 1125;
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.999f; // weight applied to gyro angle estimate
-const float accelAverageAlpha = 0.05f; // weight given to the new reading over the running average
+const float compFilterAlpha = 0.995f; // weight applied to gyro angle estimate
+const float accelAverageAlpha = 0.1f; // weight given to the new reading over the running average
 
 
 // BATTERY
