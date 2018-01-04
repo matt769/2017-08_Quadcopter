@@ -147,8 +147,11 @@ void loop() {
 
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;
-    setRatePidActual(valGyX, valGyY, valGyZ);
-    pidRateUpdate();
+
+    loopCounterAttitude++;
+    calcAnglesAccel();
+    mixAngles();
+    resetGyroChange();
 
     if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
@@ -165,6 +168,9 @@ void loop() {
       overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
     }
 
+    setRatePidActual(valGyX, valGyY, valGyZ);
+    pidRateUpdate();
+
     calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
     capMotorInputNearMaxThrottle();
     capMotorInputNearMinThrottle(throttle);
@@ -173,18 +179,6 @@ void loop() {
 
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
-
-  // ****************************************************************************************
-  // RUN ATTITUDE CALCULATIONS
-  // ****************************************************************************************
-
-  if (micros() - attitudeLoopLast >= attitudeLoopFreq) {
-    attitudeLoopLast += attitudeLoopFreq;
-    loopCounterAttitude++;
-    calcAnglesAccel();
-    mixAngles();
-    resetGyroChange();
-  }
 
 
   // ****************************************************************************************
