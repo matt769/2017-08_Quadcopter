@@ -201,7 +201,7 @@ void calcEndTimes() {
 
 void updateMotorPulseISR() {
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
-//    loopCounterMotorUpdateTry++;
+    //    loopCounterMotorUpdateTry++;
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
     if (!lockPulses) {
       loopCounterMotorUpdate++;
@@ -222,7 +222,12 @@ void recalculateMotorPulses() {
   updateMotorPulseISR();
 }
 
-
+void processMotors(int throttle, float rateRollOutput, float ratePitchOutput, float rateYawOutput) {
+  calculateMotorInput(throttle, rateRollOutput, ratePitchOutput, rateYawOutput);
+  capMotorInputNearMaxThrottle();
+  capMotorInputNearMinThrottle(throttle);
+  recalculateMotorPulses();
+}
 
 // ****************************************************************************************
 //        SETUP FOR MAIN FILE
