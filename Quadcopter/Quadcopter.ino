@@ -87,35 +87,7 @@ void loop() {
   // ****************************************************************************************
   // CHECK FOR USER INPUT AND SET MODE
   // ****************************************************************************************
-  if (millis() - receiverLast >= receiverFreq) {
-    receiverLast += receiverFreq;
-    loopCounterRx ++;
-    checkHeartbeat();  // must be done outside if(radio.available) loop
-    if (checkRadioForInput()) {
-      // CHECK MODES
-      mode = getMode();
-      autoLevel = getAutolevel();
-      if (getKill() && (throttle < 1050)) {
-        setMotorsLow();
-        digitalWrite(pinStatusLed, HIGH);
-        while (1);
-      }
-      // MAP CONTROL VALUES
-      mapThrottle(&throttle);
-      if (mode || autoLevel) {
-        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
-        mode = ATTITUDE;
-      }
-      else {
-        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, mode);
-        mode = RATE;
-      }
-    }
-    autoLevel = autoLevel || !rxHeartbeat;
-    if (autoLevel) {
-      mode = ATTITUDE;
-    }
-  }
+  receiveDataAndProcessInput();
 
   // ****************************************************************************************
   // HANDLE STATE CHANGES
@@ -197,5 +169,37 @@ void setTargetsAndRunPIDs() {
   }
   setRatePidActual(valGyX, valGyY, valGyZ);
   pidRateUpdate();
+}
+
+void receiveDataAndProcessInput() {
+  if (millis() - receiverLast >= receiverFreq) {
+    receiverLast += receiverFreq;
+    loopCounterRx ++;
+    checkHeartbeat();  // must be done outside if(radio.available) loop
+    if (checkRadioForInput()) {
+      // CHECK MODES
+      mode = getMode();
+      autoLevel = getAutolevel();
+      if (getKill() && (throttle < 1050)) {
+        setMotorsLow();
+        digitalWrite(pinStatusLed, HIGH);
+        while (1);
+      }
+      // MAP CONTROL VALUES
+      mapThrottle(&throttle);
+      if (mode || autoLevel) {
+        mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
+        mode = ATTITUDE;
+      }
+      else {
+        mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, mode);
+        mode = RATE;
+      }
+    }
+    autoLevel = autoLevel || !rxHeartbeat;
+    if (autoLevel) {
+      mode = ATTITUDE;
+    }
+  }
 }
 
