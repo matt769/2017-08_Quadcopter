@@ -178,17 +178,17 @@ void accumulateAccelReadings() {
   accZAve = (accZAve * (1.0f - accelAverageAlpha)) + (accZ * accelAverageAlpha);
 }
 
-//void calcAnglesAccel() {
-//  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
-//  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
-//  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
-//}
-
 void calcAnglesAccel() {
-  accelAngles.roll = atan2(accY, accZ) * RAD_TO_DEG;
-  accelAngles.pitch = atan2(accX, accZ) * RAD_TO_DEG;
+  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
+  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
   //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 }
+
+//void calcAnglesAccel() {
+//  accelAngles.roll = atan2(accY, accZ) * RAD_TO_DEG;
+//  accelAngles.pitch = atan2(accX, accZ) * RAD_TO_DEG;
+//  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
+//}
 
 // QC must be stationary when this runs
 void initialiseCurrentAngles() {

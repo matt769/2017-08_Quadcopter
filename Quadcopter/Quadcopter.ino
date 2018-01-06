@@ -155,11 +155,13 @@ void loop() {
       convertGyroReadingsToValues();
       accumulateGyroChange();
       applyAccelOffsets();
-//      accumulateAccelReadings();
+      accumulateAccelReadings();
       calcAnglesAccel();
       mixAngles();
       resetGyroChange();
-
+      
+//      printAnglesAllSourcesPitch(); //**********************
+      
       if (autoLevel) { // if no communication received, OR user has specified auto-level
         setAutoLevelTargets();
         // If connection lost then also modify throttle so that QC is descending slowly

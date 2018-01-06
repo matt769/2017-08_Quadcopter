@@ -27,12 +27,12 @@ const float rateYawKp = 1.0;
 const float rateYawKi = 0;
 const float rateYawKd = 0;
 
-const float attitudeRollKp = 3.0;
+const float attitudeRollKp = 3.5;
 const float attitudeRollKi = 0.0;
-const float attitudeRollKd = 0.002; // 0.001
-const float attitudePitchKp = 3.0;
+const float attitudeRollKd = 0.004; // 0.001
+const float attitudePitchKp = 3.5;
 const float attitudePitchKi = 0.0;
-const float attitudePitchKd = 0.002; // 0.001
+const float attitudePitchKd = 0.004; // 0.001
 const float attitudeYawKp = 0;
 const float attitudeYawKi = 0;
 const float attitudeYawKd = 0;
@@ -48,9 +48,9 @@ const int THROTTLE_MIN_SPIN = 1125;
 
 // MOTION
 const byte DPLF_VALUE = 3;  // set low pass filter
-const byte FS_SEL = 0;  // gyro full scale range +/-250deg/s
-const byte AFS_SEL = 2;  // accel full scale range +/-8g
-const float compFilterAlpha = 0.99f; // weight applied to gyro angle estimate
+const byte FS_SEL = 2;  // 0 = gyro full scale range +/-250deg/s
+const byte AFS_SEL = 2;  // 2 = accel full scale range +/-8g
+const float compFilterAlpha = 0.999f; // weight applied to gyro angle estimate
 const float accelAverageAlpha = 0.2f; // weight given to the new reading over the running average
 
 
