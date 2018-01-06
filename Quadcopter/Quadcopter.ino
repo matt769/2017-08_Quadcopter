@@ -141,44 +141,17 @@ void loop() {
     mainLoopLast += mainLoopFreq;
     subloopCounter++;
 
-    loopCounterRate++;  // for stats, performance checks only
-
     readGyros();
     processGyroData();
-
 
     if (subloopCounter >= (mainLoopDivisor - 1)) {  // I don't like these names very much
       subloopCounter = 0;
       readGyrosAccels();
-      loopCounterAttitude++;
       processGyroData();
       processAccelData();
       combineGyroAccelData();
-      
-//      printAnglesAllSourcesPitch(); //**********************
-      
-      if (autoLevel) { // if no communication received, OR user has specified auto-level
-        setAutoLevelTargets();
-        // If connection lost then also modify throttle so that QC is descending slowly
-        if (!rxHeartbeat) {
-          calculateVerticalAccel();
-          connectionLostDescend(&throttle, valAcZ);
-        }
-      }
-      if (mode) {
-        setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
-        pidAttitudeUpdate();
-        setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-        overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
-      }
-
-      setRatePidActual(valGyX, valGyY, valGyZ);
-      pidRateUpdate();
-
-      calculateMotorInput(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
-      capMotorInputNearMaxThrottle();
-      capMotorInputNearMinThrottle(throttle);
-      recalculateMotorPulses();
+      setTargetsAndRunPIDs();
+      processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
     }
   }
 
@@ -197,11 +170,32 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
   //
-//  if (millis() - lastPrint >= 50) {
-//    lastPrint += 50;
-//    printAnglesAllSourcesPitch();
-//  }
+  //  if (millis() - lastPrint >= 50) {
+  //    lastPrint += 50;
+  //    printAnglesAllSourcesPitch();
+  //  }
 
 
 
 } // END LOOP
+
+
+void setTargetsAndRunPIDs() {
+  if (autoLevel) { // if no communication received, OR user has specified auto-level
+    setAutoLevelTargets();
+    // If connection lost then also modify throttle so that QC is descending slowly
+    if (!rxHeartbeat) {
+      calculateVerticalAccel();
+      connectionLostDescend(&throttle, valAcZ);
+    }
+  }
+  if (mode) {
+    setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
+    pidAttitudeUpdate();
+    setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
+    overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
+  }
+  setRatePidActual(valGyX, valGyY, valGyZ);
+  pidRateUpdate();
+}
+
