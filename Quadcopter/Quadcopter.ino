@@ -83,30 +83,19 @@ void setup() {
 
 void loop() {
   loopCounter ++;
-
-  // ****************************************************************************************
-  // CHECK FOR USER INPUT AND SET MODE
-  // ****************************************************************************************
   receiveDataAndProcessInput();
-
-  // ****************************************************************************************
-  // HANDLE STATE CHANGES
-  // ****************************************************************************************
   manageStateChanges();
 
   // ****************************************************************************************
-  // RUN RATE LOOP
-  // includes sensor read
+  // RUN MAIN SENSE AND REACT FUNCTIONS
   // ****************************************************************************************
   if (micros() - mainLoopLast >= mainLoopFreq) {
     static uint8_t subloopCounter = 0;
     mainLoopLast += mainLoopFreq;
     subloopCounter++;
-
     readGyros();
     processGyroData();
-
-    if (subloopCounter >= (mainLoopDivisor - 1)) {  // I don't like these names very much
+    if (subloopCounter >= (mainLoopDivisor - 1)) {  // every xth time, read the accelerometers as well
       subloopCounter = 0;
       readGyrosAccels();
       processGyroData();
@@ -119,10 +108,6 @@ void loop() {
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
-
-  // ****************************************************************************************
-  // CHECK BATTERY
-  // ****************************************************************************************
   if (millis() - batteryLoopLast >= batteryFreq) {
     batteryLoopLast += batteryFreq;
     calculateBatteryLevel();
@@ -136,8 +121,6 @@ void loop() {
   //    lastPrint += 50;
   //    printAnglesAllSourcesPitch();
   //  }
-
-
 
 } // END LOOP
 
