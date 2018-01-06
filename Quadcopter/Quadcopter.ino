@@ -92,17 +92,7 @@ void loop() {
   // ****************************************************************************************
   // HANDLE STATE CHANGES
   // ****************************************************************************************
-  if (mode != previousMode) {
-    if (mode == ATTITUDE) {
-      pidAttitudeModeOn();
-      lastPidAttitude = millis();
-      previousMode = ATTITUDE;
-    }
-    else {
-      pidAttitudeModeOff();
-      previousMode = RATE;
-    }
-  }
+  manageStateChanges();
 
   // ****************************************************************************************
   // RUN RATE LOOP
@@ -199,6 +189,20 @@ void receiveDataAndProcessInput() {
     autoLevel = autoLevel || !rxHeartbeat;
     if (autoLevel) {
       mode = ATTITUDE;
+    }
+  }
+}
+
+void manageStateChanges() {
+  if (mode != previousMode) {
+    if (mode == ATTITUDE) {
+      pidAttitudeModeOn();
+      lastPidAttitude = millis();
+      previousMode = ATTITUDE;
+    }
+    else {
+      pidAttitudeModeOff();
+      previousMode = RATE;
     }
   }
 }
