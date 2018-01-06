@@ -87,11 +87,9 @@ void loop() {
     receiverLast += receiverFreq;
     receiveAndProcessControlData();
   }
+  
   manageStateChanges();
 
-  // ****************************************************************************************
-  // RUN MAIN SENSE AND REACT FUNCTIONS
-  // ****************************************************************************************
   if (micros() - mainLoopLast >= mainLoopFreq) {
     static uint8_t subloopCounter = 0;
     mainLoopLast += mainLoopFreq;
