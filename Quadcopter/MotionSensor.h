@@ -255,4 +255,19 @@ void calibrateGyro(int repetitions) {
 
 }
 
+void processGyroData() {
+  convertGyroReadingsToValues();
+  accumulateGyroChange();
+}
+
+void processAccelData() {
+  applyAccelOffsets();
+  accumulateAccelReadings();
+  calcAnglesAccel();
+}
+
+void combineGyroAccelData() {
+  mixAngles();
+  resetGyroChange();
+}
 

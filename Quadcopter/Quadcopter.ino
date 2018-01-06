@@ -141,24 +141,19 @@ void loop() {
     mainLoopLast += mainLoopFreq;
     subloopCounter++;
 
-    loopCounterRate++;
+    loopCounterRate++;  // for stats, performance checks only
 
     readGyros();
-    convertGyroReadingsToValues();
-    accumulateGyroChange();
+    processGyroData();
 
 
-    if (subloopCounter >= (mainLoopDivisor - 1)) {
+    if (subloopCounter >= (mainLoopDivisor - 1)) {  // I don't like these names very much
       subloopCounter = 0;
       readGyrosAccels();
       loopCounterAttitude++;
-      convertGyroReadingsToValues();
-      accumulateGyroChange();
-      applyAccelOffsets();
-      accumulateAccelReadings();
-      calcAnglesAccel();
-      mixAngles();
-      resetGyroChange();
+      processGyroData();
+      processAccelData();
+      combineGyroAccelData();
       
 //      printAnglesAllSourcesPitch(); //**********************
       
