@@ -31,14 +31,6 @@ void printRatePIDOutputs() {
   Serial.print(rateYawSettings.output); Serial.print('\n');
 }
 
-void printSettings() {
-  Serial.println(rateLoopFreq);
-  Serial.println(attitudeLoopFreq);
-  Serial.println(ratePIDFreq);
-  Serial.println(attitudePIDFreq);
-  Serial.println(receiverFreq);
-  Serial.println(batteryFreq);
-}
 
 int loopCounter = 0;
 int loopCounterRx = 0;

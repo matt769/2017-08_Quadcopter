@@ -24,8 +24,6 @@ bool autoLevel = false;
 bool kill = 0;
 
 // CONTROL LOOPS
-unsigned long rateLoopLast = 0;
-unsigned long attitudeLoopLast = 0;
 unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
 unsigned long mainLoopLast = 0;
@@ -36,7 +34,6 @@ unsigned long functionTimeSum = 0;
 int functionTimeCounter = 0;
 unsigned long tStart;
 unsigned long tEnd;
-
 
 // LED
 const byte pinStatusLed = 8;
@@ -66,16 +63,13 @@ void setup() {
   setupMotors();
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
-  lastPrint = millis();
   checkHeartbeat(); // refresh
   pidRateModeOn();
   unsigned long startTimeMillis = millis();
+  lastPrint = startTimeMillis; // for debug output
   receiverLast = startTimeMillis;
   batteryLoopLast = startTimeMillis;
-  lastPidRate = startTimeMillis;
   unsigned long startTimeMicros = micros();
-  rateLoopLast = startTimeMicros;
-  attitudeLoopLast = startTimeMicros;
   mainLoopLast = startTimeMicros;
 } // END SETUP
 
@@ -178,7 +172,6 @@ void manageStateChanges() {
   if (mode != previousMode) {
     if (mode == ATTITUDE) {
       pidAttitudeModeOn();
-      lastPidAttitude = millis();
       previousMode = ATTITUDE;
     }
     else {

@@ -1,9 +1,6 @@
 uint16_t loopCounterPidRate;
 uint16_t loopCounterPidAttitude;
 
-unsigned long lastPidRate;
-unsigned long lastPidAttitude;
-
 struct pid {
   float actual;
   float output;
