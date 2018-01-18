@@ -27,6 +27,7 @@ bool kill = 0;
 unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
 unsigned long mainLoopLast = 0;
+unsigned long gyroLoopLast = 0;
 
 // DEBUGGING // PERFORMANCE CHECKING
 unsigned long lastPrint = 0;
@@ -81,24 +82,21 @@ void loop() {
     receiverLast += receiverFreq;
     receiveAndProcessControlData();
   }
-  
+
   manageStateChanges();
 
-  if (micros() - mainLoopLast >= mainLoopFreq) {
-    static uint8_t subloopCounter = 0;
-    mainLoopLast += mainLoopFreq;
-    subloopCounter++;
+  if (micros() - gyroLoopLast >= gyroLoopFreq) {
+    gyroLoopLast += gyroLoopFreq;
     readGyros();
     processGyroData();
-    if (subloopCounter >= (mainLoopDivisor - 1)) {  // every xth time, read the accelerometers as well
-      subloopCounter = 0;
-      readGyrosAccels();
-      processGyroData();
-      processAccelData();
-      combineGyroAccelData();
-      setTargetsAndRunPIDs();
-      processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
-    }
+  }
+  if (micros() - mainLoopLast >= mainLoopFreq) {
+    mainLoopLast += mainLoopFreq;
+    readAccels();
+    processAccelData();
+    combineGyroAccelData();
+    setTargetsAndRunPIDs();
+    processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
   }
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
@@ -112,10 +110,10 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
   //
-  //  if (millis() - lastPrint >= 50) {
-  //    lastPrint += 50;
-  //    printAnglesAllSourcesPitch();
-  //  }
+//    if (millis() - lastPrint >= 50) {
+//      lastPrint += 50;
+//      printAnglesAllSourcesPitch();
+//    }
 
 } // END LOOP
 
