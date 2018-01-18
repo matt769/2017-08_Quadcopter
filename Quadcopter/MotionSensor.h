@@ -299,6 +299,7 @@ float magHeading; // main output
 // offsets
 int mxo = -7;
 int myo = 60;
+float yawOffsetAngle = 0.0f;
 
 void setupMag() {
   writeRegister(MAG_ADDRESS, MAG_MODE, CONTINUOUS_MODE);
@@ -351,7 +352,6 @@ void wrapMagHeading() {
 ////////////////// BOTH /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-float yawOffsetAngle = 0.0f;
 float headingAlpha = 0.002f;
 // note that alpha is the weight applied to the first term in the diff calculation (i.e. mag)
 // currentAngles.yaw already includes the gyro change

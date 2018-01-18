@@ -28,6 +28,7 @@ unsigned long receiverLast = 0;
 unsigned long batteryLoopLast = 0;
 unsigned long mainLoopLast = 0;
 unsigned long gyroLoopLast = 0;
+unsigned long magLoopLast = 0;
 
 // DEBUGGING // PERFORMANCE CHECKING
 unsigned long lastPrint = 0;
@@ -99,6 +100,13 @@ void loop() {
     setTargetsAndRunPIDs();
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
   }
+  if (micros() - magLoopLast >= magLoopFreq) {
+    magLoopLast += magLoopFreq;
+    readMag();
+    processMagData();
+    combineGyroMagHeadings();
+  }
+
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
@@ -111,10 +119,10 @@ void loop() {
   // DEBUGGING
   // ****************************************************************************************
   //
-//    if (millis() - lastPrint >= 50) {
-//      lastPrint += 50;
-//      printPackage();
-//    }
+  //    if (millis() - lastPrint >= 50) {
+  //      lastPrint += 50;
+  //      printPackage();
+  //    }
 
 } // END LOOP
 
