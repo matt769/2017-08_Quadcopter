@@ -77,9 +77,11 @@ void setup() {
   lastPrint = startTimeMillis; // for debug output
   receiverLast = startTimeMillis;
   batteryLoopLast = startTimeMillis;
+  magLoopLast = startTimeMillis;
   unsigned long startTimeMicros = micros();
   mainLoopLast = startTimeMicros;
   gyroLoopLast = startTimeMicros;
+
 } // END SETUP
 
 
@@ -128,11 +130,20 @@ void loop() {
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
-  //
-  //    if (millis() - lastPrint >= 50) {
-  //      lastPrint += 50;
-  //      printPackage();
-  //    }
+  
+//  if (millis() - lastPrint >= 1000) {
+//    lastPrint += 1000;
+//    Serial.print(loopCounter); Serial.print('\t');
+//    Serial.print(gyroLoopCounter); Serial.print('\t');
+//    Serial.print(mainLoopCounter); Serial.print('\t');
+//    Serial.print(magLoopCounter); Serial.print('\t');
+//    Serial.print(receiverLoopCounter); Serial.print('\n');
+//    loopCounter = 0;
+//    gyroLoopCounter = 0;
+//    mainLoopCounter = 0;
+//    magLoopCounter = 0;
+//    receiverLoopCounter = 0;
+//  }
 
 } // END LOOP
 
