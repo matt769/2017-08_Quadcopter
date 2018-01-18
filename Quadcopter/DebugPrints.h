@@ -1,3 +1,8 @@
+void printAllAngles() {
+  Serial.print(currentAngles.roll); Serial.print('\t');
+  Serial.print(currentAngles.pitch); Serial.print('\t');
+  Serial.print(currentAngles.yaw); Serial.print('\n');
+}
 
 void printAnglesAllSourcesRoll() {
   Serial.print(currentAngles.roll); Serial.print('\t');
