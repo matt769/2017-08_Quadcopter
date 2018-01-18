@@ -24,10 +24,10 @@ byte statusForAck = 0; // send this back to transmitter as acknowledgement packa
 const byte OK = 1;
 
 struct dataStruct{
-  int throttle; // number 0 to 1000
-  int roll;     // number 0 to 1000
-  int pitch;    // number 0 to 1000
-  int yaw;     // number 0 to 1000
+  byte throttle;
+  byte roll;
+  byte pitch;
+  byte yaw;
   byte control; // for some control bits
   byte alive; //this will increment every time the data is sent
   byte checksum;
