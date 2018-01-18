@@ -100,7 +100,7 @@ void loop() {
     setTargetsAndRunPIDs();
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
   }
-  if (micros() - magLoopLast >= magLoopFreq) {
+  if (millis() - magLoopLast >= magLoopFreq) {
     magLoopLast += magLoopFreq;
     readMag();
     processMagData();
