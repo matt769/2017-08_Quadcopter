@@ -72,6 +72,7 @@ void setup() {
   batteryLoopLast = startTimeMillis;
   unsigned long startTimeMicros = micros();
   mainLoopLast = startTimeMicros;
+  gyroLoopLast = startTimeMicros;
 } // END SETUP
 
 
