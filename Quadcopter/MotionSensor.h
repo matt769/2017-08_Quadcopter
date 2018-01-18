@@ -291,6 +291,7 @@ const byte DATA_RATE_75HZ = 0b00011000;
 const byte SAMPLES_TO_AVERAGE_8 = 0b01100000;
 const byte RESOLUTION_HIGHEST = 0b00000000;
 const byte RESOLUTION_DEFAULT = 0b00100000;
+const byte RESOLUTION_LOWEST = 0b11100000;
 
 // measurement variables
 int mx, my, mz;
@@ -305,7 +306,7 @@ void setupMag() {
   writeRegister(MAG_ADDRESS, MAG_MODE, CONTINUOUS_MODE);
   byte configAval = DATA_RATE_75HZ | SAMPLES_TO_AVERAGE_8;
   writeRegister(MAG_ADDRESS, MAG_CONFIG_REG_A, configAval);
-  writeRegister(MAG_ADDRESS, MAG_CONFIG_REG_B, RESOLUTION_HIGHEST);
+  writeRegister(MAG_ADDRESS, MAG_CONFIG_REG_B, RESOLUTION_LOWEST);
 }
 
 bool readMag() {
@@ -391,6 +392,7 @@ void initialiseCurrentAngles() {
   }
   applyMagOffsets();
   magCalculateHeading();
+//  Serial.println(magHeading);
   yawOffsetAngle = magHeading;
   headingAdjustment();
   currentAngles.yaw = magHeading;
