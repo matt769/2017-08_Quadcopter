@@ -91,9 +91,7 @@ void updateAckStatusForTx(){
 
 bool checkRadioForInput() {
   if ( radio.available()) {
-    while (radio.available()) {
       radio.read( &rcPackage, sizeof(rcPackage) );
-    }
     // load acknowledgement payload for the next transmission (first transmission will not get any ack payload (but will get normal ack))
     radio.writeAckPayload(1,&statusForAck,sizeof(statusForAck));
     if(rcPackage.checksum != calculateCheckSum()){
