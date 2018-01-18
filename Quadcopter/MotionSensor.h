@@ -2,6 +2,10 @@
 // Y = PITCH
 // Z = YAW
 
+/////////////////////////////////////////////////////////////////////////
+////////////////// GYRO AND ACCELEROMETER ///////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
 // Config registers
 const byte WHO_AM_I = 117;
 const byte MPU_ADDRESS = 104; // I2C Address of MPU-6050
@@ -205,26 +209,6 @@ void calcAnglesAccel() {
 //  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 //}
 
-// QC must be stationary when this runs
-void initialiseCurrentAngles() {
-  // take a certain number of readings
-  readGyrosAccels();  // just to get timing variables filled
-  for (int i = 0; i < 200; i++) {
-    readGyrosAccels();
-    applyAccelOffsets();
-    accumulateAccelReadings();
-    delay(5);
-  }
-  calcAnglesAccel();
-  currentAngles.roll = accelAngles.roll;
-  currentAngles.pitch = accelAngles.pitch;
-  //  currentAngles.yaw = accelAngles.yaw;
-  currentAngles.yaw = 0;
-  gyroAngles.roll = currentAngles.roll;
-  gyroAngles.pitch = currentAngles.pitch;
-  gyroAngles.yaw = currentAngles.yaw;
-}
-
 void resetGyroChange() {
   gyroChangeAngles.roll = 0;
   gyroChangeAngles.pitch = 0;
@@ -285,4 +269,135 @@ void combineGyroAccelData() {
   mixAngles();
   resetGyroChange();
 }
+
+
+void wrapGyroHeading() {
+  if (currentAngles.yaw < - 180.0f) currentAngles.yaw += 360.0f;
+  else if (currentAngles.yaw > 180.0f) currentAngles.yaw -= 360.0f;
+}
+
+/////////////////////////////////////////////////////////////////////////
+////////////////// MAGNETOMETER /////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+const byte MAG_ADDRESS = 0x1E;
+const byte MAG_MODE = 0x02;
+const byte MAG_FIRST_SENSOR_REG = 0x03;
+const byte MAG_CONFIG_REG_A = 0x00;
+const byte MAG_CONFIG_REG_B = 0x01;
+
+const byte CONTINUOUS_MODE = 0b00000000;
+const byte DATA_RATE_75HZ = 0b00011000;
+const byte SAMPLES_TO_AVERAGE_8 = 0b01100000;
+const byte RESOLUTION_HIGHEST = 0b00000000;
+const byte RESOLUTION_DEFAULT = 0b00100000;
+
+// measurement variables
+int mx, my, mz;
+float magHeading; // main output
+
+// offsets
+int mxo = -7;
+int myo = 60;
+
+void setupMag() {
+  writeRegister(MAG_ADDRESS, MAG_MODE, CONTINUOUS_MODE);
+  byte configAval = DATA_RATE_75HZ | SAMPLES_TO_AVERAGE_8;
+  writeRegister(MAG_ADDRESS, MAG_CONFIG_REG_A, configAval);
+  writeRegister(MAG_ADDRESS, MAG_CONFIG_REG_B, RESOLUTION_HIGHEST);
+}
+
+bool readMag() {
+  I2c.read(MAG_ADDRESS, MAG_FIRST_SENSOR_REG, 6);
+  if (I2c.available() == 6) {
+    mx = I2c.receive() << 8 | I2c.receive();
+    mz = I2c.receive() << 8 | I2c.receive();  // NOTE X then Z then Y
+    my = I2c.receive() << 8 | I2c.receive();
+    return true;
+  }
+  else {
+    flushI2cBuffer();
+    return false;
+  }
+}
+
+void applyMagOffsets() {
+  mx += mxo;
+  my += myo;
+}
+
+void magCalculateHeading() {
+  magHeading = -atan2(my, mx) * RAD_TO_DEG;
+}
+
+// starting heading always considered to be zero
+void headingAdjustment() {
+  magHeading -= yawOffsetAngle;
+}
+
+void processMagData() {
+  applyMagOffsets();
+  magCalculateHeading();
+  headingAdjustment();
+}
+
+void wrapMagHeading() {
+  if (magHeading < - 180.0f) magHeading += 360.0f;
+  else if (magHeading > 180.0f) magHeading -= 360.0f;
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+////////////////// BOTH /////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+
+float yawOffsetAngle = 0.0f;
+float headingAlpha = 0.002f;
+// note that alpha is the weight applied to the first term in the diff calculation (i.e. mag)
+// currentAngles.yaw already includes the gyro change
+// this needs to comes after the main mixAngles (which adds gyro change to the current angle)
+void combineGyroMagHeadings() {
+  wrapGyroHeading();
+  wrapMagHeading();
+  float diff = magHeading - currentAngles.yaw;
+  float minDistance;
+  if (diff < - 180.0f) minDistance = diff + 360.0f;
+  else if (diff > 180.0f) minDistance = diff - 360.0f;
+  else minDistance = diff;
+  float adjustment = minDistance * headingAlpha;
+  float newHeading = currentAngles.yaw + adjustment;
+  if (newHeading < - 180.0f) newHeading += 360.0f;
+  else if (newHeading > 180.0f) newHeading -= 360.0f;
+  currentAngles.yaw = newHeading;
+}
+
+// QC must be stationary when this runs
+void initialiseCurrentAngles() {
+  // take a certain number of readings
+  readGyrosAccels();  // just to get timing variables filled
+  for (int i = 0; i < 100; i++) {
+    readGyrosAccels();
+    applyAccelOffsets();
+    accumulateAccelReadings();
+    delay(5);
+  }
+  calcAnglesAccel();
+  currentAngles.roll = accelAngles.roll;
+  currentAngles.pitch = accelAngles.pitch;
+
+  for (int i = 0; i < 16; i++) {
+    readMag();
+    delay(15);
+  }
+  applyMagOffsets();
+  magCalculateHeading();
+  yawOffsetAngle = magHeading;
+  headingAdjustment();
+  currentAngles.yaw = magHeading;
+
+  gyroAngles.roll = currentAngles.roll;
+  gyroAngles.pitch = currentAngles.pitch;
+  gyroAngles.yaw = currentAngles.yaw;
+}
+
 
