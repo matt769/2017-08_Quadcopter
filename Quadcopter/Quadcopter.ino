@@ -47,6 +47,7 @@ void setup() {
   setupBatteryMonitor();
   setupI2C();
   setupMotionSensor();
+  setupMag();
   setupRadio();
   setupPid();
   calculateOffsets();
