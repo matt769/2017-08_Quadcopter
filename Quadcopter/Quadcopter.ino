@@ -33,9 +33,14 @@ unsigned long magLoopLast = 0;
 // DEBUGGING // PERFORMANCE CHECKING
 unsigned long lastPrint = 0;
 unsigned long functionTimeSum = 0;
-int functionTimeCounter = 0;
+uint16_t functionTimeCounter = 0;
 unsigned long tStart;
 unsigned long tEnd;
+uint16_t loopCounter = 0;
+uint16_t gyroLoopCounter = 0;
+uint16_t receiverLoopCounter = 0;
+uint16_t mainLoopCounter = 0;
+uint16_t magLoopCounter = 0;
 
 // LED
 const byte pinStatusLed = 8;
@@ -84,6 +89,7 @@ void loop() {
   if (millis() - receiverLast >= receiverFreq) {
     receiverLast += receiverFreq;
     receiveAndProcessControlData();
+    receiverLoopCounter++;
   }
 
   manageStateChanges();
@@ -92,6 +98,7 @@ void loop() {
     gyroLoopLast += gyroLoopFreq;
     readGyros();
     processGyroData();
+    gyroLoopCounter++;
   }
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;
@@ -100,12 +107,14 @@ void loop() {
     combineGyroAccelData();
     setTargetsAndRunPIDs();
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
+    mainLoopCounter++;
   }
   if (millis() - magLoopLast >= magLoopFreq) {
     magLoopLast += magLoopFreq;
     readMag();
     processMagData();
     combineGyroMagHeadings();
+    magLoopCounter++;
   }
 
 
