@@ -161,7 +161,7 @@ void setTargetsAndRunPIDs() {
     setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
     pidAttitudeUpdate();
     setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-    overrideYawTarget();  // OVERIDE THE YAW BALANCE PID OUTPUT
+//    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
   }
   setRatePidActual(valGyX, valGyY, valGyZ);
   pidRateUpdate();

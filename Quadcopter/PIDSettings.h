@@ -104,7 +104,7 @@ void pidRateUpdate() {
 void pidAttitudeUpdate() {
     pidAttitudeRoll.Compute();
     pidAttitudePitch.Compute();
-//    pidAttitudeYaw.Compute();
+    pidAttitudeYaw.Compute();
 }
 
 void setAutoLevelTargets() {

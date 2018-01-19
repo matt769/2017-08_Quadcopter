@@ -353,7 +353,7 @@ void wrapMagHeading() {
 ////////////////// BOTH /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
-float headingAlpha = 0.002f;
+float headingAlpha = 0.05f;
 // note that alpha is the weight applied to the first term in the diff calculation (i.e. mag)
 // currentAngles.yaw already includes the gyro change
 // this needs to comes after the main mixAngles (which adds gyro change to the current angle)

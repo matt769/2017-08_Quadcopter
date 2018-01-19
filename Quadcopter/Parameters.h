@@ -29,7 +29,7 @@ const float attitudeRollKd = 0.004; // 0.001
 const float attitudePitchKp = 3.5;
 const float attitudePitchKi = 0.0;
 const float attitudePitchKd = 0.004; // 0.001
-const float attitudeYawKp = 0;
+const float attitudeYawKp = 1.0;
 const float attitudeYawKi = 0;
 const float attitudeYawKd = 0;
 
