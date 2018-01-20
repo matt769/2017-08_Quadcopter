@@ -33,10 +33,10 @@ uint16_t loopCounterMotorPulse;
 // ****************************************************************************************
 
 void calculateMotorInput(int throttle, float rollOffset, float pitchOffset, float yawOffset) {
-  motor1pulse = throttle + (int) rollOffset - (int) pitchOffset - (int) yawOffset;
-  motor2pulse = throttle - (int) rollOffset - (int) pitchOffset + (int) yawOffset;
-  motor3pulse = throttle + (int) rollOffset + (int) pitchOffset + (int) yawOffset;
-  motor4pulse = throttle - (int) rollOffset + (int) pitchOffset - (int) yawOffset;
+  motor1pulse = throttle + (int) rollOffset - (int) pitchOffset + (int) yawOffset;
+  motor2pulse = throttle - (int) rollOffset - (int) pitchOffset - (int) yawOffset;
+  motor3pulse = throttle + (int) rollOffset + (int) pitchOffset - (int) yawOffset;
+  motor4pulse = throttle - (int) rollOffset + (int) pitchOffset + (int) yawOffset;
 }
 
 void capMotorInputNearMaxThrottle() {
