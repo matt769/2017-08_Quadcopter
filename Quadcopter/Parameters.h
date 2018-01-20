@@ -54,6 +54,8 @@ const float accelAverageAlpha = 0.2f; // weight given to the new reading over th
 
 
 
+// STATUS LED
+const byte pinStatusLed = 8;
 
 
 

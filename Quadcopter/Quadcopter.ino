@@ -42,8 +42,6 @@ uint16_t receiverLoopCounter = 0;
 uint16_t mainLoopCounter = 0;
 uint16_t magLoopCounter = 0;
 
-// LED
-const byte pinStatusLed = 8;
 
 void setup() {
   Serial.begin(115200);
