@@ -1,10 +1,10 @@
 // CONTROL LOOP FREQUENCY
-const uint16_t receiverFreq = 50; // expressed in loop duration in milliseconds
-const uint16_t batteryFreq = 1000; // expressed in loop duration in milliseconds
-const uint16_t mainLoopFreq = 5000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
-const uint16_t mainLoopFreqMillis = mainLoopFreq / 1000;  // PID class takes times in millis
-const uint16_t gyroLoopFreq = 1000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
-const uint16_t magLoopFreq = 20; // expressed in loop duration in milliseconds
+const unsigned long receiverFreq = 50; // expressed in loop duration in milliseconds
+const unsigned long batteryFreq = 1000; // expressed in loop duration in milliseconds
+const unsigned long mainLoopFreq = 5000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+const unsigned long mainLoopFreqMillis = mainLoopFreq / 1000;  // PID class takes times in millis
+const unsigned long gyroLoopFreq = 1000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+const unsigned long magLoopFreq = 20; // expressed in loop duration in milliseconds
 
 // PID OUTPUT LIMITS
 const int pidRateMin = -150;  // MOTOR INPUT (PULSE LENGTH)
