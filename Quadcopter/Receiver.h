@@ -66,7 +66,6 @@ void printPackage() {
 }
 
 void setupRadio() {
-  // RADIO
   radio.begin();
   radio.setPALevel(RF24_PA_HIGH);  // MIN, LOW, HIGH, MAX
   radio.enableAckPayload();
@@ -86,7 +85,6 @@ void updateAckStatusForTx() {
   statusForAck |= batteryLevel << 5;
   statusForAck |= OK << 1; // obviously need to change if not ok
   statusForAck |= 1; // set low bit to 1 always
-  //  Serial.print('\t');Serial.println(statusForAck);
 }
 
 bool checkRadioForInput() {
@@ -108,7 +106,6 @@ bool checkRadioForInput() {
 
 bool checkHeartbeat() {
   if (millis() - lastRxReceived > heartbeatTimeout) {
-    //    Serial.println(F("Lost connection"));
     rxHeartbeat = false;
   }
   else {
