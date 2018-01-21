@@ -34,7 +34,7 @@ const float attitudeYawKi = 0.0;
 const float attitudeYawKd = 0.0;
 
 // MOTORS
-const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
+const int THROTTLE_LIMIT = 1600; // currently have no need of more power than this
 const int ZERO_THROTTLE = 1000;
 const int THROTTLE_MIN_SPIN = 1125;
 
