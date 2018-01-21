@@ -175,16 +175,28 @@ void convertGyroReadingsToValues() {
   valGyX = gyX * gyroRes;
   valGyY = gyY * gyroRes;
   valGyZ = gyZ * gyroRes;
+  // could move * MICROS_TO_SECONDS here which would save 3 float multiplications (~465 cycles, 29us)
 }
 
 void accumulateGyroChange() {
   float interval = (thisReadingTime - lastReadingTime) * MICROS_TO_SECONDS;  // convert to seconds (from micros)
-  gyroChangeAngles.roll += valGyX * interval;
-  gyroChangeAngles.pitch += valGyY * interval;
-  gyroChangeAngles.yaw += valGyZ * interval;
+  currentAngles.roll += valGyX * interval;
+  currentAngles.pitch += valGyY * interval;
+  currentAngles.yaw += valGyZ * interval;
+
+//  gyroAngles.roll += gyroChangeAngles.roll;
+//  gyroAngles.pitch += gyroChangeAngles.pitch;
+//  gyroAngles.yaw += gyroChangeAngles.yaw;
+  
   // Note faster alternative to this
   // use the reading value (valGy?) and do not convert to seconds
   // then only when actually populating gyroChangeAngle variables, apply gyroRes and convert to seconds
+}
+
+void processGyroData() {
+  applyGyroOffsets();
+  convertGyroReadingsToValues();
+  accumulateGyroChange();
 }
 
 void applyAccelOffsets() {
@@ -192,7 +204,6 @@ void applyAccelOffsets() {
   accY = accY - accelYOffset;
   accZ = accZ - accelZOffset;
 }
-
 
 void accumulateAccelReadings() {
   // don't need to convert to values at all because we only need relative values
@@ -204,30 +215,22 @@ void accumulateAccelReadings() {
 void calcAnglesAccel() {
   accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
   accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
-  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 }
 
 //void calcAnglesAccel() {
 //  accelAngles.roll = atan2(accY, accZ) * RAD_TO_DEG;
 //  accelAngles.pitch = atan2(accX, accZ) * RAD_TO_DEG;
-//  //  accelAngles.yaw = atan2(AcXAve,AcYAve) * RAD_TO_DEG;
 //}
 
-void resetGyroChange() {
-  gyroChangeAngles.roll = 0;
-  gyroChangeAngles.pitch = 0;
-  gyroChangeAngles.yaw = 0;
+void processAccelData() {
+  applyAccelOffsets();
+  accumulateAccelReadings();
+  calcAnglesAccel();
 }
 
-void mixAngles() {
-  gyroAngles.roll += gyroChangeAngles.roll;   // calc gyro ony angle just for testing
-  gyroAngles.pitch += gyroChangeAngles.pitch;
-  gyroAngles.yaw += gyroChangeAngles.yaw;
-
-  currentAngles.roll = ((currentAngles.roll + gyroChangeAngles.roll) * compFilterAlpha) + (accelAngles.roll * (1.0f - compFilterAlpha));
-  currentAngles.pitch = ((currentAngles.pitch + gyroChangeAngles.pitch) * compFilterAlpha) + (accelAngles.pitch * (1.0f - compFilterAlpha));
-  //  currentAngles.yaw = ((currentAngles.yaw + gyroChangeAngles.yaw) * compFilterAlpha) + (accelAngles.yaw * (1.0f - compFilterAlpha));
-  currentAngles.yaw = currentAngles.yaw + gyroChangeAngles.yaw;   // add wrap around
+void combineGyroAccelData() {
+  currentAngles.roll = (currentAngles.roll * compFilterAlpha) + (accelAngles.roll * (1.0f - compFilterAlpha));
+  currentAngles.pitch = (currentAngles.pitch * compFilterAlpha) + (accelAngles.pitch * (1.0f - compFilterAlpha));
 }
 
 void calculateVerticalAccel() {
@@ -257,24 +260,6 @@ void calibrateGyro(int repetitions) {
   //  Serial.print(gyZOffset); Serial.print('\n');
 
 }
-
-void processGyroData() {
-  applyGyroOffsets();
-  convertGyroReadingsToValues();
-  accumulateGyroChange();
-}
-
-void processAccelData() {
-  applyAccelOffsets();
-  accumulateAccelReadings();
-  calcAnglesAccel();
-}
-
-void combineGyroAccelData() {
-  mixAngles();
-  resetGyroChange();
-}
-
 
 void wrapGyroHeading() {
   if (currentAngles.yaw < - 180.0f) currentAngles.yaw += 360.0f;
