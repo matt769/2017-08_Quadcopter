@@ -37,10 +37,8 @@ class PID
       inAuto = newAuto;
     }
 
-    bool Compute()
+    void Compute()
     {
-      if (!inAuto) return false;
-      /*Compute all the working error variables*/
       float input = *myInput;
       float error = *mySetpoint - input;
       ITerm += (ki * error);
@@ -57,7 +55,6 @@ class PID
 
       /*Remember some variables for next time*/
       lastInput = input;
-      return true;
     }
 
     void SetOutputLimits(float Min, float Max)
