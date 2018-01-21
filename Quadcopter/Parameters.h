@@ -17,11 +17,11 @@ const float rateRollKp = 1.2;
 const float rateRollKi = 0.0;
 const float rateRollKd = 0.0025; // 0.0025
 const float ratePitchKp = 1.2;
-const float ratePitchKi = 0;
+const float ratePitchKi = 0.0;
 const float ratePitchKd = 0.0025; // 0.0025
 const float rateYawKp = 1.0;
-const float rateYawKi = 0;
-const float rateYawKd = 0;
+const float rateYawKi = 0.0;
+const float rateYawKd = 0.0;
 
 const float attitudeRollKp = 3.5;
 const float attitudeRollKi = 0.0;
@@ -29,9 +29,9 @@ const float attitudeRollKd = 0.004; // 0.001
 const float attitudePitchKp = 3.5;
 const float attitudePitchKi = 0.0;
 const float attitudePitchKd = 0.004; // 0.001
-const float attitudeYawKp = 2.0;
-const float attitudeYawKi = 0;
-const float attitudeYawKd = 0.001;
+const float attitudeYawKp = 1.0;
+const float attitudeYawKi = 0.0;
+const float attitudeYawKd = 0.0;
 
 // MOTORS
 const int THROTTLE_LIMIT = 1500; // currently have no need of more power than this
