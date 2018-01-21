@@ -165,10 +165,16 @@ void setupMotionSensor() {
   }
 }
 
+void applyGyroOffsets(){
+  gyX -= gyXOffset;
+  gyY -= gyYOffset;
+  gyZ -= gyZOffset;
+}
+
 void convertGyroReadingsToValues() {
-  valGyX = (gyX - gyXOffset) * gyroRes;
-  valGyY = (gyY - gyYOffset) * gyroRes;
-  valGyZ = (gyZ - gyZOffset) * gyroRes;
+  valGyX = gyX * gyroRes;
+  valGyY = gyY * gyroRes;
+  valGyZ = gyZ * gyroRes;
 }
 
 void accumulateGyroChange() {
@@ -253,6 +259,7 @@ void calibrateGyro(int repetitions) {
 }
 
 void processGyroData() {
+  applyGyroOffsets();
   convertGyroReadingsToValues();
   accumulateGyroChange();
 }
