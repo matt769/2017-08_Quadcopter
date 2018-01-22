@@ -15,13 +15,17 @@
 // THROTTLE
 int throttle;  // distinct from the user input because it may be modified
 
-// STATE
+// MODE
 const bool RATE = false;
 const bool ATTITUDE = true;
 bool mode = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
 bool previousMode = RATE;
 bool autoLevel = false;
 bool kill = 0;
+
+// STATE
+enum State {NOT_ARMED, ARMED, ON_GROUND, TAKING_OFF, FLYING, LANDING, DISABLED, CRASHED, UNSPEC_ERROR};
+State state = NOT_ARMED;
 
 // CONTROL LOOPS
 unsigned long receiverLast = 0;
