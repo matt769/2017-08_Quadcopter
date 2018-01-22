@@ -51,11 +51,9 @@ void setup() {
   setupI2C();
   setupMotionSensor();
   setupMag();
+  initialiseCurrentAngles();
   setupRadio();
   setupPid();
-  calculateOffsets();
-  calibrateGyro(500);
-  initialiseCurrentAngles();
   // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()) {
@@ -100,9 +98,6 @@ void loop() {
     readGyros();
     processGyroData();
     gyroLoopCounter++;
-//    Serial.print(gyX); Serial.print('\t');
-//    Serial.print(gyY); Serial.print('\t');
-//    Serial.print(gyZ); Serial.print('\n');
   }
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;

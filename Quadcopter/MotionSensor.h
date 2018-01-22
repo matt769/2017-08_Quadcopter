@@ -146,25 +146,6 @@ void calculateOffsets() {
   gyZOffset /= gyroRangeFactor;
 }
 
-void setupMotionSensor() {
-  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
-  delay(50);  // delay desirable after reset
-  writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
-  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 3, 2, FS_SEL); // set gyro full scale range
-  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 3, 2, AFS_SEL); // set accel full scale range
-  writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
-  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
-  byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
-  if (MPU_ADDRESS_CHECK == MPU_ADDRESS) {
-    Serial.println(F("MPU-6050 available"));
-  }
-  else {
-    Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
-    Serial.println(F("Try reseting..."));
-    while (1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
-  }
-}
-
 void applyGyroOffsets(){
   gyX -= gyXOffset;
   gyY -= gyYOffset;
@@ -270,6 +251,27 @@ void calibrateGyro(int repetitions) {
 void wrapGyroHeading() {
   if (currentAngles.yaw < - 180.0f) currentAngles.yaw += 360.0f;
   else if (currentAngles.yaw > 180.0f) currentAngles.yaw -= 360.0f;
+}
+
+void setupMotionSensor() {
+  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 7, 1, 1); // resets the device
+  delay(50);  // delay desirable after reset
+  writeRegister(MPU_ADDRESS, PWR_MGMT_1, 0); // wake up the MPU-6050
+  writeBitsNew(MPU_ADDRESS, GYRO_CONFIG, 3, 2, FS_SEL); // set gyro full scale range
+  writeBitsNew(MPU_ADDRESS, ACCEL_CONFIG, 3, 2, AFS_SEL); // set accel full scale range
+  writeBitsNew(MPU_ADDRESS, CONFIG, 0, 3, DPLF_VALUE); // set low pass filter
+  writeBitsNew(MPU_ADDRESS, PWR_MGMT_1, 0, 3, 1); // sets clock source to X axis gyro (as recommended in user guide)
+  byte MPU_ADDRESS_CHECK = readRegister(MPU_ADDRESS, WHO_AM_I);
+  if (MPU_ADDRESS_CHECK == MPU_ADDRESS) {
+    Serial.println(F("MPU-6050 available"));
+  }
+  else {
+    Serial.println(F("ERROR: MPU-6050 NOT FOUND"));
+    Serial.println(F("Try reseting..."));
+    while (1); // CHANGE TO SET SOME STATUS FLAG THAT CAN BE SENT TO TRANSMITTER
+  }
+  calculateOffsets();
+  calibrateGyro(500);
 }
 
 /////////////////////////////////////////////////////////////////////////
