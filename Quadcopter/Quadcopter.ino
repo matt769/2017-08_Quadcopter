@@ -155,22 +155,24 @@ void loop() {
 
 
 void setTargetsAndRunPIDs() {
-  if (autoLevel) { // if no communication received, OR user has specified auto-level
-    setAutoLevelTargets();
-    // If connection lost then also modify throttle so that QC is descending slowly
-    if (!rxHeartbeat) {
-      calculateVerticalAccel();
-      connectionLostDescend(&throttle, valAcZ);
+  // If connection lost then modify throttle so that QC is descending slowly
+  if (!rxHeartbeat) {
+    calculateVerticalAccel();
+    connectionLostDescend(&throttle, valAcZ);
+  }
+  if (state == FLYING) {
+    if (autoLevel) { // if no communication received, OR user has specified auto-level
+      setAutoLevelTargets();
     }
+    if (mode) {
+      setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
+      pidAttitudeUpdate();
+      setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
+      //    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
+    }
+    setRatePidActual(valGyX, valGyY, valGyZ);
+    pidRateUpdate();
   }
-  if (mode) {
-    setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
-    pidAttitudeUpdate();
-    setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-    //    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
-  }
-  setRatePidActual(valGyX, valGyY, valGyZ);
-  pidRateUpdate();
 }
 
 void receiveAndProcessControlData() {
@@ -220,12 +222,12 @@ void manageModeChanges() {
 
 // this doesn't really do much yet but it will influence future behaviour
 // also currently very simplistic in how it decides that it is 'flying'
-void manageStateChanges(){
-  if( throttle > THROTTLE_MIN_SPIN){
+void manageStateChanges() {
+  if ( throttle > THROTTLE_MIN_SPIN) {
     state = FLYING;
   }
   else {
-     state = ON_GROUND;
+    state = ON_GROUND;
   }
 }
 
