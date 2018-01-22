@@ -137,11 +137,6 @@ void connectionLostDescend(int *throttle, float accelZ) {
   if (accelZ > 0.95) {    // accelZ < 1 implies downwards movement, reduce throttle until I get it
     *throttle -= 1;
   }
-  if (*throttle < 1050) {
-    setMotorsLow();
-    digitalWrite(8, HIGH);
-    while (1);
-  }
 }
 
 void overrideYawTarget() {

@@ -171,15 +171,16 @@ void setTargetsAndRunPIDs() {
 
 void receiveAndProcessControlData() {
   checkHeartbeat();  // must be done outside if(radio.available) loop
+  if (!rxHeartbeat && (throttle < 1050)) {
+    setMotorsLow();
+    digitalWrite(pinStatusLed, HIGH);
+    state = DISABLED;
+    while (1);
+  }
   if (checkRadioForInput()) {
     // CHECK MODES
-    mode = getMode();
     autoLevel = getAutolevel();
-    if (getKill() && (throttle < 1050)) {
-      setMotorsLow();
-      digitalWrite(pinStatusLed, HIGH);
-      while (1);
-    }
+    mode = getMode();
     // MAP CONTROL VALUES
     mapThrottle(&throttle);
     if (mode || autoLevel) {
@@ -196,6 +197,8 @@ void receiveAndProcessControlData() {
     mode = ATTITUDE;
   }
 }
+
+
 
 
 void manageStateChanges() {
