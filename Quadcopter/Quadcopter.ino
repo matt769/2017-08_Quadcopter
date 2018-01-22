@@ -16,10 +16,9 @@
 int throttle;  // distinct from the user input because it may be modified
 
 // MODE
-const bool RATE = false;
-const bool ATTITUDE = true;
-bool mode = RATE; // MODE IS ONLY FOR RATE or ATTITUDE
-bool previousMode = RATE;
+enum Mode {RATE=0, ATTITUDE=1, ATTITUDE_RATEYAW=3};
+Mode mode = RATE;
+Mode previousMode = RATE;
 bool autoLevel = false;
 bool kill = 0;
 
@@ -164,7 +163,7 @@ void setTargetsAndRunPIDs() {
     if (autoLevel) { // if no communication received, OR user has specified auto-level
       setAutoLevelTargets();
     }
-    if (mode) {
+    if (mode==ATTITUDE) {
       setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       pidAttitudeUpdate();
       setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
@@ -193,31 +192,28 @@ void receiveAndProcessControlData() {
     mode = getMode();
     // MAP CONTROL VALUES
     mapThrottle(&throttle);
-    if (mode) {
+    if (mode == ATTITUDE) {
       mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
-      mode = ATTITUDE;
+    }
+    if (mode == ATTITUDE_RATEYAW) {
+      mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
+      overrideYawTarget();
     }
     else {
       mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, mode);
-      mode = RATE;
     }
   }
-
 }
-
-
-
 
 void manageModeChanges() {
   if (mode != previousMode) {
-    if (mode == ATTITUDE) {
+    if (mode != RATE) {
       pidAttitudeModeOn();
-      previousMode = ATTITUDE;
     }
     else {
       pidAttitudeModeOff();
-      previousMode = RATE;
     }
+    previousMode = mode;
   }
 }
 

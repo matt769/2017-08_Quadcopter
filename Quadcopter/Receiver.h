@@ -2,7 +2,7 @@
 // bit 0;
 // bit 1:
 // bit 2: 1 = Attitude mode, 0 = rate mode
-// bit 3: 1 = auto-level on, 0 = auto-level off
+// bit 3: 1 = attitude with rate yaw
 // bit 4:
 // bit 5:
 // bit 6:
@@ -136,13 +136,10 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
   }
 }
 
-bool getMode() {
-  return bitRead(rcPackage.control, 2);
+byte getMode() { // note that this hardcodes the values also (separately) hardcoded in the mode enum
+  byte tmp = rcPackage.control && 0b00001100;
+  tmp = tmp >> 2;
+  return tmp;
 }
-bool getAutolevel() {
-  return bitRead(rcPackage.control, 3);
-}
-bool getKill() {
-  return bitRead(rcPackage.control, 7);
-}
+
 
