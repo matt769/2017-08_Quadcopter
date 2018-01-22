@@ -186,13 +186,14 @@ void receiveAndProcessControlData() {
       while (1);
     }
   }
+  if (autoLevel) {  // in the future there may be other scenarios that put the QC into autolevel mode
+    mode = ATTITUDE;
+  }
   if (checkRadioForInput()) {
-    // CHECK MODES
-    autoLevel = getAutolevel();
     mode = getMode();
     // MAP CONTROL VALUES
     mapThrottle(&throttle);
-    if (mode || autoLevel) {
+    if (mode) {
       mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
       mode = ATTITUDE;
     }
@@ -201,9 +202,7 @@ void receiveAndProcessControlData() {
       mode = RATE;
     }
   }
-  if (autoLevel) {  // in the future there may be other scenarios that put the QC into autolevel mode
-    mode = ATTITUDE;
-  }
+
 }
 
 
