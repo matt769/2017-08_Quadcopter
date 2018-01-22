@@ -58,6 +58,7 @@ void setup() {
   initialiseCurrentAngles();
   setupRadio();
   setupPid();
+  state = NOT_ARMED;
   // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()) {
@@ -70,6 +71,7 @@ void setup() {
   }
   // END ARMING
   setupMotors();
+  state = ARMED;
   Serial.println(F("Setup complete"));
   digitalWrite(pinStatusLed, LOW);
   checkHeartbeat(); // refresh
@@ -82,6 +84,7 @@ void setup() {
   unsigned long startTimeMicros = micros();
   mainLoopLast = startTimeMicros;
   gyroLoopLast = startTimeMicros;
+  state = ON_GROUND;
 
 } // END SETUP
 
@@ -95,6 +98,7 @@ void loop() {
     receiverLoopCounter++;
   }
 
+  manageModeChanges();
   manageStateChanges();
 
   if (micros() - gyroLoopLast >= gyroLoopFreq) {
@@ -201,7 +205,7 @@ void receiveAndProcessControlData() {
 
 
 
-void manageStateChanges() {
+void manageModeChanges() {
   if (mode != previousMode) {
     if (mode == ATTITUDE) {
       pidAttitudeModeOn();
@@ -211,6 +215,17 @@ void manageStateChanges() {
       pidAttitudeModeOff();
       previousMode = RATE;
     }
+  }
+}
+
+// this doesn't really do much yet but it will influence future behaviour
+// also currently very simplistic in how it decides that it is 'flying'
+void manageStateChanges(){
+  if( throttle > THROTTLE_MIN_SPIN){
+    state = FLYING;
+  }
+  else {
+     state = ON_GROUND;
   }
 }
 
