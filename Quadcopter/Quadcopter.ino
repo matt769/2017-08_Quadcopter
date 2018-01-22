@@ -177,11 +177,14 @@ void setTargetsAndRunPIDs() {
 
 void receiveAndProcessControlData() {
   checkHeartbeat();  // must be done outside if(radio.available) loop
-  if (!rxHeartbeat && (throttle < 1050)) {
-    setMotorsLow();
-    digitalWrite(pinStatusLed, HIGH);
-    state = DISABLED;
-    while (1);
+  if (!rxHeartbeat) {
+    autoLevel = true;
+    if (throttle < THROTTLE_MIN_SPIN) {
+      setMotorsLow();
+      digitalWrite(pinStatusLed, HIGH);
+      state = DISABLED;
+      while (1);
+    }
   }
   if (checkRadioForInput()) {
     // CHECK MODES
@@ -198,8 +201,7 @@ void receiveAndProcessControlData() {
       mode = RATE;
     }
   }
-  autoLevel = autoLevel || !rxHeartbeat;
-  if (autoLevel) {
+  if (autoLevel) {  // in the future there may be other scenarios that put the QC into autolevel mode
     mode = ATTITUDE;
   }
 }
