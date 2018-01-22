@@ -3,7 +3,7 @@ const unsigned long receiverFreq = 50; // expressed in loop duration in millisec
 const unsigned long batteryFreq = 1000; // expressed in loop duration in milliseconds
 const unsigned long mainLoopFreq = 5000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
 const unsigned long mainLoopFreqMillis = mainLoopFreq / 1000;  // PID class takes times in millis
-const unsigned long gyroLoopFreq = 1000;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
+const unsigned long gyroLoopFreq = 1250;  // expressed in loop duration in MICROseconds // 1250 -> 800Hz
 const unsigned long magLoopFreq = 20; // expressed in loop duration in milliseconds
 
 // PID OUTPUT LIMITS
@@ -25,10 +25,10 @@ const float rateYawKd = 0.0;
 
 const float attitudeRollKp = 3.5;
 const float attitudeRollKi = 0.0;
-const float attitudeRollKd = 0.004; // 0.001
+const float attitudeRollKd = 0.008; // 0.001
 const float attitudePitchKp = 3.5;
 const float attitudePitchKi = 0.0;
-const float attitudePitchKd = 0.004; // 0.001
+const float attitudePitchKd = 0.008; // 0.001
 const float attitudeYawKp = 1.0;
 const float attitudeYawKi = 0.0;
 const float attitudeYawKd = 0.0;
@@ -46,7 +46,7 @@ const int THROTTLE_MIN_SPIN = 1125;
 const byte DPLF_VALUE = 3;  // set low pass filter
 const byte FS_SEL = 2;  // 0 = gyro full scale range +/-250deg/s
 const byte AFS_SEL = 2;  // 2 = accel full scale range +/-8g
-const float compFilterAlpha = 0.999f; // weight applied to gyro angle estimate
+const float compFilterAlpha = 0.998f; // weight applied to gyro angle estimate
 const float accelAverageAlpha = 0.2f; // weight given to the new reading over the running average
 
 

@@ -39,7 +39,7 @@ const float offsetScale[6] = { 0.01129227174, -0.00323063182, -0.11709311610, -0
 const float offsetIntercept[6] = { 875.974694, 34.84791487, 17830.3859, -557.7712577, 342.0514029, 207.8547826};
 // will be used to populate these
 int16_t accelXOffset, accelYOffset, accelZOffset, gyXOffset, gyYOffset, gyZOffset;  // to be populated during setup depending on the temperature
-
+const float offsetAngle[3] = {0.77f, -3.37f, 0.0f};
 
 // MEASUREMENT
 int16_t accX, accY, accZ, tmp, gyX, gyY, gyZ; // raw measurement values
@@ -222,10 +222,16 @@ void calcAnglesAccel() {
 //  accelAngles.pitch = atan2(accX, accZ) * RAD_TO_DEG;
 //}
 
+void applyAngleOffsets(){
+  accelAngles.roll -= offsetAngle[0];
+  accelAngles.pitch -= offsetAngle[1];
+}
+
 void processAccelData() {
   applyAccelOffsets();
   accumulateAccelReadings();
   calcAnglesAccel();
+  applyAngleOffsets();
 }
 
 void combineGyroAccelData() {

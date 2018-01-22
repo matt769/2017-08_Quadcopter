@@ -54,6 +54,7 @@ void setup() {
   setupRadio();
   setupPid();
   calculateOffsets();
+  calibrateGyro(500);
   initialiseCurrentAngles();
   // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
@@ -99,6 +100,9 @@ void loop() {
     readGyros();
     processGyroData();
     gyroLoopCounter++;
+//    Serial.print(gyX); Serial.print('\t');
+//    Serial.print(gyY); Serial.print('\t');
+//    Serial.print(gyZ); Serial.print('\n');
   }
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;
@@ -108,6 +112,7 @@ void loop() {
     setTargetsAndRunPIDs();
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
     mainLoopCounter++;
+
   }
   if (millis() - magLoopLast >= magLoopFreq) {
     magLoopLast += magLoopFreq;
@@ -128,20 +133,20 @@ void loop() {
   // ****************************************************************************************
   // DEBUGGING
   // ****************************************************************************************
-  
-//  if (millis() - lastPrint >= 1000) {
-//    lastPrint += 1000;
-//    Serial.print(loopCounter); Serial.print('\t');
-//    Serial.print(gyroLoopCounter); Serial.print('\t');
-//    Serial.print(mainLoopCounter); Serial.print('\t');
-//    Serial.print(magLoopCounter); Serial.print('\t');
-//    Serial.print(receiverLoopCounter); Serial.print('\n');
-//    loopCounter = 0;
-//    gyroLoopCounter = 0;
-//    mainLoopCounter = 0;
-//    magLoopCounter = 0;
-//    receiverLoopCounter = 0;
-//  }
+
+  //  if (millis() - lastPrint >= 1000) {
+  //    lastPrint += 1000;
+  //    Serial.print(loopCounter); Serial.print('\t');
+  //    Serial.print(gyroLoopCounter); Serial.print('\t');
+  //    Serial.print(mainLoopCounter); Serial.print('\t');
+  //    Serial.print(magLoopCounter); Serial.print('\t');
+  //    Serial.print(receiverLoopCounter); Serial.print('\n');
+  //    loopCounter = 0;
+  //    gyroLoopCounter = 0;
+  //    mainLoopCounter = 0;
+  //    magLoopCounter = 0;
+  //    receiverLoopCounter = 0;
+  //  }
 
 } // END LOOP
 
@@ -159,7 +164,7 @@ void setTargetsAndRunPIDs() {
     setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
     pidAttitudeUpdate();
     setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-//    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
+    //    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
   }
   setRatePidActual(valGyX, valGyY, valGyZ);
   pidRateUpdate();
