@@ -7,7 +7,6 @@ uint8_t volatile escOrderIsr[4];  // copy to use in IRS
 uint8_t escIndex = 0;
 bool volatile lockPulses = false;
 bool needUpdatePulses = false; // this needs to be set to true after the rate PID runs
-bool needRecalcPulses = false;  // this needs to be set to true after the new pulse information is calulated
 uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
 const uint16_t PULSE_GAP = 100;  // gap between starting pulses, in ticks
 const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
@@ -190,11 +189,6 @@ void calcEndTimes() {
   escTicksEndMain[2] = escTicks[2] + (3 * PULSE_GAP);
   escTicksEndMain[3] = escTicks[3] + (4 * PULSE_GAP);
 }
-
-
-// needRecalcPulses should be true when the rate PID has produced a new output
-// this function should be run as quickly as possible - maybe have at multiple points throughout the program?
-
 void updateMotorPulseISR() {
   if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
     cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
