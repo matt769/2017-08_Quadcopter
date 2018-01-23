@@ -25,6 +25,7 @@ bool kill = 0;
 // STATE
 enum State {NOT_ARMED, ARMED, ON_GROUND, TAKING_OFF, FLYING, LANDING, DISABLED, CRASHED, UNSPEC_ERROR};
 State state = NOT_ARMED;
+State previousState = NOT_ARMED;
 
 // CONTROL LOOPS
 unsigned long receiverLast = 0;
@@ -159,16 +160,17 @@ void setTargetsAndRunPIDs() {
     calculateVerticalAccel();
     connectionLostDescend(&throttle, valAcZ);
   }
+  // don't want to run PIDs if not doing anything to prevent integral building up
   if (state == FLYING) {
     if (autoLevel) {
       setAutoLevelTargets();
     }
-    if (mode != RATE) {
+    if (mode != RATE) { // i.e. one of the ATTITUDE modes
       setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       pidAttitudeUpdate();
       setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
       if (mode == ATTITUDE_RATEYAW) {
-        overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
+        overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT with controller output i.e. user controls yaw rate
       }
     }
     setRatePidActual(valGyX, valGyY, valGyZ);
