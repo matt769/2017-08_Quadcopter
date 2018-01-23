@@ -16,7 +16,7 @@
 int throttle;  // distinct from the user input because it may be modified
 
 // MODE
-enum Mode {RATE=0, ATTITUDE=1, ATTITUDE_RATEYAW=3};
+enum Mode {RATE = 0, ATTITUDE = 1, ATTITUDE_RATEYAW = 3};
 Mode mode = RATE;
 Mode previousMode = RATE;
 bool autoLevel = false;
@@ -106,6 +106,7 @@ void loop() {
     processGyroData();
     gyroLoopCounter++;
   }
+  
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;
     readAccels();
@@ -114,8 +115,8 @@ void loop() {
     setTargetsAndRunPIDs();
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
     mainLoopCounter++;
-
   }
+  
   if (millis() - magLoopLast >= magLoopFreq) {
     magLoopLast += magLoopFreq;
     readMag();
@@ -123,7 +124,6 @@ void loop() {
     combineGyroMagHeadings();
     magLoopCounter++;
   }
-
 
   updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
 
@@ -160,14 +160,16 @@ void setTargetsAndRunPIDs() {
     connectionLostDescend(&throttle, valAcZ);
   }
   if (state == FLYING) {
-    if (autoLevel) { // if no communication received, OR user has specified auto-level
+    if (autoLevel) {
       setAutoLevelTargets();
     }
-    if (mode==ATTITUDE) {
+    if (mode != RATE) {
       setAttitudePidActual(currentAngles.roll, currentAngles.pitch, currentAngles.yaw);
       pidAttitudeUpdate();
       setRatePidTargets(attitudeRollSettings.output, attitudePitchSettings.output, attitudeYawSettings.output);
-      //    overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
+      if (mode == ATTITUDE_RATEYAW) {
+        overrideYawTarget();  // OVERIDE THE YAW ATTITUDE PID OUTPUT
+      }
     }
     setRatePidActual(valGyX, valGyY, valGyZ);
     pidRateUpdate();
@@ -178,28 +180,26 @@ void receiveAndProcessControlData() {
   checkHeartbeat();  // must be done outside if(radio.available) loop
   if (!rxHeartbeat) {
     autoLevel = true;
+    mode = ATTITUDE;  // in the future there may be other scenarios that put the QC into autolevel mode
     if (throttle < THROTTLE_MIN_SPIN) {
       setMotorsLow();
       digitalWrite(pinStatusLed, HIGH);
       state = DISABLED;
       while (1);
     }
-  }
-  if (autoLevel) {  // in the future there may be other scenarios that put the QC into autolevel mode
-    mode = ATTITUDE;
+    else {
+      autoLevel = false;  // this does not come from the controller anymore so needs to be re set even when comms resume
+    }
   }
   if (checkRadioForInput()) {
     mode = getMode();
     // MAP CONTROL VALUES
     mapThrottle(&throttle);
-    if (mode == ATTITUDE) {
+    if (mode != RATE) { // i.e. one of the ATTITUDE modes
       mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
+      // yaw rate target will be overiden in setTargetsAndRunPIDs function for ATTITUDE_RATEYAW mode
     }
-    if (mode == ATTITUDE_RATEYAW) {
-      mapRcToPidInput(&attitudeRollSettings.target, &attitudePitchSettings.target, &attitudeYawSettings.target, mode);
-      overrideYawTarget();
-    }
-    else {
+    else {  // RATE mode
       mapRcToPidInput(&rateRollSettings.target, &ratePitchSettings.target, &rateYawSettings.target, mode);
     }
   }
@@ -207,13 +207,13 @@ void receiveAndProcessControlData() {
 
 void manageModeChanges() {
   if (mode != previousMode) {
+    previousMode = mode;
     if (mode != RATE) {
       pidAttitudeModeOn();
     }
     else {
       pidAttitudeModeOff();
     }
-    previousMode = mode;
   }
 }
 

@@ -137,7 +137,7 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
 }
 
 byte getMode() { // note that this hardcodes the values also (separately) hardcoded in the mode enum
-  byte tmp = rcPackage.control && 0b00001100;
+  byte tmp = rcPackage.control & 0b00001100;
   tmp = tmp >> 2;
   return tmp;
 }
