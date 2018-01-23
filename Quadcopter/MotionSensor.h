@@ -48,7 +48,6 @@ float accXAve = 0, accYAve = 0, accZAve = 0;
 unsigned long lastReadingTime; // For calculating angle change from gyros
 unsigned long thisReadingTime; // For calculating angle change from gyros
 const float MICROS_TO_SECONDS = 0.000001;
-bool sensorRead;  // indicates whether valid information was read from the sensor
 const float gyroRes = (250.0f * pow(2, FS_SEL)) / 32768.0f; // FS_SEL = 0 -> 250.0f / 32768.0f; // see register map
 const float accelRes = (2.0f * pow(2, AFS_SEL)) / 32768.0f;
 
@@ -60,7 +59,6 @@ struct angle {
 
 struct angle accelAngles;
 struct angle gyroAngles;
-struct angle gyroChangeAngles;
 struct angle currentAngles;
 
 bool readGyrosAccels() {
