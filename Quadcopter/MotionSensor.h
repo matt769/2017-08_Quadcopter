@@ -192,8 +192,8 @@ void accumulateAccelReadings() {
 }
 
 void calcAnglesAccel() {
-  accelAngles.roll = atan2(accYAve, accZAve) * RAD_TO_DEG;
-  accelAngles.pitch = atan2(accXAve, accZAve) * RAD_TO_DEG;
+  accelAngles.roll = atan2Lookup(accYAve, accZAve);
+  accelAngles.pitch = atan2Lookup(accXAve, accZAve);
 }
 
 //void calcAnglesAccel() {
@@ -325,7 +325,7 @@ void applyMagOffsets() {
 }
 
 void magCalculateHeading() {
-  magHeading = -atan2(my, mx) * RAD_TO_DEG;
+  magHeading = -atan2Lookup(my, mx);
 }
 
 // starting heading always considered to be zero

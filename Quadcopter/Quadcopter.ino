@@ -3,6 +3,7 @@
 #include <RF24.h> // https://github.com/nRF24/RF24
 
 #include "Parameters.h"
+#include "MathsHelper.h"
 #include "PID.h"
 #include "BatteryMonitor.h"
 #include "I2cFunctions.h"
