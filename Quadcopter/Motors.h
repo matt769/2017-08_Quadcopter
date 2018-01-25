@@ -137,8 +137,8 @@ ISR(TIMER1_COMPA_vect) {
   generate_esc_pulses();
 }
 
+// note that interupts are expected to be turned off when this is called
 void copyPulseInfoToIsrVariables() {
-  cli();
   escOrderIsr[0] = escOrderMain[0];
   escOrderIsr[1] = escOrderMain[1];
   escOrderIsr[2] = escOrderMain[2];
@@ -147,7 +147,6 @@ void copyPulseInfoToIsrVariables() {
   escTicksEndIsr[1] = escTicksEndMain[1];
   escTicksEndIsr[2] = escTicksEndMain[2];
   escTicksEndIsr[3] = escTicksEndMain[3];
-  sei();
 }
 
 void calculateRequiredTicks() {
