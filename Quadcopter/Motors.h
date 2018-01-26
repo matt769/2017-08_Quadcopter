@@ -1,13 +1,16 @@
 const uint16_t CYCLE_TICKS = 5000; // 10000ticks, 5000us, 5ms, 200Hz
 uint16_t escTicks[4];
 uint16_t escTicksEndMain[4];
-uint16_t volatile escTicksEndIsr[4];  // copy to use in IRS
+uint16_t volatile escTicksEndTemp[4];
+uint16_t escTicksEndIsr[4];  // copy to use in IRS
 uint8_t escOrderMain[4];
-uint8_t volatile escOrderIsr[4];  // copy to use in IRS
+uint8_t volatile escOrderTemp[4];
+uint8_t escOrderIsr[4];  // copy to use in IRS
 uint8_t escIndex = 0;
 bool volatile lockPulses = false;
-bool needUpdatePulses = false; // this needs to be set to true after the rate PID runs
-uint8_t escPulseGenerationCycle = 2;  //0 = start, 1 = stop, 2 = reset
+bool volatile needUpdatePulses = false; // this needs to be set to true after the rate PID runs
+enum GenerationCycle {START_PULSES, END_PULSES, RESET};
+GenerationCycle escPulseGenerationCycle = RESET;
 const uint16_t PULSE_GAP = 100;  // gap between starting pulses, in ticks
 const uint16_t escTicksStart[4] = {PULSE_GAP, PULSE_GAP * 2, PULSE_GAP * 3, PULSE_GAP * 4};
 
@@ -90,7 +93,7 @@ static void endPulseTimer() {
 
 static inline void generate_esc_pulses() {
 
-  if (escPulseGenerationCycle == 0) {  // interupt has fired and we're starting the pulses
+  if (escPulseGenerationCycle == START_PULSES) {  // interupt has fired and we're starting the pulses
     uint8_t currentEsc = escOrderIsr[escIndex];
     if (currentEsc == 1) PORTD |= B00001000; // set bit/pin 3 HIGH
     if (currentEsc == 2) PORTD |= B01000000; // set bit/pin 6 HIGH
@@ -100,14 +103,14 @@ static inline void generate_esc_pulses() {
     if (escIndex > 3) {
       escIndex = 0;
       OCR1A = escTicksEndIsr[0]; // set to end time of first pulse
-      escPulseGenerationCycle = 1;
+      escPulseGenerationCycle = END_PULSES;
     }
     else {
       OCR1A = escTicksStart[escIndex];  // next interrupt when the next pulse needs to start
     }
   }
 
-  else if (escPulseGenerationCycle == 1) {  // interupt has fired and we're ending the pulses
+  else if (escPulseGenerationCycle == END_PULSES) {  // interupt has fired and we're ending the pulses
     uint8_t currentEsc = escOrderIsr[escIndex];
     if (currentEsc == 1) PORTD &= B11110111;
     if (currentEsc == 2) PORTD &= B10111111;
@@ -117,19 +120,29 @@ static inline void generate_esc_pulses() {
     if (escIndex > 3) {
       OCR1A = CYCLE_TICKS;
       escIndex = 0;
-      escPulseGenerationCycle = 2; // reset back to beginning
-      lockPulses = false;   // it's now ok to update the pulse length
+      escPulseGenerationCycle = RESET; // reset back to beginning
+      // new data is available then update the ISR variables
+      if (!lockPulses && needUpdatePulses) {
+        escOrderIsr[0] = escOrderTemp[0];
+        escOrderIsr[1] = escOrderTemp[1];
+        escOrderIsr[2] = escOrderTemp[2];
+        escOrderIsr[3] = escOrderTemp[3];
+        escTicksEndIsr[0] = escTicksEndTemp[0];
+        escTicksEndIsr[1] = escTicksEndTemp[1];
+        escTicksEndIsr[2] = escTicksEndTemp[2];
+        escTicksEndIsr[3] = escTicksEndTemp[3];
+        needUpdatePulses = false;
+      }
     }
     else {
       OCR1A = escTicksEndIsr[escIndex];
     }
   }
 
-  else {  // i.e. escPulseGenerationCycle = 2;
+  else {  // i.e. escPulseGenerationCycle = RESET;
     TCNT1 = 0;  // reset the timer
     OCR1A = PULSE_GAP;  // start again after the standard gap
-    escPulseGenerationCycle = 0; // next time interupt fire we want to start the pulses
-    lockPulses = true;  // this is the begging of the pulse train, so don't allow the pulse lengths to be updated until this cycle is 'finished'
+    escPulseGenerationCycle = START_PULSES; // next time interupt fire we want to start the pulses
   }
 }
 
@@ -138,15 +151,18 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 // note that interupts are expected to be turned off when this is called
-void copyPulseInfoToIsrVariables() {
-  escOrderIsr[0] = escOrderMain[0];
-  escOrderIsr[1] = escOrderMain[1];
-  escOrderIsr[2] = escOrderMain[2];
-  escOrderIsr[3] = escOrderMain[3];
-  escTicksEndIsr[0] = escTicksEndMain[0];
-  escTicksEndIsr[1] = escTicksEndMain[1];
-  escTicksEndIsr[2] = escTicksEndMain[2];
-  escTicksEndIsr[3] = escTicksEndMain[3];
+void makePulseInfoAvailableToISR() {
+  lockPulses = true;
+  escOrderTemp[0] = escOrderMain[0];
+  escOrderTemp[1] = escOrderMain[1];
+  escOrderTemp[2] = escOrderMain[2];
+  escOrderTemp[3] = escOrderMain[3];
+  escTicksEndTemp[0] = escTicksEndMain[0];
+  escTicksEndTemp[1] = escTicksEndMain[1];
+  escTicksEndTemp[2] = escTicksEndMain[2];
+  escTicksEndTemp[3] = escTicksEndMain[3];
+  lockPulses = false;
+  needUpdatePulses = true;
 }
 
 void calculateRequiredTicks() {
@@ -188,24 +204,13 @@ void calcEndTimes() {
   escTicksEndMain[2] = escTicks[2] + (3 * PULSE_GAP);
   escTicksEndMain[3] = escTicks[3] + (4 * PULSE_GAP);
 }
-void updateMotorPulseISR() {
-  if (needUpdatePulses) { // but will only update them when variables are 'unlocked'
-    cli();  // need to turn off interupts here or there is a risk that lockPulses changes state immediately after being checked
-    if (!lockPulses) {
-      copyPulseInfoToIsrVariables();
-      needUpdatePulses = false;
-    }
-    sei();
-  }
-}
 
 void recalculateMotorPulses() {
   resetOrder(); // reset escOrderMain
   calculateRequiredTicks(); // populate escTicks
   sortPulses(); // reorder escOrderMain and escTicks
   calcEndTimes(); // what times should these finish - populate escTicksEndMain
-  needUpdatePulses = true;
-  updateMotorPulseISR();
+  makePulseInfoAvailableToISR();
 }
 
 void processMotors(int throttle, float rateRollOutput, float ratePitchOutput, float rateYawOutput) {
@@ -241,9 +246,7 @@ void setMotorsLow() {
   motor2pulse = 1000;
   motor3pulse = 1000;
   motor4pulse = 1000;
-  calculateRequiredTicks();
-  calcEndTimes();
-  copyPulseInfoToIsrVariables();
+  recalculateMotorPulses();
 }
 
 

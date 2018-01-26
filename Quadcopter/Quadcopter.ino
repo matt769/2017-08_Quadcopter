@@ -127,8 +127,6 @@ void loop() {
     magLoopCounter++;
   }
 
-  updateMotorPulseISR(); // keep trying to update the actual esc pulses in the ISR in case it was locked previously
-
   if (millis() - batteryLoopLast >= batteryFreq) {
     batteryLoopLast += batteryFreq;
     calculateBatteryLevel();
