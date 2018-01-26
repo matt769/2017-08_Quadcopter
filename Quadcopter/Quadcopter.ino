@@ -56,6 +56,7 @@ void setup() {
   setupI2C();
   setupMotionSensor();
   setupMag();
+  delay(3000); // so that hands aren't still fiddling with the battery connection while the gyros are calibrating
   initialiseCurrentAngles();
   setupRadio();
   setupPid();
