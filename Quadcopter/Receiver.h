@@ -132,7 +132,7 @@ void mapRcToPidInput(float *roll, float *pitch, float *yaw, bool mode) {
   else {
     *roll = (float)map(rcPackage.roll + 1, 0, 255, attitudeMin, attitudeMax);
     *pitch = (float)map(rcPackage.pitch + 1, 0, 255, attitudeMin, attitudeMax);
-    *yaw = (float)map(rcPackage.yaw + 1, 0, 255, attitudeMin, attitudeMax);
+    *yaw = (float)map(rcPackage.yaw + 1, 0, 255, attitudeMax, attitudeMin);
   }
 }
 
