@@ -294,8 +294,8 @@ int mx, my, mz;
 float magHeading; // main output
 
 // offsets
-int mxo = 3;
-int myo = -14;
+const int mxo = 3;
+const int myo = -14;
 float yawOffsetAngle = 0.0f;
 
 void setupMag() {
