@@ -24,13 +24,13 @@ const float rateYawKi = 0.0;
 const float rateYawKd = 0.0;
 
 const float attitudeRollKp = 3.5;
-const float attitudeRollKi = 0.0;
+const float attitudeRollKi = 0.5;
 const float attitudeRollKd = 0.008; // 0.001
 const float attitudePitchKp = 3.5;
-const float attitudePitchKi = 0.0;
+const float attitudePitchKi = 0.5;
 const float attitudePitchKd = 0.008; // 0.001
 const float attitudeYawKp = 1.5;
-const float attitudeYawKi = 0.0;
+const float attitudeYawKi = 0.3;
 const float attitudeYawKd = 0.0;
 
 // MOTORS
