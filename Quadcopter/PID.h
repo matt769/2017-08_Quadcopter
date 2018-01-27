@@ -37,22 +37,24 @@ class PID
       inAuto = newAuto;
     }
 
-    void Compute()
+    void Compute(bool allTerms=true)
     {
       float input = *myInput;
       float error = *mySetpoint - input;
-      ITerm += (ki * error);
-      if (ITerm > outMax) ITerm = outMax;
-      else if (ITerm < outMin) ITerm = outMin;
+      if (allTerms) {
+        ITerm += (ki * error);
+        if (ITerm > outMax) ITerm = outMax;
+        else if (ITerm < outMin) ITerm = outMin;
+      }
       float dInput = (input - lastInput);
-
       /*Compute PID Output*/
-      float output = kp * error + ITerm - kd * dInput;
-
+      float output;
+      if (allTerms) output = kp * error + ITerm - kd * dInput;
+      else output = kp * error - kd * dInput;
+      
       if (output > outMax) output = outMax;
       else if (output < outMin) output = outMin;
       *myOutput = output;
-
       /*Remember some variables for next time*/
       lastInput = input;
     }

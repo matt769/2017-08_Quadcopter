@@ -96,9 +96,9 @@ void setupPid() {
 }
 
 void pidRateUpdate() {
-    pidRateRoll.Compute();
-    pidRatePitch.Compute();
-    pidRateYaw.Compute();
+    pidRateRoll.Compute(false);
+    pidRatePitch.Compute(false);
+    pidRateYaw.Compute(false);
 }
 
 void pidAttitudeUpdate() {
