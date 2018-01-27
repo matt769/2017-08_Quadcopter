@@ -49,6 +49,7 @@ uint16_t magLoopCounter = 0;
 
 
 void setup() {
+  state = NOT_ARMED;
   Serial.begin(115200);
   pinMode(pinStatusLed, OUTPUT);
   digitalWrite(pinStatusLed, HIGH);
@@ -56,11 +57,8 @@ void setup() {
   setupI2C();
   setupMotionSensor();
   setupMag();
-  delay(3000); // so that hands aren't still fiddling with the battery connection while the gyros are calibrating
-  initialiseCurrentAngles();
   setupRadio();
   setupPid();
-  state = NOT_ARMED;
   // ARMING PROCEDURE
   // wait for radio connection and specific user input (stick up, stick down)
   while (!checkRadioForInput()) {
@@ -68,14 +66,13 @@ void setup() {
   while (rcPackage.throttle < 200) {
     checkRadioForInput();
   }
+  initialiseCurrentAngles();  // so that hands aren't still fiddling with the battery connection while the gyros are calibrating
   while (rcPackage.throttle > 50) {
     checkRadioForInput();
   }
   // END ARMING
   setupMotors();
   state = ARMED;
-  Serial.println(F("Setup complete"));
-  digitalWrite(pinStatusLed, LOW);
   checkHeartbeat(); // refresh
   pidRateModeOn();
   unsigned long startTimeMillis = millis();
@@ -87,6 +84,8 @@ void setup() {
   mainLoopLast = startTimeMicros;
   gyroLoopLast = startTimeMicros;
   state = ON_GROUND;
+  digitalWrite(pinStatusLed, LOW);
+  //  Serial.println(F("Setup complete"));
 
 } // END SETUP
 
@@ -109,7 +108,7 @@ void loop() {
     processGyroData();
     gyroLoopCounter++;
   }
-  
+
   if (micros() - mainLoopLast >= mainLoopFreq) {
     mainLoopLast += mainLoopFreq;
     readAccels();
@@ -119,7 +118,7 @@ void loop() {
     processMotors(throttle, rateRollSettings.output, ratePitchSettings.output, rateYawSettings.output);
     mainLoopCounter++;
   }
-  
+
   if (millis() - magLoopLast >= magLoopFreq) {
     magLoopLast += magLoopFreq;
     readMag();
