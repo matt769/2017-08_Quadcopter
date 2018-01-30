@@ -24,7 +24,6 @@ class PID
       inAuto = false;
       SetControllerDirection(ControllerDirection);
       SetTunings(Kp, Ki, Kd);
-      lastTime = millis() - SampleTime;
     }
 
     void SetMode(int Mode)
@@ -79,8 +78,6 @@ class PID
     {
       if (Kp < 0 || Ki < 0 || Kd < 0) return;
 
-      dispKp = Kp; dispKi = Ki; dispKd = Kd;
-
       float SampleTimeInSec = ((float)SampleTime) / 1000;
       kp = Kp;
       ki = Ki * SampleTimeInSec;
@@ -126,9 +123,6 @@ class PID
       if (ITerm > outMax) ITerm = outMax;
       else if (ITerm < outMin) ITerm = outMin;
     }
-    float dispKp;       // * we'll hold on to the tuning parameters in user-entered
-    float dispKi;       //   format for display purposes
-    float dispKd;       //
     float kp;                  // * (P)roportional Tuning Parameter
     float ki;                  // * (I)ntegral Tuning Parameter
     float kd;                  // * (D)erivative Tuning Parameter
@@ -137,7 +131,6 @@ class PID
     float *myOutput;             //   This creates a hard link between the variables and the
     float *mySetpoint;           //   PID, freeing the user from having to constantly tell us
     //   what these values are.  with pointers we'll just know.
-    unsigned long lastTime;
     float ITerm, lastInput;
     unsigned long SampleTime;
     float outMin, outMax;
