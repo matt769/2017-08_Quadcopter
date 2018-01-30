@@ -379,6 +379,7 @@ void initialiseCurrentAngles() {
     delay(5);
   }
   calcAnglesAccel();
+  applyAngleOffsets();
   currentAngles.roll = accelAngles.roll;
   currentAngles.pitch = accelAngles.pitch;
 
