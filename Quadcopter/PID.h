@@ -16,12 +16,13 @@ class PID
 
     //commonly used functions **************************************************************************
     PID(float* Input, float* Output, float* Setpoint,
-        float Kp, float Ki, float Kd, int ControllerDirection)
+        float Kp, float Ki, float Kd, int ControllerDirection, unsigned long sampleTime)
     {
       myOutput = Output;
       myInput = Input;
       mySetpoint = Setpoint;
       inAuto = false;
+      SampleTime = sampleTime;
       SetControllerDirection(ControllerDirection);
       SetTunings(Kp, Ki, Kd);
     }
